@@ -20,6 +20,7 @@
 #include "src/plot_LCE_fits.C"
 #include "src/plot_LM.C"
 #include "src/plot_spectrum.C"
+#include "src/plot_opticalphotons.C"
 #include "src/process_LCE.C"
 #include "src/process_LM.C"
 
@@ -202,6 +203,14 @@ bool exec_commands(string input, string datafile, bool returnValue) {
 	if ( input == "o-off" ) {
 		cout << "root direct output: off" << endl;
 		gROOT->SetBatch(kTRUE);
+		returnValue = true;
+	}
+	if (( input == "op" ) || 
+		( input == "Op" )) {
+		if (! bins()) getbin_dim3();
+		cout << "Opticalphotons of: " << datafilename << endl;
+		plot_opticalphotons(datafile, Bin1, Bin2, Bin3);
+		show_canvas();
 		returnValue = true;
 	}
 	if (( input == "B" ) || 
