@@ -10,7 +10,7 @@
  * @changes	 
  *
  ******************************************************************/
-#include "../TPCsim_analysis.C"
+#include "../Analyzer.C"
 #include <iostream>
 #include <sstream>
 #include <string>

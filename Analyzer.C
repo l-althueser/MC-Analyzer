@@ -1,29 +1,14 @@
 /******************************************************************
- * TPCsim_analysis.C
+ * Analyzer.C
  * 
  * analysis scripts for the data files of the Muenster dual phase 
  * xenon TPC simulations - ROOT files
  *
- * there are some easy ways to use these scripts:
- *
- * a)	make symbolic links from each folder to this folder with:
- *	  ln -s ../analysis/analysis.sh ./analysis.sh
- *    you have to make the analysis.sh executable! (chmod 744/774)
- *	  and start the shell from the *.root folder with ./analysis.sh
- *
- * b)	register the analysis.sh script in your .bashrc in $HOME
- *
  * @author	Lutz Althueser
- * @date   	2015-04-01
- * @updated	2016-02-27
  *
- * @usage 	./analysis.sh												start the analysis framework
- *					./analysis.sh /home/.../.../*.root	process a specific file
- *					./analysis.sh /home/.../.../all			process all files in folder
- *
- * @comment 
- *
- * @changes	 
+ * @usage 	.x Analyzer.C	start the analysis framework
+ *			.x Analyzer.C("/home/.../.../*.root")	process a specific file
+ *			.x Analyzer.C("/home/.../.../all")	process all files in folder
  *
  ******************************************************************/
 
@@ -53,13 +38,13 @@ string datafilename;
 
 /*=================================================================*/
 
-void TPCsim_analysis() {
+void Analyzer() {
 	analysis();
 }
 
 /*=================================================================*/
 
-void TPCsim_analysis(string datafile){
+void Analyzer(string datafile){
 	analysis(datafile);
 }
 
