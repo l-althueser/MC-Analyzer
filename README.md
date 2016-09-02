@@ -72,3 +72,4 @@ The output file has an specific file format which is described in the following.
 ### Overview of the Geant4 Simulation
 ![Overview_01](/drawings/muensterTPCsim_overview_01.png)
 ![Overview_02](/drawings/muensterTPCsim_overview_02.png)
+![Overview_PMTholder](/drawings/muensterTPCsim_pmtholder_top_wireframe.pdf.jpg)
