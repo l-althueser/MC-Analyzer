@@ -12,6 +12,7 @@
  ******************************************************************/
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 using namespace std;
 
@@ -44,9 +45,9 @@ void LCE_DividingDetector(string datafile, const int NbRBin, const int NbTBin, c
 
 	// recommended values: NbRBin = 40; NbTBin = 10; NbZBin = 40;
 	const int NbVolumes = NbRBin*NbTBin*NbZBin; 
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			0.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2;//mm
+	const float DetHeight = abs(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;
 
 	//////////////////////////////////////////////////////////////////
@@ -130,7 +131,7 @@ void LCE_DividingDetector(string datafile, const int NbRBin, const int NbTBin, c
 
 	if ( x > -DetRadius && x < DetRadius && 
 			 y > -DetRadius && y < DetRadius && 
-			 Z > -DetMax && Z < -DetMin ) { 
+			 Z > DetMax && Z < DetMin ) { 
 	 		 		 
  		 	double Radius = (TMath::Sqrt(TMath::Power(x,2) + TMath::Power(y,2)));
 			double Theta = TMath::ATan(y/x);
@@ -138,7 +139,7 @@ void LCE_DividingDetector(string datafile, const int NbRBin, const int NbTBin, c
 			if (x < 0) Theta = Theta + TMath::Pi();
 			if (Theta < 0) Theta = Theta + 2*TMath::Pi();
 			
- 		 	int z=floor(-((Z+DetMin)/(DetHeight/NbZBin)));
+ 		 	int z=floor(-((Z-DetMin)/(DetHeight/NbZBin)));
 			int t=floor((Theta/(2*pi/NbTBin)));
 			int r=floor(Radius/(DetRadius/NbRBin));
 			if (r == NbRBin) r--;
@@ -206,8 +207,8 @@ void LCE_DividingDetector(string datafile, const int NbRBin, const int NbTBin, c
 	for (int z=0; z<NbZBin; z++){	
 		for (int t=0; t<NbTBin; t++){	
 		  for (int r=0; r<NbRBin; r++){
-				zhigh[z][t][r] = -z*DetHeight/NbZBin-DetMin;     //max value is -2
-				zlow[z][t][r]  = (-1-z)*DetHeight/NbZBin-DetMin; //min value is -169
+				zhigh[z][t][r] = -z*DetHeight/NbZBin+DetMin;     //max value is -2
+				zlow[z][t][r]  = (-1-z)*DetHeight/NbZBin+DetMin; //min value is -169
 				rlow[z][t][r]  = r*DetRadius/NbRBin;      //min value is 0
 				rhigh[z][t][r] = (r+1)*DetRadius/NbRBin;  //max value is DetRadius
 				tlow[z][t][r]  = t*2*pi/NbTBin;           //min value is 0

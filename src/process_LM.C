@@ -12,6 +12,8 @@
  ******************************************************************/
 #include <iostream>
 #include <string>
+#include <stdio.h>
+#include <stdlib.h>
 #include <numeric>
 #include <math.h> 
 #include <cmath>
@@ -41,9 +43,9 @@ void LM_DividingDetector_xy(string datafile, const int NbRBin, const int NbTBin,
 
 	// recommended values: NbRBin = 40; NbTBin = 10; NbZBin = 40;
 	const int NbVolumes = NbRBin*NbTBin*NbZBin; 
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2.;//mm
+	const float DetHeight = abs(DetMax - DetMin;//mm 
 	const float DetRadius = 40.;//mm
 	
 	//////////////////////////////////////////////////////////////////
@@ -143,7 +145,7 @@ void LM_DividingDetector_xy(string datafile, const int NbRBin, const int NbTBin,
 		
 			if ( X > -DetRadius && X < DetRadius && 
 					 Y > -DetRadius && Y < DetRadius && 
-					 Z > -DetMax && Z < -DetMin ) { 
+					 Z > DetMax && Z < DetMin ) { 
 					 
 					double Radius = (TMath::Sqrt(TMath::Power(X,2) + TMath::Power(Y,2)));
 					double Theta = TMath::ATan(Y/X);
@@ -151,7 +153,7 @@ void LM_DividingDetector_xy(string datafile, const int NbRBin, const int NbTBin,
 					if (X < 0) Theta = Theta + TMath::Pi();
 					if (Theta < 0) Theta = Theta + 2*TMath::Pi();
 					
- 		 			int z=floor(-((Z+DetMin)/(DetHeight/NbZBin)));
+ 		 			int z=floor(-((Z-DetMin)/(DetHeight/NbZBin)));
 					int t=floor((Theta/(2*pi/NbTBin)));
 					int r=floor((Radius/(DetRadius/NbRBin)));
 					if (r == NbRBin) r--;
@@ -194,8 +196,8 @@ void LM_DividingDetector_xy(string datafile, const int NbRBin, const int NbTBin,
 	for (int z=0; z<NbZBin; z++){	
 		for (int t=0; t<NbTBin; t++){	
 		  for (int r=0; r<NbRBin ; r++){
-				zhigh[z][t][r] = -z*DetHeight/NbZBin-DetMin;     //max value is -2
-				zlow[z][t][r]  = (-1-z)*DetHeight/NbZBin-DetMin; //min value is -169
+				zhigh[z][t][r] = -z*DetHeight/NbZBin+DetMin;     //max value is -2
+				zlow[z][t][r]  = (-1-z)*DetHeight/NbZBin+DetMin; //min value is -169
 				rlow[z][t][r]  = r*DetRadius/NbRBin;      //min value is 0
 				rhigh[z][t][r] = (r+1)*DetRadius/NbRBin;  //max value is DetRadius
 				tlow[z][t][r]  = t*2*pi/NbTBin;           //min value is 0
@@ -236,9 +238,9 @@ void LM_DividingDetector_zx(string datafile, const int NbZBin, const int NbXBin)
 
 	// recommended values: NbZBin = 40; NbXBin = 40;
 	const int NbVolumes = NbZBin*NbXBin; 
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2.;//mm
+	const float DetHeight = abs(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;//mm
 	
 	//////////////////////////////////////////////////////////////////
@@ -336,8 +338,8 @@ void LM_DividingDetector_zx(string datafile, const int NbZBin, const int NbXBin)
 		
 			if ( X > -DetRadius && X < DetRadius && 
 					 Y > -DetRadius && Y < DetRadius && 
-					 Z > -DetMax && Z < -DetMin ) { 
-					 int z=-floor(Z/(DetMax/NbZBin))-1;
+					 Z > DetMax && Z < DetMin ) { 
+					 int z=-floor(Z/(-DetMax/NbZBin))-1;
 					 int x=floor((X+DetRadius)/(2*DetRadius/NbXBin));
 					 
 					 // u can filter events with
@@ -381,8 +383,8 @@ void LM_DividingDetector_zx(string datafile, const int NbZBin, const int NbXBin)
 	txtfile << "z\t" << "x\t" << "zhigh\t"<< "xlow\t" << "ly\t" << "pmthits\t" << "events\t" << "energy\t" << endl;
 	for (int z=0; z<NbZBin; z++){	
 		for (int x=0; x<NbXBin; x++){	
-				zhigh[z][x]	= -z*DetHeight/NbZBin-DetMin;
-				zlow[z][x] 	= (-1-z)*DetHeight/NbZBin-DetMin;
+				zhigh[z][x]	= -z*DetHeight/NbZBin+DetMin;
+				zlow[z][x] 	= (-1-z)*DetHeight/NbZBin+DetMin;
 				xhigh[z][x]	= -DetRadius+(x+1)*2*DetRadius/NbXBin;
 				xlow[z][x]	= -DetRadius+2*x*DetRadius/NbXBin;
 
@@ -420,9 +422,9 @@ void LM_DividingDetector_zy(string datafile, const int NbZBin, const int NbYBin)
 
 	// recommended values: NbZBin = 40; NbYBin = 40;
 	const int NbVolumes = NbZBin*NbYBin;
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2.;//mm
+	const float DetHeight = abs(DetMax - DetMin);//mm 
 	const float DetRadius =  40.;//mm
 	
 	//////////////////////////////////////////////////////////////////
@@ -519,8 +521,8 @@ void LM_DividingDetector_zy(string datafile, const int NbZBin, const int NbYBin)
 		
 			if ( X > -DetRadius && X < DetRadius && 
 					 Y > -DetRadius && Y < DetRadius && 
-					 Z > -DetMax && Z < -DetMin ) { 
-					 int z=-floor(Z/(DetMax/NbZBin))-1;
+					 Z > DetMax && Z < DetMin ) { 
+					 int z=-floor(Z/(-DetMax/NbZBin))-1;
 					 int y=floor((Y+DetRadius)/(2*DetRadius/NbYBin));
 					 
 					 // u can filter events with
@@ -564,8 +566,8 @@ void LM_DividingDetector_zy(string datafile, const int NbZBin, const int NbYBin)
 	txtfile << "z\t" << "y\t" << "zhigh\t"<< "ylow\t" << "ly\t" << "pmthits\t" << "events\t" << "energy\t" << endl;
 	for (int z=0; z<NbZBin; z++){	
 		for (int y=0; y<NbYBin; y++){	
-				zhigh[z][y]	= -z*DetHeight/NbZBin-DetMin;
-				zlow[z][y] 	= (-1-z)*DetHeight/NbZBin-DetMin;
+				zhigh[z][y]	= -z*DetHeight/NbZBin+DetMin;
+				zlow[z][y] 	= (-1-z)*DetHeight/NbZBin+DetMin;
 				yhigh[z][y]	= -DetRadius+(y+1)*2*DetRadius/NbYBin;
 				ylow[z][y]	= -DetRadius+2*y*DetRadius/NbYBin;
 
