@@ -45,7 +45,7 @@ void LM_DividingDetector_xy(string datafile, const int NbRBin, const int NbTBin,
 	const int NbVolumes = NbRBin*NbTBin*NbZBin; 
 	const float DetMax = -169.;//mm
 	const float DetMin = -2.;//mm
-	const float DetHeight = abs(DetMax - DetMin;//mm 
+	const float DetHeight = abs(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;//mm
 	
 	//////////////////////////////////////////////////////////////////
