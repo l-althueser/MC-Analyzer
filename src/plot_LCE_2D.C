@@ -79,6 +79,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	int ri=0;
 
 	float av=0;
+	float avlyop=0;
+	float avlykr=0;
 
 	float d=0;
 
@@ -101,7 +103,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 			LCEzr[z][r]=LCEzr[z][r]/NbTBin;
 			lyzr[z][r]=lyzr[z][r]/NbTBin;
 			av += LCEzr[z][r]/(NbZBin*NbRBin);
-			//av += ((LCEabszr[z][r]/(41.55*(NbSimuInitial/(NbRBin*NbZBin))))*0.3)/(NbZBin*NbRBin);
+			avlyop += lyzr[z][r]/(NbZBin*NbRBin);
+			avlykr += ((LCEabszr[z][r]/(41.55*(NbSimuInitial/(NbRBin*NbZBin))))*0.3)/(NbZBin*NbRBin);
 		}
 	}
 
@@ -184,6 +187,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	
 		sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_ly-83mKr.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 		c1->SaveAs(filename);
+		
+		cout << "Average LYKr: " << avlykr << endl;
 	}
 	else {
 		//ly for op
@@ -197,6 +202,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	
 		sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_ly.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 		c1->SaveAs(filename);
+		
+		cout << "Average LYOP: " << avlyop << endl;
 	}
 
 	gStyle->SetOptStat(0);

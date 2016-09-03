@@ -26,4 +26,7 @@
 *.exe
 *.out
 *.app
+
 *.root
+!testing/Cs137.root
+!testing/opticalphoton.root
