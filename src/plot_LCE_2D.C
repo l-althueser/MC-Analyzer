@@ -200,6 +200,10 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 		//c1->SaveAs(filename);
 		c1->Write();
 		
+		TParameter<float> *r_avlykr;
+		r_avlykr = new TParameter<float>("Average_LY_Kr83m", avlykr);
+		r_avlykr->Write();
+		
 		cout << "Average LYKr: " << avlykr << endl;
 	}
 	else {
@@ -215,6 +219,10 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 		sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_ly.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 		//c1->SaveAs(filename);
 		c1->Write();
+		
+		TParameter<float> *r_avlyop;
+		r_avlyop = new TParameter<float>("Average_LY_OP", avlyop);
+		r_avlyop->Write();
 		
 		cout << "Average LYOP: " << avlyop << endl;
 	}
@@ -248,8 +256,12 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_initial_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
 	//c1->Write();
+	
+	TParameter<float> *r_av;
+	r_av = new TParameter<float>("Average_LCE", av*100);
+	r_av->Write();
 
-	cout << "Average LCE: " << av << endl;
+	cout << "Average LCE: " << av*100 << endl;
 	
 	delete f_plot;
 }
