@@ -22,6 +22,13 @@ void abslength(string datafile) {
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
 	TString Tdatafile = datafile;
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot_abs.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 
 	char filename[10000];
 	char histname[100];
@@ -78,8 +85,10 @@ void abslength(string datafile) {
 	cout << "===========================================" << endl;
 
 	sprintf(filename,"%s/%s.pdf", workingdirectory.c_str(), datafilename.c_str());
-	plotcanvas->SaveAs(filename);
+	//plotcanvas->SaveAs(filename);
+	plotcanvas->Write();
 
+	delete f_plot;
 }
 
 Double_t fitexpref(Double_t *x,Double_t *par)
@@ -93,6 +102,13 @@ void ref(string datafile) {
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
 	TString Tdatafile = datafile;
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot_ref.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 
 	char filename[10000];
 	char histname[100];
@@ -147,6 +163,8 @@ void ref(string datafile) {
 	cout << "===========================================" << endl;
 
 	sprintf(filename,"%s/%s.pdf", workingdirectory.c_str(), datafilename.c_str());
-	plotcanvas->SaveAs(filename);
-
+	//plotcanvas->SaveAs(filename);
+	plotcanvas->Write();
+	
+	delete f_plot;
 }

@@ -47,15 +47,22 @@ void LM_xy(string datafile, string zname, const int NbRBin, const int NbTBin, co
 
 	// recommended values: NbRBin = 40; NbTBin = 10; NbZBin = 40;
 	const int NbVolumes = NbRBin*NbTBin*NbZBin; 
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2.;//mm
+	const float DetHeight = -(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;//mm
 
 	cout << "R is divided in " << NbRBin << " bins" << endl;
 	cout << "Theta is divided in " << NbTBin << " bins" << endl;
 	cout << "Z is divided in " << NbZBin << " bins" << endl;
 	cout << "The Detector is divided into " << NbVolumes << " volumes" << endl;
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 
 	//////////////////////////////////////////////////////////////////
 
@@ -244,10 +251,12 @@ void LM_xy(string datafile, string zname, const int NbRBin, const int NbTBin, co
 
 	//sprintf(filename,"%s/%s_LM_ZSlice_R%d-T%d-Z%d_%s%s_abs.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin, zname.c_str(), filetag.c_str());
 	//zslices->SaveAs(filename);
+	//zslices->Write();
 
 	gPad->SetLogz();
 	sprintf(filename,"%s/%s_LM_ZSlice_R%d-T%d-Z%d_%s%s_abs_logz.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin, zname.c_str(), filetag.c_str());
-	zslices->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 	gPad->SetLogz(0);
 
 	for (Int_t i=0;i<hLMMap.GetSize();i++) bins[i] = bins[i]/sum*100;
@@ -256,12 +265,16 @@ void LM_xy(string datafile, string zname, const int NbRBin, const int NbTBin, co
 	ZTitle->DrawText(0.78, 0.955, dum);
 
 	sprintf(filename,"%s/%s_LM_ZSlice_R%d-T%d-Z%d_%s%s_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin, zname.c_str(), filetag.c_str());
-	zslices->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 
 	gPad->SetLogz();
 	sprintf(filename,"%s/%s_LM_ZSlice_R%d-T%d-Z%d_%s%s_pct_logz.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin, zname.c_str(), filetag.c_str());
-	zslices->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 	gPad->SetLogz(0);
+	
+	delete f_plot;
 }
 
 /*=================================================================*/
@@ -294,9 +307,9 @@ void LM_zx(string datafile, string zname, const int NbZBin, const int NbXBin) {
 
 	// recommended values: NbZBin = 40; NbXBin = 40;
 	const int NbVolumes = NbZBin*NbXBin; 
-	const float DetMax = 		169.;//mm
+	const float DetMax = -169.;//mm
 	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetHeight = -(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;//mm
 
 	cout << "Z is divided in " << NbZBin << " bins" << endl;
@@ -304,6 +317,13 @@ void LM_zx(string datafile, string zname, const int NbZBin, const int NbXBin) {
 	cout << "The Detector is divided into " << NbVolumes << " volumes." << endl;
 
 	//////////////////////////////////////////////////////////////////
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 
 	char filename[10000];
 	sprintf(filename,"%s/%s_LM_Z%d-X%d.dat", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbXBin);
@@ -367,7 +387,7 @@ void LM_zx(string datafile, string zname, const int NbZBin, const int NbXBin) {
 	
 	double sum = 0;
 	
-	TH2F *h1 = new TH2F("LM",filename,NbXBin,-DetRadius,DetRadius,NbZBin,-DetMax,-DetMin);
+	TH2F *h1 = new TH2F("LM",filename,NbXBin,-DetRadius,DetRadius,NbZBin,DetMax,DetMin);
 	for (int z=0; z<(NbZBin); z++){
 		for (int x=0; x<NbXBin; x++){
 			h1->SetBinContent(x+1,NbZBin-z,counter[z][x]);
@@ -417,11 +437,13 @@ void LM_zx(string datafile, string zname, const int NbZBin, const int NbXBin) {
 
 	//gStyle->SetOptStat("");
 	//sprintf(filename,"%s/%s_LM_Z%d-X%d_%s_abs.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbXBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
 
 	//gStyle->SetOptStat("neim");
 	//sprintf(filename,"%s/%s_LM_Z%d-X%d_%s_abs_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbXBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
 
 	for (Int_t i=0;i<h1->GetSize();i++) bins[i] = bins[i]/sum*100;
 	sprintf(dum, "%s [pct]", zname.c_str());
@@ -429,11 +451,15 @@ void LM_zx(string datafile, string zname, const int NbZBin, const int NbXBin) {
 
 	gStyle->SetOptStat("");
 	sprintf(filename,"%s/%s_LM_Z%d-X%d_%s_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbXBin, zname.c_str());
-	c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 
 	//gStyle->SetOptStat("neim");
 	//sprintf(filename,"%s/%s_LM_Z%d-X%d_%s_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbXBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
+	
+	delete f_plot;
 }
 
 /*=================================================================*/
@@ -466,9 +492,9 @@ void LM_zy(string datafile, string zname, const int NbZBin, const int NbYBin) {
 
 	// recommended values: NbZBin = 40; NbYBin = 40;
 	const int NbVolumes = NbZBin*NbYBin; 
-	const float DetMax = 		169.;//mm
-	const float DetMin = 			2.;//mm
-	const float DetHeight = DetMax - DetMin;//mm 
+	const float DetMax = -169.;//mm
+	const float DetMin = -2.;//mm
+	const float DetHeight = -(DetMax - DetMin);//mm 
 	const float DetRadius = 40.;//mm
 
 	cout << "Z is divided in " << NbZBin << " bins" << endl;
@@ -477,6 +503,13 @@ void LM_zy(string datafile, string zname, const int NbZBin, const int NbYBin) {
 
 	//////////////////////////////////////////////////////////////////
 
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
+	
 	char filename[10000];
 	sprintf(filename,"%s/%s_LM_Z%d-Y%d.dat", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbYBin);
 
@@ -539,7 +572,7 @@ void LM_zy(string datafile, string zname, const int NbZBin, const int NbYBin) {
 
 	double sum = 0;
 	
-	TH2F *h1 = new TH2F("LM",filename,NbYBin,-DetRadius,DetRadius,NbZBin,-DetMax,-DetMin);
+	TH2F *h1 = new TH2F("LM",filename,NbYBin,-DetRadius,DetRadius,NbZBin,DetMax,DetMin);
 	for (int z=0; z<(NbZBin); z++){
 		for (int y=0; y<NbYBin; y++){
 			h1->SetBinContent(y+1,NbZBin-z,counter[z][y]);
@@ -589,11 +622,13 @@ void LM_zy(string datafile, string zname, const int NbZBin, const int NbYBin) {
 
 	//gStyle->SetOptStat("");
 	//sprintf(filename,"%s/%s_LM_Z%d-Y%d_%s_abs.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbYBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
 	
 	//gStyle->SetOptStat("neim");
 	//sprintf(filename,"%s/%s_LM_Z%d-Y%d_%s_abs_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbYBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
 
 	for (Int_t i=0;i<h1->GetSize();i++) bins[i] = bins[i]/sum*100;
 	sprintf(dum, "%s [pct]", zname.c_str());
@@ -601,11 +636,15 @@ void LM_zy(string datafile, string zname, const int NbZBin, const int NbYBin) {
  
 	gStyle->SetOptStat("");
 	sprintf(filename,"%s/%s_LM_Z%d-Y%d_%s_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbYBin, zname.c_str());
-	c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 	
 	//gStyle->SetOptStat("neim");
 	//sprintf(filename,"%s/%s_LM_Z%d-Y%d_%s_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbZBin, NbYBin, zname.c_str());
-	//c1->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	//zslices->Write();
+	
+	delete f_plot;
 }
 
 /*=================================================================*/

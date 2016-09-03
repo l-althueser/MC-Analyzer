@@ -52,6 +52,13 @@ void LCE_MapZSlices(string datafile, const int NbRBin, const int NbTBin, const i
 
 	float ly[NbZBin][NbTBin][NbRBin]={0};
 	float LCE[NbZBin][NbTBin][NbRBin]={0};
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 
 	// read txtfile
 	char filename[10000];
@@ -151,7 +158,8 @@ void LCE_MapZSlices(string datafile, const int NbRBin, const int NbTBin, const i
 	}
 	
 	sprintf(filename,"%s/%s_LY_ZSlices_R%d-T%d-Z%d.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
-	zslices->SaveAs(filename);
+	//zslices->SaveAs(filename);
+	zslices->Write();
 	
 	//for (int z=0; z<NbZBin; z++){
 	//	Float_t *bins = hLYMap[z]->GetArray();
@@ -165,6 +173,8 @@ void LCE_MapZSlices(string datafile, const int NbRBin, const int NbTBin, const i
 	//zslices->SaveAs(filename);
 	
 	cout << endl << "average ly: " << avly << endl;
+	
+	delete f_plot;
 }
 
 /*=================================================================*/

@@ -35,7 +35,7 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
 	TString Tdatafile = datafile;
-
+	
 	//////////////////////////////////////////////////////////////////
 
 	// recommended values: NbRBin = 40; NbTBin = 10; NbZBin = 40;
@@ -66,6 +66,15 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 		const int NbSimuInitial = 100000000;
 	}
 	long nbentries = T1->GetEntries();
+	
+	delete rootfile;
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
 	
 	// read txtfile
 	char filename[10000];
@@ -170,10 +179,12 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_abs.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 
 	gStyle->SetOptStat("neim");
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_abs_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 	
 	if (datafilename.find("83mKr") != std::string::npos) {
 		//ly for Kr-83m
@@ -186,7 +197,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 		h1->GetZaxis()->SetTitle("LY [pe/keV]");
 	
 		sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_ly-83mKr.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
-		c1->SaveAs(filename);
+		//c1->SaveAs(filename);
+		c1->Write();
 		
 		cout << "Average LYKr: " << avlykr << endl;
 	}
@@ -201,7 +213,8 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 		h1->GetZaxis()->SetTitle("LY [pe/keV]");
 	
 		sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_ly.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
-		c1->SaveAs(filename);
+		//c1->SaveAs(filename);
+		c1->Write();
 		
 		cout << "Average LYOP: " << avlyop << endl;
 	}
@@ -212,10 +225,12 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 	
 	gStyle->SetOptStat("neim");
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 	
 	gStyle->SetOptStat(0);
 	for (int z=0; z<(NbZBin); z++){
@@ -226,14 +241,17 @@ void LCE_Map(string datafile, const int NbRBin, const int NbTBin, const int NbZB
 	h1->GetZaxis()->SetTitle("LCE [pct]");
 	
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_initial_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
-	c1->SaveAs(filename);
+	//c1->SaveAs(filename);
+	c1->Write();
 	
 	gStyle->SetOptStat("nem");
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_initial_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 
 	cout << "Average LCE: " << av << endl;
 	
+	delete f_plot;
 }
 
 /*=================================================================*/

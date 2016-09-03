@@ -66,6 +66,15 @@ void LCE_3D(string datafile, const int NbRBin, const int NbTBin, const int NbZBi
 	}
 	long nbentries = T1->GetEntries();
 	
+	delete rootfile;
+	
+	found=datafilename.find_last_of(".");
+	string outputfilename = datafilename.substr(0,found);
+	const char rootfileout[10000];
+	sprintf(rootfileout,"%s/%s_plot.root", workingdirectory.c_str(), outputfilename.c_str());
+	TFile *f_plot = TFile::Open(rootfileout,"UPDATE");
+	if (!f_plot) { return; }
+	
 	// read txtfile
 	char filename[10000];
 	sprintf(filename,"%s/%s_LCE-LY_R%d-T%d-Z%d.dat", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
@@ -175,10 +184,13 @@ void LCE_3D(string datafile, const int NbRBin, const int NbTBin, const int NbZBi
 	gStyle->SetStatH(0.125); 
 	
 	sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_3D_initial_pct.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
-	c1->SaveAs(filename);
+	//c1->SaveAs(filename);
+	c1->Write();
 	
 	//gStyle->SetOptStat("nem");
 	//sprintf(filename,"%s/%s_LCE_R%d-T%d-Z%d_3D_initial_pct_stat.pdf", workingdirectory.c_str(), datafilename.c_str(), NbRBin, NbTBin, NbZBin);
 	//c1->SaveAs(filename);
+	//c1->Write();
 	
+	delete f_plot;
 }
