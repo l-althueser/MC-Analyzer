@@ -8,6 +8,7 @@
  * @comment 
  *
  * @changes	 
+ * alternativ: tv__tree->Draw("zp_pri:(yp_pri**2+xp_pri**2):(ntpmthits+nbpmthits)","pmthits[0]>0","COLZ");
  *
  ******************************************************************/
  
