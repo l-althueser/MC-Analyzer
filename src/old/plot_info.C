@@ -2,12 +2,6 @@
  * plot_info.C
  * 
  * @author	Lutz Althueser
- * @date   	2015-04-01
- * @updated	2016-02-27
- *
- * @comment 
- *
- * @changes	 
  *
  ******************************************************************/
 void plot_info(){
@@ -21,7 +15,7 @@ void plot_info(string datafile) {
 	TString Tdatafile = datafile;
 
 	TFile *rootfile = new TFile(Tdatafile);
-	TTree *t1 = (TTree*)rootfile->Get("t1");
+	TTree *t1 = (TTree*)rootfile->Get("events/events");
 
 	char eventnumber[10000];
 	char filename[10000];
@@ -30,8 +24,8 @@ void plot_info(string datafile) {
 	int x = 3;
 	int y = 5;
 	
-	if ( rootfile->GetListOfKeys()->Contains("nbeventstosimulate") == 1 ) {
-		TParameter<int> *NbEventsToSimulateParameter = rootfile->Get("nbeventstosimulate");
+	if ( rootfile->GetListOfKeys()->Contains("nbevents") == 1 ) {
+		TParameter<int> *NbEventsToSimulateParameter = rootfile->Get("nbevents");
 		const int NbSimuInitial = NbEventsToSimulateParameter->GetVal();
 		sprintf(eventnumber,"#scale[0.6]{#splitline{events simulated}{%d}}", NbSimuInitial);
 	}
@@ -45,17 +39,15 @@ void plot_info(string datafile) {
 	infocanvas->cd(1);
 	sprintf(filename,"#scale[0.6]{#splitline{information about}{%s}}", datafilename.c_str());
 	TLatex text1(0.05,0.7,filename); 
-  text1.SetNDC(kTRUE);
-  text1.Draw();
-  TLatex text2(0.05,0.5,eventnumber); 
-  text2.SetNDC(kTRUE);
-  text2.Draw();
+	text1.SetNDC(kTRUE);
+	text1.Draw();
+	TLatex text2(0.05,0.5,eventnumber); 
+	text2.SetNDC(kTRUE);
+	text2.Draw();
 	infocanvas->cd(2);
 	t1->Draw("e_pri");
 	infocanvas->cd(3);
 	t1->Draw("etot");
-	TH1F *htemp = (TH1F*)gPad->GetPrimitive("htemp");
-	//htemp->Set;
 	gPad->SetLogy();
 	infocanvas->cd(4);
 	t1->Draw("xp_pri");
