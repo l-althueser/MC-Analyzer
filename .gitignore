@@ -1,3 +1,8 @@
+.MCAnalyzer.config
+*.root
+!testing/Cs137.root
+!testing/opticalphoton.root
+
 # Compiled Object files
 *.slo
 *.lo
@@ -26,7 +31,3 @@
 *.exe
 *.out
 *.app
-
-*.root
-!testing/Cs137.root
-!testing/opticalphoton.root
