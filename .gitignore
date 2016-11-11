@@ -31,3 +31,4 @@ testing/*
 *.out
 *.app
 *.d
+*.pcm

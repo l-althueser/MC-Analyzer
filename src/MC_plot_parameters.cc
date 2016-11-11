@@ -39,7 +39,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void MC_plot_parameters(string datafile, string export_format, string parameter) {
+void MC_plot_parameters(string datafile, string export_format, string parameter, string suffix) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
@@ -89,7 +89,7 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 	TFile *file_input;
 	
 	char file_outname[10000];
-	sprintf(file_outname,"%s/OpPhotStudy_plot_MC_%s.dat", workingdirectory.c_str(), parameter.c_str());
+	sprintf(file_outname,"%s/%s_plot_MC_%s.dat", workingdirectory.c_str(),suffix.c_str(), parameter.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -126,7 +126,7 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 		
 		// generate plots
 		TFile *file_outplot;  
-		sprintf(file_outname,"%s/OpPhotStudy_plot_MC_%s.root", workingdirectory.c_str(), parameter.c_str());
+		sprintf(file_outname,"%s/%s_plot_MC_%s.root", workingdirectory.c_str(),suffix.c_str(), parameter.c_str());
 		file_outplot = new TFile(file_outname,"RECREATE");
 		
 		TH1F* h_LCE_paramter = new TH1F("LCE_parameter", "LCE_parameter", 15000, 0., 15000.);
@@ -146,7 +146,7 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains("OpPhotStudy"))) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains(suffix.c_str()))) {
 					string input_file = fname.Data();
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), input_file.c_str());
@@ -245,7 +245,7 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 		h_AFT_paramter_MC->Draw("P");  
 		
 		if (file_outplot) c_AFT_paramter->Write();	
-	sprintf(canvasfile,"%s/OpPhotStudy_plot_MC_%s_AFT.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_plot_MC_%s_AFT.%s", workingdirectory.c_str(),suffix.c_str(), parameter.c_str(),export_format.c_str());
 		if (!(export_format=="")) c_AFT_paramter->SaveAs(canvasfile);
 		
 		style_1D->cd();
@@ -279,7 +279,7 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 		leg->Draw();    
 		
 		if (file_outplot) c_LCE_paramter->Write();	
-	sprintf(canvasfile,"%s/OpPhotStudy_plot_MC_%s.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_plot_MC_%s.%s", workingdirectory.c_str(),suffix.c_str(), parameter.c_str(),export_format.c_str());
 		if (!(export_format=="")) c_LCE_paramter->SaveAs(canvasfile);
 		
 	}

@@ -39,7 +39,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void Xe1T_LCE_map(string datafile, string export_format) {
+void Xe1T_LCE_map(string datafile, string export_format, string suffix) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
@@ -87,7 +87,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	
 	TFile *file_outplot;  
 	char file_outplotname[10000];
-	sprintf(file_outplotname,"%s/OpPhotStudy_plot_LCE.root", workingdirectory.c_str());
+	sprintf(file_outplotname,"%s/%s_plot_LCE.root", workingdirectory.c_str(),suffix.c_str());
 	file_outplot = new TFile(file_outplotname,"RECREATE");
 	
 	const Int_t canvas_x = 650;
@@ -180,7 +180,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	h_LCE_map->Scale((1./50.)/0.3*100);
 	h_LCE_map->Draw("colz");
 	if (file_outplot) c_LCE_map->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_LCE_map.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_LCE_map.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_LCE_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -205,7 +205,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	}
 	h_ly_map->Draw("colz");
 	if (file_outplot) c_ly_map->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_ly_map.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_ly_map.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_map->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -238,7 +238,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	h_rLCE_map->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map->Draw("colz");
 	if (file_outplot) c_rLCE_map->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_rLCE_map.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_rLCE_map.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -262,7 +262,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	c_rLCE_map_3D->SetTheta(20.);
 	c_rLCE_map_3D->SetPhi(220.);
 	if (file_outplot) c_rLCE_map_3D->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_rLCE_map_3D.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_rLCE_map_3D.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_3D->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -285,7 +285,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	h_rLCE_map_top->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map_top->Draw("colz");
 	if (file_outplot) c_rLCE_map_top->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_rLCE_map_top.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_rLCE_map_top.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -304,7 +304,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	h_rLCE_map_bottom->Add(h_rLCE_map_top,-1);
 	h_rLCE_map_bottom->Draw("colz");
 	if (file_outplot) c_rLCE_map_bottom->Write();
-	sprintf(canvasfile,"%s/OpPhotStudy_rLCE_map_bottom.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_rLCE_map_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -359,7 +359,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	leg_rLCEZ->Draw();    
 
 	if (file_outplot) c_rLCE_LCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/OpPhotStudy_rLCE_LCEZ.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_rLCE_LCEZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_LCEZ_ALL->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -413,7 +413,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	leg_LCEZ->Draw();    
 
 	if (file_outplot) c_LCE_LCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/OpPhotStudy_LCE_LCEZ.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_LCE_LCEZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_LCE_LCEZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -465,7 +465,7 @@ void Xe1T_LCE_map(string datafile, string export_format) {
 	leg_lyZ->Draw();    
 
 	if (file_outplot) c_ly_lyZ_ALL->Write();	
-	sprintf(canvasfile,"%s/OpPhotStudy_ly_lyZ.%s", workingdirectory.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/%s_ly_lyZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_lyZ_ALL->SaveAs(canvasfile);
 	
 	gROOT->SetBatch(kFALSE);	

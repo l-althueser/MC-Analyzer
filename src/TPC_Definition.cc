@@ -62,16 +62,16 @@ void TPC_Definition::TPC_Xe1T () {
 }
 
 void TPC_Definition::TPC_MS () {
-  	chamber_minZ  = -1.8;
+  	chamber_minZ  = -18.;
 	chamber_maxZ  = 0.5;
 	chamber_minRR = 0.;
 	chamber_maxR  = 5.;
 	chamber_maxRR = chamber_maxR*chamber_maxR;
 	
-	LXe_minZ  = -1.69;
-	LXe_maxZ  = -0.02;
+	LXe_minZ  = -16.9;
+	LXe_maxZ  = -0.2;
 	LXe_minRR = 0.;
-	LXe_maxR  = 4;
+	LXe_maxR  = 4.;
 	LXe_maxRR = LXe_maxR*LXe_maxR;
 }
 

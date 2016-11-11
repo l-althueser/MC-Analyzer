@@ -71,8 +71,8 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		MC_plot_LCE(datafile,"png","big");
-		MC_plot_LCE(datafile,"png","small");
+		MC_plot_LCE(datafile,"png","big","OpPhotStudy");
+		MC_plot_LCE(datafile,"png","small","OpPhotStudy");
 		
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
@@ -93,7 +93,7 @@ void MC_Analyzer() {
 			lastfile_Kr83m = datafile;
 		}
 		
-		Xe1T_LCE_map(datafile,"png");
+		Xe1T_LCE_map(datafile,"png","OpPhotStudy");
 		
 	}
 	if (( cinput == "3" )){
@@ -128,7 +128,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile_mc;
 		}
 		
-		comparison(datafile_kr,datafile_mc,"png");
+		comparison(datafile_kr,datafile_mc,"png","OpPhotStudy");
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
@@ -154,7 +154,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile;
 		}
 		
-		MC_plot_parameters(datafile,"png",parameter);
+		MC_plot_parameters(datafile,"png",parameter,"OpPhotStudy");
 		
 	}
 
