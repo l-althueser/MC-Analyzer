@@ -25,9 +25,9 @@ using namespace std;
 
 /*=================================================================*/
 
-void MCAnalyzer() {
+void MC_Analyzer() {
 	
-	std::ifstream configfile_in("./.MC-Analyzer.config");
+	std::ifstream configfile_in("./.MC_Analyzer.config");
 	string lastfile_MC, lastfile_Kr83m, lastfile_parameters;
 	
 	if(configfile_in) {
@@ -160,7 +160,7 @@ void MCAnalyzer() {
 
 	
 	ofstream configfile_out;
-	configfile_out.open ("./.MC-Analyzer.config");
+	configfile_out.open ("./.MC_Analyzer.config");
 	configfile_out << lastfile_MC << "\n";
 	configfile_out << lastfile_Kr83m << "\n";
 	configfile_out << lastfile_parameters << "\n";

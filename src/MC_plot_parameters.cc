@@ -46,7 +46,8 @@ void MC_plot_parameters(string datafile, string export_format, string parameter)
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
 	
-	int param_min, param_max;
+	int param_min = 0;
+	int	param_max = 0;
 	
 	Int_t canvas_x = 650;
 	Int_t canvas_y = 800;
