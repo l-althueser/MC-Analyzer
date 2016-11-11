@@ -39,7 +39,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void Xe1T_LCE_map(string datafile, string export_format, string suffix) {
+void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");

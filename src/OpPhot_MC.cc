@@ -40,7 +40,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void MC_plot_LCE(string datafile, string export_format, string bin_format, string suffix) {
+void OpPhot_MC(string datafile, string export_format, string bin_format, string suffix) {
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
 	string workingdirectory = datafile.substr(0,found);

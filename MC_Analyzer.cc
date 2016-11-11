@@ -18,10 +18,11 @@
 using namespace std;
 
 // include own functions
-#include "src/MC_plot_LCE.cc"
-#include "src/Xe1T_LCE_map.cc"
-#include "src/comparisons.cc"
-#include "src/MC_plot_parameters.cc"
+#include "src/OpPhot_MC.cc"
+#include "src/OpPhot_Xe1T_data.cc"
+#include "src/OpPhot_comparison.cc"
+#include "src/OpPhot_MC_parameters.cc"
+#include "src/Source_MC.cc"
 
 /*=================================================================*/
 
@@ -40,13 +41,13 @@ void MC_Analyzer() {
 	cout << "============================================================" << endl;
 	cout << "= Starting MC-Analyzer =====================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= You can choose between two different analysis tools to ===" << endl;
-	cout << "= execute. =================================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (1) MC analysis ==========================================" << endl;
-	cout << "= (2) Generate Kr83m LCE map from file =====================" << endl;
-	cout << "= (3) Comparison of Kr83m data and MC ======================" << endl;
-	cout << "= (4) MC analysis - parameters =============================" << endl;
+	cout << "= (1) OpPhot - MC analysis =================================" << endl;
+	cout << "= (2) OpPhot - Kr83m data LCE map ==========================" << endl;
+	cout << "= (3) OpPhot - Comparison of Kr83m data vs. MC =============" << endl;
+	cout << "= (4) OpPhot - analyze parameter dir =======================" << endl;
+	cout << "============================================================" << endl;
+	cout << "= (5) Source - MC analysis =================================" << endl;
 	cout << "============================================================" << endl;
 	
 	string cinput;
@@ -55,7 +56,7 @@ void MC_Analyzer() {
 	
 	if (( cinput == "1" ) || ( cinput == "MC" )){
 		// execute MC analysis
-		cout << "= MC analysis ==============================================" << endl;
+		cout << "= OpPhot - MC analysis =====================================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -71,13 +72,13 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		MC_plot_LCE(datafile,"png","big","OpPhotStudy");
-		MC_plot_LCE(datafile,"png","small","OpPhotStudy");
+		OpPhot_MC(datafile,"png","big","OpPhotStudy");
+		OpPhot_MC(datafile,"png","small","OpPhotStudy");
 		
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
 		// execute LCE map generator
-		cout << "= LCE map generator =======================================" << endl;
+		cout << "= OpPhot - Kr83m data LCE map ==============================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -93,12 +94,12 @@ void MC_Analyzer() {
 			lastfile_Kr83m = datafile;
 		}
 		
-		Xe1T_LCE_map(datafile,"png","OpPhotStudy");
+		OpPhot_Xe1T_data(datafile,"png","OpPhotStudy");
 		
 	}
 	if (( cinput == "3" )){
 		// execute LCE map generator
-		cout << "= Comparison Kr83m vs MC ==================================" << endl;
+		cout << "= OpPhot - Comparison of Kr83m data vs. MC =================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which Kr83m datafile do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -128,11 +129,11 @@ void MC_Analyzer() {
 			lastfile_MC = datafile_mc;
 		}
 		
-		comparison(datafile_kr,datafile_mc,"png","OpPhotStudy");
+		OpPhot_comparison(datafile_kr,datafile_mc,"png","OpPhotStudy");
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
-		cout << "= MC analysis - parameters ================================" << endl;
+		cout << "= OpPhot - analyze parameter dir ===========================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse (only directories)?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -154,7 +155,27 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile;
 		}
 		
-		MC_plot_parameters(datafile,"png",parameter,"OpPhotStudy");
+		OpPhot_MC_parameters(datafile,"png",parameter,"OpPhotStudy");
+		
+	}
+	if ( cinput == "5" ){
+		cout << "= Source - MC analysis =====================================" << endl;
+		cout << "============================================================" << endl;
+		cout << "Which datafile(s) do you want to analyse?" << endl;
+		cout << "------------------------------------------------------------" << endl;
+		cout << "(l) for: " << lastfile_MC << endl;
+		string datafile;
+		cin >> datafile;
+		cin.ignore();
+		
+		if (datafile=="l") {
+			datafile = lastfile_MC;
+		}
+		else {
+			lastfile_MC = datafile;
+		}
+		
+		Source_MC(datafile,"png","small","OpPhotStudy");
 		
 	}
 

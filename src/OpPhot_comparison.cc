@@ -39,7 +39,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void comparison(string datafile_kr, string datafile_mc, string export_format, string suffix) {
+void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_format, string suffix) {
 	
 	if (fileexists(datafile_kr) == false) {
 		cout << endl;

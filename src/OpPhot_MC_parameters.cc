@@ -39,7 +39,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void MC_plot_parameters(string datafile, string export_format, string parameter, string suffix) {
+void OpPhot_MC_parameters(string datafile, string export_format, string parameter, string suffix) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
