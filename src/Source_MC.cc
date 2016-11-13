@@ -288,15 +288,16 @@ void Source_MC(string datafile, string export_format, string bin_format, string 
 	// X vs. Y of events chamber
 	/*=================================================================*/
 	style_1D->cd();
-	TCanvas *c_spectrum = new TCanvas("spectrum","spectrum",canvas_x,canvas_x);
-	file_input_tree->Draw("etot");
-	TH1F *h_spectrum = (TH1F*)gPad->GetPrimitive("htemp");
+	TCanvas *c_spectrum = new TCanvas("cspectrum","cspectrum",canvas_x,canvas_x);
+	TH1F* h_spectrum = new TH1F("spectrum", "energy spectrum",250.,0.,1000.);
+	file_input_tree->Draw("etot >> spectrum", 0, "goff");
 	gPad->SetLogy();
 	h_spectrum->SetTitle("energy spectrum");
 	h_spectrum->GetYaxis()->SetTitle("counts");
 	h_spectrum->GetXaxis()->SetTitle("E [keV]");
 	h_spectrum->GetXaxis()->CenterTitle();
 	h_spectrum->GetYaxis()->CenterTitle();
+	h_spectrum->Draw();
 	if (file_outplot) c_spectrum->Write();
 	sprintf(canvasfile,"%s/%s_%s_spectrum.%s", workingdirectory.c_str(),suffix.c_str(),bin_format.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_spectrum->SaveAs(canvasfile);
