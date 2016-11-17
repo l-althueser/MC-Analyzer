@@ -79,20 +79,26 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	char draw_selection[10000];
 	
 	TGaxis::SetMaxDigits(3);
+	//TGaxis::SetExponentOffset(-0.0325, +0.01, "z"); // X and Y offset for Z axis
+	TGaxis::SetExponentOffset(0.01, -0.0325, "x"); // Y and Y offset for X axis
 	
-	const Int_t NRGBs = 6;
+	const Int_t NRGBs = 5;
 	const Int_t NCont = 255;
-	Double_t stops[NRGBs] = { 0.00, 0.15, 0.34, 0.61, 0.84, 1.00 };
-	Double_t red[NRGBs]   = { 1.00, 0.00, 0.00, 0.87, 1.00, 0.51 };
-	Double_t green[NRGBs] = { 1.00, 0.00, 0.81, 1.00, 0.20, 0.00 };
-	Double_t blue[NRGBs]  = { 1.00, 0.51, 1.00, 0.12, 0.00, 0.00 };
+	static Int_t ColPalette[255];
+	Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+	Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+	Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+	Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
 	
+	Int_t FI = TColor::CreateGradientColorTable(NRGBs,stops,red,green,blue,NCont);
+    for (int i=0; i<NCont; i++) ColPalette[i] = FI+i;
+		
 	TStyle *style_1D = new TStyle("1D","1D");
 	style_1D->SetCanvasColor(10);
 	style_1D->SetTitleFillColor(0);
 	style_1D->SetOptStat(0);
 	style_1D->SetPadLeftMargin(0.105);
-	style_1D->SetPadRightMargin(0.05);
+	style_1D->SetPadRightMargin(0.09);
 	style_1D->SetPadTopMargin(0.075);
 	style_1D->SetPadBottomMargin(0.075);
 	
@@ -100,8 +106,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->SetTitleOffset(1.45,"Y");
 	style_1D->SetTitleOffset(1.35,"Z");
 	
-	style_1D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_1D->SetPalette(NCont,ColPalette);
 	style_1D->SetNumberContours(NCont);
 	style_1D->cd();
 	
@@ -118,8 +123,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_2D->SetTitleOffset(1.45,"Y");
 	style_2D->SetTitleOffset(1.35,"Z");
 	
-	style_2D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_2D->SetPalette(NCont,ColPalette);
 	style_2D->SetNumberContours(NCont);
 	style_2D->cd();
 	
@@ -136,10 +140,56 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_3D->SetTitleOffset(1.75,"Y");
 	style_3D->SetTitleOffset(2.,"Z");
 	
-	style_3D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_3D->SetPalette(NCont,ColPalette);
 	style_3D->SetNumberContours(99);
 	style_3D->cd();
+	
+	const Int_t NRGBs_Sym = 3;
+	const Int_t NCont_Sym = 255;
+	static Int_t ColPalette_Sym[255];
+	Double_t stops_Sym[NRGBs_Sym] = { 0.00, 0.5, 1.00 };
+	Double_t red_Sym[NRGBs_Sym]   = { 0.00, 1.0, 1.00 };
+	Double_t green_Sym[NRGBs_Sym] = { 0.00, 1.0, 0.00 };
+	Double_t blue_Sym[NRGBs_Sym]  = { 1.00, 1.0, 0.00 };
+	
+	Int_t FI_Sym = TColor::CreateGradientColorTable(NRGBs_Sym,stops_Sym,red_Sym,green_Sym,blue_Sym,NCont_Sym);
+    for (int i=0; i<NCont_Sym; i++) ColPalette_Sym[i] = FI_Sym+i;
+	
+	TStyle *style_2D_Sym = new TStyle("2D_Sym","2D_Sym");
+	style_2D_Sym->SetCanvasColor(10);
+	style_2D_Sym->SetTitleFillColor(0);
+	style_2D_Sym->SetOptStat(0);
+	style_2D_Sym->SetPadLeftMargin(0.105);
+	style_2D_Sym->SetPadRightMargin(0.15);
+	style_2D_Sym->SetPadTopMargin(0.075);
+	style_2D_Sym->SetPadBottomMargin(0.075);
+	
+	style_2D_Sym->SetTitleOffset(1.,"X");
+	style_2D_Sym->SetTitleOffset(1.45,"Y");
+	style_2D_Sym->SetTitleOffset(1.35,"Z");
+	
+	style_2D_Sym->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_2D_Sym->SetNumberContours(NCont_Sym);
+	style_2D_Sym->cd();
+	
+	TStyle *style_3D_Sym = new TStyle("3D_Sym","3D_Sym");
+	style_3D_Sym->SetCanvasColor(10);
+	style_3D_Sym->SetTitleFillColor(0);
+	style_3D_Sym->SetOptStat(0);
+	style_3D_Sym->SetPadLeftMargin(0.15);
+	style_3D_Sym->SetPadRightMargin(0.05);
+	style_3D_Sym->SetPadTopMargin(0.075);
+	style_3D_Sym->SetPadBottomMargin(0.075);
+	
+	style_3D_Sym->SetTitleOffset(1.75,"X");
+	style_3D_Sym->SetTitleOffset(1.75,"Y");
+	style_3D_Sym->SetTitleOffset(2.,"Z");
+	
+	style_3D_Sym->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_3D_Sym->SetNumberContours(99);
+	style_3D_Sym->cd();
+	
+	gStyle->SetPalette(NCont,ColPalette);
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -395,10 +445,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 						if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
 							TPC.TPC_Xe1T();
 							TPC.Set_LCE_max(50);
+							f->Close();
 						}
 						else if ( (f->GetListOfKeys()->Contains("MC_TAG")) && (f->GetListOfKeys()->Contains("events")) ){
 							TPC.TPC_MS();
 							TPC.Set_LCE_max(30);
+							f->Close();
 						}
 						else {
 							cout << endl;
@@ -425,10 +477,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 			if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
 				TPC.TPC_Xe1T();
 				TPC.Set_LCE_max(50);
+				f->Close();
 			}
 			else if ( (f->GetListOfKeys()->Contains("MC_TAG")) && (f->GetListOfKeys()->Contains("events")) ){
 				TPC.TPC_MS();
 				TPC.Set_LCE_max(30);
+				f->Close();
 			}
 			else {
 				cout << endl;
@@ -445,6 +499,8 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		cout << " file: " << datafilename << " " << nevents << " events " << endl;
 	}
 	cout << "============================================================" << endl;
+	
+	file_outplot->cd();
 	
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
@@ -558,7 +614,8 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z
 	/*=================================================================*/
-	style_2D->cd();
+	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ = new TCanvas("crLCE_rrZ","crLCE_rrZ",canvas_x,canvas_y);
 	TH2F* h_crLCE_rrZ = new TH2F("crLCE_rrZ", "relative LCE of R^{2} vs. Z (ALL PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ->SetXTitle("R^{2} [cm^{2}]");
@@ -570,6 +627,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ->Add(h_rLCE_rrZ,-1);
 	h_crLCE_rrZ->Add(h_rLCE_map,1);
 	h_crLCE_rrZ->Draw("colz");
+	if ( (abs(h_crLCE_rrZ->GetMaximum()) > abs(h_crLCE_rrZ->GetMinimum())) && (abs(h_crLCE_rrZ->GetMaximum()) > 0.) )
+		{h_crLCE_rrZ->SetAxisRange(-abs(h_crLCE_rrZ->GetMaximum()), abs(h_crLCE_rrZ->GetMaximum()),"Z");}
+	else if ( (abs(h_crLCE_rrZ->GetMaximum()) < abs(h_crLCE_rrZ->GetMinimum())) && (abs(h_crLCE_rrZ->GetMinimum()) < 0.) ) 
+		{h_crLCE_rrZ->SetAxisRange(-abs(h_crLCE_rrZ->GetMinimum()), abs(h_crLCE_rrZ->GetMinimum()),"Z");}
+	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ->SaveAs(canvasfile);
@@ -577,7 +639,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z TOP
 	/*=================================================================*/
-	style_2D->cd();
+	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_top = new TCanvas("crLCE_rrZ_top","crLCE_rrZ_top",canvas_x,canvas_y);
 	TH2F* h_crLCE_rrZ_top = new TH2F("crLCE_rrZ_top", "relative LCE of R^{2} vs. Z (TOP PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ_top->SetXTitle("R^{2} [cm^{2}]");
@@ -589,6 +651,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_top->Add(h_rLCE_rrZ_top,-1);
 	h_crLCE_rrZ_top->Add(h_rLCE_map_top,1);
 	h_crLCE_rrZ_top->Draw("colz");
+	if ( (abs(h_crLCE_rrZ_top->GetMaximum()) > abs(h_crLCE_rrZ_top->GetMinimum())) && (abs(h_crLCE_rrZ_top->GetMaximum()) > 0.) )
+		{h_crLCE_rrZ_top->SetAxisRange(-abs(h_crLCE_rrZ_top->GetMaximum()), abs(h_crLCE_rrZ_top->GetMaximum()),"Z");}
+	else if ( (abs(h_crLCE_rrZ_top->GetMaximum()) < abs(h_crLCE_rrZ_top->GetMinimum())) && (abs(h_crLCE_rrZ_top->GetMinimum()) < 0.) ) 
+		{h_crLCE_rrZ_top->SetAxisRange(-abs(h_crLCE_rrZ_top->GetMinimum()), abs(h_crLCE_rrZ_top->GetMinimum()),"Z");}
+	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ_top->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_top.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_top->SaveAs(canvasfile);
@@ -596,7 +663,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z BOTTOM
 	/*=================================================================*/
-	style_2D->cd();
+	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_bottom = new TCanvas("crLCE_rrZ_bottom","crLCE_rrZ_bottom",canvas_x,canvas_y);
 	TH2F* h_crLCE_rrZ_bottom = new TH2F("crLCE_rrZ_bottom", "relative LCE of R^{2} vs. Z (BOTTOM PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ_bottom->SetXTitle("R^{2} [cm^{2}]");
@@ -608,6 +675,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_bottom->Add(h_rLCE_rrZ_bottom,-1);
 	h_crLCE_rrZ_bottom->Add(h_rLCE_map_bottom,1);
 	h_crLCE_rrZ_bottom->Draw("colz");
+	if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) > abs(h_crLCE_rrZ_bottom->GetMinimum())) && (abs(h_crLCE_rrZ_bottom->GetMaximum()) > 0.) )
+		{h_crLCE_rrZ_bottom->SetAxisRange(-abs(h_crLCE_rrZ_bottom->GetMaximum()), abs(h_crLCE_rrZ_bottom->GetMaximum()),"Z");}
+	else if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) < abs(h_crLCE_rrZ_bottom->GetMinimum())) && (abs(h_crLCE_rrZ_bottom->GetMinimum()) < 0.) ) 
+		{h_crLCE_rrZ_bottom->SetAxisRange(-abs(h_crLCE_rrZ_bottom->GetMinimum()), abs(h_crLCE_rrZ_bottom->GetMinimum()),"Z");}
+	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ_bottom->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_bottom->SaveAs(canvasfile);
@@ -630,7 +702,8 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z 3D
 	/*=================================================================*/
-	style_3D->cd();
+	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_3D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_3D = new TCanvas("crLCE_rrZ_3D","crLCE_rrZ_3D",canvas_x,canvas_y);
 	TH2F* h_crLCE_rrZ_3D = new TH2F("crLCE_rrZ_3D", "relative LCE of R^{2} vs. Z (ALL PMTs) of KR83m vs MC", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	h_crLCE_rrZ_3D->SetYTitle("R^{2} [cm^{2}]");
@@ -642,6 +715,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_3D->Add(h_rLCE_rrZ_3D,-1);
 	h_crLCE_rrZ_3D->Add(h_rLCE_map_3D,1);
 	h_crLCE_rrZ_3D->Draw("surf1");
+	if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) > abs(h_crLCE_rrZ_3D->GetMinimum())) && (abs(h_crLCE_rrZ_3D->GetMaximum()) > 0.) )
+		{h_crLCE_rrZ_3D->SetAxisRange(-abs(h_crLCE_rrZ_3D->GetMaximum()), abs(h_crLCE_rrZ_3D->GetMaximum()),"Z");}
+	else if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) < abs(h_crLCE_rrZ_3D->GetMinimum())) && (abs(h_crLCE_rrZ_3D->GetMinimum()) < 0.) ) 
+		{h_crLCE_rrZ_3D->SetAxisRange(-abs(h_crLCE_rrZ_3D->GetMinimum()), abs(h_crLCE_rrZ_3D->GetMinimum()),"Z");}
+	// else do nothing; 
 	c_crLCE_rrZ_3D->SetTheta(20.);
 	c_crLCE_rrZ_3D->SetPhi(220.);
 	if (file_outplot) c_crLCE_rrZ_3D->Write();
@@ -722,6 +800,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE vs. Z
 	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
 	TCanvas *c_crLCEZ_ALL = new TCanvas("crLCEZ_ALL","crLCEZ_ALL",canvas_x,canvas_y);
 	c_crLCEZ_ALL->SetGridy();
@@ -782,6 +861,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison AFT vs. Z
 	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
 	TCanvas *c_cAFTZ = new TCanvas("cAFTZ","cAFTZ",canvas_x,canvas_y);
 	c_cAFTZ->SetGridy();
@@ -839,6 +919,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison AFT vs. rr
 	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
 	TCanvas *c_cAFTrr = new TCanvas("cAFTrr","cAFTrr",canvas_x,canvas_y);
 	c_cAFTrr->SetGridy();
@@ -867,5 +948,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (file_outplot) c_cAFTrr->Write();	
 	sprintf(canvasfile,"%s/%s_comparison_AFTrr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cAFTrr->SaveAs(canvasfile);
+	
+	gStyle->SetPalette(NCont,ColPalette);
 		
 }

@@ -95,20 +95,26 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	char canvasfile[10000];
 	
 	TGaxis::SetMaxDigits(3);
+	//TGaxis::SetExponentOffset(-0.01, 0.01, "y"); // X and Y offset for Y axis
+	TGaxis::SetExponentOffset(0.01, -0.0325, "x"); // Y and Y offset for X axis
 	
-	const Int_t NRGBs = 6;
+	const Int_t NRGBs = 5;
 	const Int_t NCont = 255;
-	Double_t stops[NRGBs] = { 0.00, 0.15, 0.34, 0.61, 0.84, 1.00 };
-	Double_t red[NRGBs]   = { 1.00, 0.00, 0.00, 0.87, 1.00, 0.51 };
-	Double_t green[NRGBs] = { 1.00, 0.00, 0.81, 1.00, 0.20, 0.00 };
-	Double_t blue[NRGBs]  = { 1.00, 0.51, 1.00, 0.12, 0.00, 0.00 };
+	static Int_t ColPalette[255];
+	Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+	Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+	Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+	Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
 	
+	Int_t FI = TColor::CreateGradientColorTable(NRGBs,stops,red,green,blue,NCont);
+    for (int i=0; i<NCont; i++) ColPalette[i] = FI+i;
+		
 	TStyle *style_1D = new TStyle("1D","1D");
 	style_1D->SetCanvasColor(10);
 	style_1D->SetTitleFillColor(0);
 	style_1D->SetOptStat(0);
 	style_1D->SetPadLeftMargin(0.105);
-	style_1D->SetPadRightMargin(0.05);
+	style_1D->SetPadRightMargin(0.09);
 	style_1D->SetPadTopMargin(0.075);
 	style_1D->SetPadBottomMargin(0.075);
 	
@@ -116,8 +122,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_1D->SetTitleOffset(1.45,"Y");
 	style_1D->SetTitleOffset(1.35,"Z");
 	
-	style_1D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_1D->SetPalette(NCont,ColPalette);
 	style_1D->SetNumberContours(NCont);
 	style_1D->cd();
 	
@@ -134,8 +139,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_2D->SetTitleOffset(1.45,"Y");
 	style_2D->SetTitleOffset(1.35,"Z");
 	
-	style_2D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_2D->SetPalette(NCont,ColPalette);
 	style_2D->SetNumberContours(NCont);
 	style_2D->cd();
 	
@@ -152,10 +156,11 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_3D->SetTitleOffset(1.75,"Y");
 	style_3D->SetTitleOffset(2.,"Z");
 	
-	style_3D->SetPalette(1,0); 
-	TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+	style_3D->SetPalette(NCont,ColPalette);
 	style_3D->SetNumberContours(99);
 	style_3D->cd();
+	
+	gStyle->SetPalette(NCont,ColPalette);
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
@@ -164,6 +169,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	// generate LCE map
 	/*=================================================================*/
 	style_2D->cd();
+	gStyle->SetPalette(NCont,ColPalette);
 	TCanvas *c_LCE_map = new TCanvas("LCE_map","LCE_map",canvas_x,canvas_y);
 	TH2F* h_LCE_map = new TH2F("LCE_map", "LCE map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_map->SetXTitle("R^{2} [cm^{2}]");
