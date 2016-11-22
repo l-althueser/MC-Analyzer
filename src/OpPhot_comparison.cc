@@ -246,7 +246,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_ly_map = new TCanvas("ly_map","ly_map",canvas_x,canvas_y);
-	TH2F* h_ly_map = new TH2F("ly_map", "ly map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_ly_map = new TH2F("ly_map", "ly map of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_map->SetXTitle("R^{2} [cm^{2}]");
 	h_ly_map->GetXaxis()->CenterTitle();
 	h_ly_map->SetYTitle("Z [cm]");
@@ -268,7 +268,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_ly_map_top = new TCanvas("ly_map_top","ly_map_top",canvas_x,canvas_y);
-	TH2F* h_ly_map_top = new TH2F("ly_map_top", "ly map of Kr83m (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_ly_map_top = new TH2F("ly_map_top", "ly map of ^{83m}Kr (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_map_top->SetXTitle("R^{2} [cm^{2}]");
 	h_ly_map_top->GetXaxis()->CenterTitle();
 	h_ly_map_top->SetYTitle("Z [cm]");
@@ -290,7 +290,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_ly_map_bottom = new TCanvas("ly_map_bottom","ly_map_bottom",canvas_x,canvas_y);
-	TH2F* h_ly_map_bottom = new TH2F("ly_map_bottom", "ly map of Kr83m (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_ly_map_bottom = new TH2F("ly_map_bottom", "ly map of ^{83m}Kr (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_map_bottom->SetXTitle("R^{2} [cm^{2}]");
 	h_ly_map_bottom->GetXaxis()->CenterTitle();
 	h_ly_map_bottom->SetYTitle("Z [cm]");
@@ -309,7 +309,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map = new TCanvas("rLCE_map","rLCE_map",canvas_x,canvas_y);
-	TH2F* h_rLCE_map = new TH2F("rLCE_map", "relative LCE map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map = new TH2F("rLCE_map", "relative LCE map of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map->GetXaxis()->CenterTitle();
 	h_rLCE_map->SetYTitle("Z [cm]");
@@ -340,7 +340,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	// generate relative LCE map 3D
 	/*=================================================================*/
 	style_3D->cd();
-	TH2F* h_rLCE_map_3D = new TH2F("rLCE_map_3D", "relative LCE map of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH2F* h_rLCE_map_3D = new TH2F("rLCE_map_3D", "relative LCE map of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	for (int z=0; z<TPC.Get_nbinsZ(); z++){
 		for (int r=0; r<TPC.Get_nbinsR(); r++){
 				h_rLCE_map_3D->SetBinContent(z+1,r+1,h_rLCE_map->GetBinContent(r+1,z+1));
@@ -352,7 +352,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map_top = new TCanvas("rLCE_map_top","rLCE_map_top",canvas_x,canvas_y);
-	TH2F* h_rLCE_map_top = new TH2F("rLCE_map_top", "relative LCE map of Kr83m (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map_top = new TH2F("rLCE_map_top", "relative LCE map of ^{83m}Kr (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map_top->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map_top->GetXaxis()->CenterTitle();
 	h_rLCE_map_top->SetYTitle("Z [cm]");
@@ -377,7 +377,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map_bottom = new TCanvas("rLCE_map_bottom","rLCE_map_bottom",canvas_x,canvas_y);
-	TH2F* h_rLCE_map_bottom = new TH2F("rLCE_map_bottom", "relative LCE map of Kr83m (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map_bottom = new TH2F("rLCE_map_bottom", "relative LCE map of ^{83m}Kr (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map_bottom->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map_bottom->GetXaxis()->CenterTitle();
 	h_rLCE_map_bottom->SetYTitle("Z [cm]");
@@ -397,7 +397,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	// generate relative LCE vs. Z
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_rLCE_LCEZ = new TH1F("rLCE_LCEZ", "relative LCE vs. Z of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ = new TH1F("rLCE_LCEZ", "relative LCE vs. Z of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ->Sumw2();
 	double h_rLCE_map_meanZ = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
@@ -406,14 +406,14 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	}
 	h_rLCE_LCEZ->Scale(1./h_rLCE_map_meanZ);
 
-	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ_top->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_rLCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
 	h_rLCE_LCEZ_top->Scale(1./h_rLCE_map_meanZ);
 
-	TH1F* h_rLCE_LCEZ_bottom = new TH1F("rLCE_LCEZ_bottom", "relative LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ_bottom = new TH1F("rLCE_LCEZ_bottom", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ,1);
 	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ_top,-1);
 	
@@ -421,13 +421,13 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	// LCE vs. Z
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_Kr_LCE_LCEZ = new TH1F("Kr_LCE_LCEZ", "LCE vs. Z of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_Kr_LCE_LCEZ = new TH1F("Kr_LCE_LCEZ", "LCE vs. Z of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_Kr_LCE_LCEZ->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_Kr_LCE_LCEZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
 	}
 
-	TH1F* h_Kr_LCE_LCEZ_top = new TH1F("Kr_LCE_LCEZ_top", "LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_Kr_LCE_LCEZ_top = new TH1F("Kr_LCE_LCEZ_top", "LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_Kr_LCE_LCEZ_top->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_Kr_LCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
@@ -447,13 +447,13 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	// LCE vs. rr
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_Kr_LCE_LCErr = new TH1F("Kr_LCE_LCErr", "LCE vs. rr of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH1F* h_Kr_LCE_LCErr = new TH1F("Kr_LCE_LCErr", "LCE vs. rr of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	h_Kr_LCE_LCErr->Sumw2();
 	for (int rr=0; rr<(TPC.Get_nbinsR()); rr++){
 		h_Kr_LCE_LCErr->SetBinContent(TPC.Get_nbinsR()-rr,lyrr[rr]);
 	}
 
-	TH1F* h_Kr_LCE_LCErr_top = new TH1F("Kr_LCE_LCErr_top", "LCE vs. rr of Kr83m TOP", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH1F* h_Kr_LCE_LCErr_top = new TH1F("Kr_LCE_LCErr_top", "LCE vs. rr of ^{83m}Kr TOP", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	h_Kr_LCE_LCErr_top->Sumw2();
 	for (int rr=0; rr<(TPC.Get_nbinsR()); rr++){
 		h_Kr_LCE_LCErr_top->SetBinContent(TPC.Get_nbinsR()-rr,lyareatoprr[rr]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
@@ -628,6 +628,13 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ly_rrZ->Divide(h_rrZ);
 	h_ly_rrZ->Scale(50.); 
 	h_ly_rrZ->Draw("colz");
+	TLegend *leg_ly_rrZ = new TLegend(0.725,0.935,1.,1.);
+	leg_ly_rrZ->SetFillColor(0);     
+	sprintf(canvasfile,"MC_QE_top: %0.3f", TPC.Get_QE_top());
+	leg_ly_rrZ->AddEntry((TObject*)0,canvasfile,""); 
+	sprintf(canvasfile,"MC_QE_bottom: %0.3f", TPC.Get_QE_bottom());
+	leg_ly_rrZ->AddEntry((TObject*)0,canvasfile,"");
+	leg_ly_rrZ->Draw();  
 	if (file_outplot) c_ly_rrZ->Write();
 	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_rrZ->SaveAs(canvasfile);
@@ -673,7 +680,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ly_rrZ_bottom->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
 	h_ly_rrZ_bottom->Divide(h_rrZ);
 	h_ly_rrZ_bottom->Scale(50.); 
-	h_ly_rrZ_bottom->Draw("colz");
+	h_ly_rrZ_bottom->Draw("colz");	
 	if (file_outplot) c_ly_rrZ_bottom->Write();
 	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_bottom_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_rrZ_bottom->SaveAs(canvasfile);
@@ -687,16 +694,23 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
 	style_2D_Sym->cd();
 	TCanvas *c_cly_rrZ = new TCanvas("cly_rrZ","cly_rrZ",canvas_x,canvas_y);
-	TH2F* h_cly_rrZ = new TH2F("cly_rrZ", "ly of R^{2} vs. Z (ALL PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_cly_rrZ = new TH2F("cly_rrZ", "ly of R^{2} vs. Z (ALL PMTs) of ^{83m}Kr vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_cly_rrZ->SetXTitle("R^{2} [cm^{2}]");
 	h_cly_rrZ->GetXaxis()->CenterTitle();
 	h_cly_rrZ->SetYTitle("Z [cm]");
 	h_cly_rrZ->GetYaxis()->CenterTitle();
-	h_cly_rrZ->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ->SetZTitle("ly ^{83m}Kr - ly MC [pe/keV]");
 	h_cly_rrZ->GetZaxis()->CenterTitle();
 	h_cly_rrZ->Add(h_ly_rrZ,-1);
 	h_cly_rrZ->Add(h_ly_map,1);
 	h_cly_rrZ->Draw("colz");
+	TLegend *leg_cly_rrZ = new TLegend(0.725,0.935,1.,1.);
+	leg_cly_rrZ->SetFillColor(0);    
+	sprintf(canvasfile,"MC_QE_top: %0.3f", TPC.Get_QE_top());
+	leg_cly_rrZ->AddEntry((TObject*)0,canvasfile,""); 
+	sprintf(canvasfile,"MC_QE_bottom: %0.3f", TPC.Get_QE_bottom());
+	leg_cly_rrZ->AddEntry((TObject*)0,canvasfile,"");
+	leg_cly_rrZ->Draw();  
 	if ( (abs(h_cly_rrZ->GetMaximum()) > abs(h_cly_rrZ->GetMinimum())) && (h_cly_rrZ->GetMaximum() > 0.) )
 		{h_cly_rrZ->SetMinimum(-abs(h_cly_rrZ->GetMaximum()));}
 	else if ( (abs(h_cly_rrZ->GetMaximum()) < abs(h_cly_rrZ->GetMinimum())) && (h_cly_rrZ->GetMinimum() < 0.) ) 
@@ -712,12 +726,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
 	style_2D_Sym->cd();
 	TCanvas *c_cly_rrZ_top = new TCanvas("cly_rrZ_top","cly_rrZ_top",canvas_x,canvas_y);
-	TH2F* h_cly_rrZ_top = new TH2F("cly_rrZ_top", "ly of R^{2} vs. Z (TOP PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_cly_rrZ_top = new TH2F("cly_rrZ_top", "ly of R^{2} vs. Z (TOP PMTs) of ^{83m}Kr vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_cly_rrZ_top->SetXTitle("R^{2} [cm^{2}]");
 	h_cly_rrZ_top->GetXaxis()->CenterTitle();
 	h_cly_rrZ_top->SetYTitle("Z [cm]");
 	h_cly_rrZ_top->GetYaxis()->CenterTitle();
-	h_cly_rrZ_top->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ_top->SetZTitle("ly ^{83m}Kr - ly MC [pe/keV]");
 	h_cly_rrZ_top->GetZaxis()->CenterTitle();
 	h_cly_rrZ_top->Add(h_ly_rrZ_top,-1);
 	h_cly_rrZ_top->Add(h_ly_map_top,1);
@@ -737,12 +751,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
 	style_2D_Sym->cd();
 	TCanvas *c_cly_rrZ_bottom = new TCanvas("cly_rrZ_bottom","cly_rrZ_bottom",canvas_x,canvas_y);
-	TH2F* h_cly_rrZ_bottom = new TH2F("cly_rrZ_bottom", "ly of R^{2} vs. Z (BOTTOM PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_cly_rrZ_bottom = new TH2F("cly_rrZ_bottom", "ly of R^{2} vs. Z (BOTTOM PMTs) of ^{83m}Kr vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_cly_rrZ_bottom->SetXTitle("R^{2} [cm^{2}]");
 	h_cly_rrZ_bottom->GetXaxis()->CenterTitle();
 	h_cly_rrZ_bottom->SetYTitle("Z [cm]");
 	h_cly_rrZ_bottom->GetYaxis()->CenterTitle();
-	h_cly_rrZ_bottom->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ_bottom->SetZTitle("ly ^{83m}Kr - ly MC [pe/keV]");
 	h_cly_rrZ_bottom->GetZaxis()->CenterTitle();
 	h_cly_rrZ_bottom->Add(h_ly_rrZ_bottom,-1);
 	h_cly_rrZ_bottom->Add(h_ly_map_bottom,1);
@@ -844,12 +858,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
 	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ = new TCanvas("crLCE_rrZ","crLCE_rrZ",canvas_x,canvas_y);
-	TH2F* h_crLCE_rrZ = new TH2F("crLCE_rrZ", "relative LCE of R^{2} vs. Z (ALL PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_crLCE_rrZ = new TH2F("crLCE_rrZ", "relative LCE of R^{2} vs. Z (ALL PMTs) of ^{83m}Kr vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ->SetXTitle("R^{2} [cm^{2}]");
 	h_crLCE_rrZ->GetXaxis()->CenterTitle();
 	h_crLCE_rrZ->SetYTitle("Z [cm]");
 	h_crLCE_rrZ->GetYaxis()->CenterTitle();
-	h_crLCE_rrZ->SetZTitle("rLCE Kr83m - rLCE MC");
+	h_crLCE_rrZ->SetZTitle("rLCE ^{83m}Kr - rLCE MC");
 	h_crLCE_rrZ->GetZaxis()->CenterTitle();
 	h_crLCE_rrZ->Add(h_rLCE_rrZ,-1);
 	h_crLCE_rrZ->Add(h_rLCE_map,1);
@@ -868,12 +882,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_top = new TCanvas("crLCE_rrZ_top","crLCE_rrZ_top",canvas_x,canvas_y);
-	TH2F* h_crLCE_rrZ_top = new TH2F("crLCE_rrZ_top", "relative LCE of R^{2} vs. Z (TOP PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_crLCE_rrZ_top = new TH2F("crLCE_rrZ_top", "relative LCE of R^{2} vs. Z (TOP PMTs) of ^{83m}Kr vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ_top->SetXTitle("R^{2} [cm^{2}]");
 	h_crLCE_rrZ_top->GetXaxis()->CenterTitle();
 	h_crLCE_rrZ_top->SetYTitle("Z [cm]");
 	h_crLCE_rrZ_top->GetYaxis()->CenterTitle();
-	h_crLCE_rrZ_top->SetZTitle("rLCE Kr83m - rLCE MC");
+	h_crLCE_rrZ_top->SetZTitle("rLCE ^{83m}Kr - rLCE MC");
 	h_crLCE_rrZ_top->GetZaxis()->CenterTitle();
 	h_crLCE_rrZ_top->Add(h_rLCE_rrZ_top,-1);
 	h_crLCE_rrZ_top->Add(h_rLCE_map_top,1);
@@ -892,12 +906,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	style_2D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_bottom = new TCanvas("crLCE_rrZ_bottom","crLCE_rrZ_bottom",canvas_x,canvas_y);
-	TH2F* h_crLCE_rrZ_bottom = new TH2F("crLCE_rrZ_bottom", "relative LCE of R^{2} vs. Z (BOTTOM PMTs) of KR83m vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_crLCE_rrZ_bottom = new TH2F("crLCE_rrZ_bottom", "relative LCE of R^{2} vs. Z (BOTTOM PMTs) of ^{83m}Kr vs MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_crLCE_rrZ_bottom->SetXTitle("R^{2} [cm^{2}]");
 	h_crLCE_rrZ_bottom->GetXaxis()->CenterTitle();
 	h_crLCE_rrZ_bottom->SetYTitle("Z [cm]");
 	h_crLCE_rrZ_bottom->GetYaxis()->CenterTitle();
-	h_crLCE_rrZ_bottom->SetZTitle("rLCE Kr83m - rLCE MC");
+	h_crLCE_rrZ_bottom->SetZTitle("rLCE ^{83m}Kr - rLCE MC");
 	h_crLCE_rrZ_bottom->GetZaxis()->CenterTitle();
 	h_crLCE_rrZ_bottom->Add(h_rLCE_rrZ_bottom,-1);
 	h_crLCE_rrZ_bottom->Add(h_rLCE_map_bottom,1);
@@ -931,12 +945,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
 	style_3D_Sym->cd();
 	TCanvas *c_crLCE_rrZ_3D = new TCanvas("crLCE_rrZ_3D","crLCE_rrZ_3D",canvas_x,canvas_y);
-	TH2F* h_crLCE_rrZ_3D = new TH2F("crLCE_rrZ_3D", "relative LCE of R^{2} vs. Z (ALL PMTs) of KR83m vs MC", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH2F* h_crLCE_rrZ_3D = new TH2F("crLCE_rrZ_3D", "relative LCE of R^{2} vs. Z (ALL PMTs) of ^{83m}Kr vs MC", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	h_crLCE_rrZ_3D->SetYTitle("R^{2} [cm^{2}]");
 	h_crLCE_rrZ_3D->GetYaxis()->CenterTitle();
 	h_crLCE_rrZ_3D->SetXTitle("Z [cm]");
 	h_crLCE_rrZ_3D->GetXaxis()->CenterTitle();
-	h_crLCE_rrZ_3D->SetZTitle("rLCE Kr83m - rLCE MC");
+	h_crLCE_rrZ_3D->SetZTitle("rLCE ^{83m}Kr - rLCE MC");
 	h_crLCE_rrZ_3D->GetZaxis()->CenterTitle();
 	h_crLCE_rrZ_3D->Add(h_rLCE_rrZ_3D,-1);
 	h_crLCE_rrZ_3D->Add(h_rLCE_map_3D,1);
@@ -1045,7 +1059,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_LCE_LCEZ_top->Scale(1./h_rLCE_mean);
 	h_LCE_LCEZ_top->Draw();
 	
-	h_LCE_LCEZ->SetTitle("relative LCE vs. Z of Kr83m vs. MC");
+	h_LCE_LCEZ->SetTitle("relative LCE vs. Z of ^{83m}Kr vs. MC");
 	h_LCE_LCEZ->SetLineColor(kBlue);
 	h_LCE_LCEZ->GetYaxis()->SetRangeUser(0,2.5);
 	h_LCE_LCEZ->Draw("");
@@ -1071,9 +1085,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	leg_crLCE->SetFillColor(0);
 	leg_crLCE->SetTextSize(0.04);
 	leg_crLCE->SetTextAlign(22);         
-	leg_crLCE->AddEntry(h_rLCE_LCEZ,"Kr83m All PMTs","LP"); 
-	leg_crLCE->AddEntry(h_rLCE_LCEZ_top,"Kr83m Top PMTs","LP");
-	leg_crLCE->AddEntry(h_rLCE_LCEZ_bottom,"Kr83m Bottom PMTs","LP"); 
+	leg_crLCE->AddEntry(h_rLCE_LCEZ,"^{83m}Kr All PMTs","LP"); 
+	leg_crLCE->AddEntry(h_rLCE_LCEZ_top,"^{83m}Kr Top PMTs","LP");
+	leg_crLCE->AddEntry(h_rLCE_LCEZ_bottom,"^{83m}Kr Bottom PMTs","LP"); 
 	leg_crLCE->AddEntry(h_LCE_LCEZ,"MC All PMTs","l"); 
 	leg_crLCE->AddEntry(h_LCE_LCEZ_top,"MC Top PMTs","l");
 	leg_crLCE->AddEntry(h_LCE_LCEZ_bottom,"MC Bottom PMTs","l"); 
@@ -1090,7 +1104,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->cd();
 	TCanvas *c_cAFTZ = new TCanvas("cAFTZ","cAFTZ",canvas_x,canvas_y);
 	c_cAFTZ->SetGridy();
-	h_AFTZ_MC->SetTitle("AreaFractionTop vs. Z of Kr83m vs. MC");
+	h_AFTZ_MC->SetTitle("AreaFractionTop vs. Z of ^{83m}Kr vs. MC");
 	h_AFTZ_MC->SetXTitle("Z [cm]");
 	h_AFTZ_MC->GetXaxis()->CenterTitle();
 	h_AFTZ_MC->SetYTitle("AreaFractionTop [%]");
@@ -1108,7 +1122,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	leg_cAFTZ->SetFillColor(0);
 	leg_cAFTZ->SetTextSize(0.04);
 	leg_cAFTZ->SetTextAlign(22);         
-	leg_cAFTZ->AddEntry(h_AFTZ_Kr,"Kr83m","P"); 
+	leg_cAFTZ->AddEntry(h_AFTZ_Kr,"^{83m}Kr","P"); 
 	leg_cAFTZ->AddEntry(h_AFTZ_MC,"MC","l"); 
 	leg_cAFTZ->Draw();    
 
@@ -1154,7 +1168,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->cd();
 	TCanvas *c_cAFTrr = new TCanvas("cAFTrr","cAFTrr",canvas_x,canvas_y);
 	c_cAFTrr->SetGridy();
-	h_AFTrr_MC->SetTitle("AreaFractionTop vs. R^{2} of Kr83m vs. MC");
+	h_AFTrr_MC->SetTitle("AreaFractionTop vs. R^{2} of ^{83m}Kr vs. MC");
 	h_AFTrr_MC->SetXTitle("R^{2} [cm^{2}]");
 	h_AFTrr_MC->GetXaxis()->CenterTitle();
 	h_AFTrr_MC->SetYTitle("AreaFractionTop [%]");
@@ -1172,7 +1186,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	leg_cAFTrr->SetFillColor(0);
 	leg_cAFTrr->SetTextSize(0.04);
 	leg_cAFTrr->SetTextAlign(22);         
-	leg_cAFTrr->AddEntry(h_AFTrr_Kr,"Kr83m","P"); 
+	leg_cAFTrr->AddEntry(h_AFTrr_Kr,"^{83m}Kr","P"); 
 	leg_cAFTrr->AddEntry(h_AFTrr_MC,"MC","l"); 
 	leg_cAFTrr->Draw();    
 

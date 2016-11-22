@@ -171,7 +171,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_2D->cd();
 	gStyle->SetPalette(NCont,ColPalette);
 	TCanvas *c_LCE_map = new TCanvas("LCE_map","LCE_map",canvas_x,canvas_y);
-	TH2F* h_LCE_map = new TH2F("LCE_map", "LCE map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_LCE_map = new TH2F("LCE_map", "LCE map of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_map->SetXTitle("R^{2} [cm^{2}]");
 	h_LCE_map->GetXaxis()->CenterTitle();
 	h_LCE_map->SetYTitle("Z [cm]");
@@ -197,7 +197,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_ly_map = new TCanvas("ly_map","ly_map",canvas_x,canvas_y);
-	TH2F* h_ly_map = new TH2F("ly_map", "ly map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_ly_map = new TH2F("ly_map", "ly map of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_map->SetXTitle("R^{2} [cm^{2}]");
 	h_ly_map->GetXaxis()->CenterTitle();
 	h_ly_map->SetYTitle("Z [cm]");
@@ -222,7 +222,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map = new TCanvas("rLCE_map","rLCE_map",canvas_x,canvas_y);
-	TH2F* h_rLCE_map = new TH2F("rLCE_map", "relative LCE map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map = new TH2F("rLCE_map", "relative LCE map of ^{83m}Kr", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map->GetXaxis()->CenterTitle();
 	h_rLCE_map->SetYTitle("Z [cm]");
@@ -252,7 +252,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	/*=================================================================*/
 	style_3D->cd();
 	TCanvas *c_rLCE_map_3D = new TCanvas("rLCE_map_3D","rLCE_map_3D",canvas_x,canvas_y);
-	TH2F* h_rLCE_map_3D = new TH2F("rLCE_map_3D", "relative LCE map of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH2F* h_rLCE_map_3D = new TH2F("rLCE_map_3D", "relative LCE map of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ(), TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	h_rLCE_map_3D->SetYTitle("R^{2} [cm^{2}]");
 	h_rLCE_map_3D->GetYaxis()->CenterTitle();
 	h_rLCE_map_3D->SetXTitle("Z [cm]");
@@ -276,7 +276,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map_top = new TCanvas("rLCE_map_top","rLCE_map_top",canvas_x,canvas_y);
-	TH2F* h_rLCE_map_top = new TH2F("rLCE_map_top", "relative LCE map of Kr83m (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map_top = new TH2F("rLCE_map_top", "relative LCE map of ^{83m}Kr (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map_top->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map_top->GetXaxis()->CenterTitle();
 	h_rLCE_map_top->SetYTitle("Z [cm]");
@@ -299,7 +299,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	/*=================================================================*/
 	style_2D->cd();
 	TCanvas *c_rLCE_map_bottom = new TCanvas("rLCE_map_bottom","rLCE_map_bottom",canvas_x,canvas_y);
-	TH2F* h_rLCE_map_bottom = new TH2F("rLCE_map_bottom", "relative LCE map of Kr83m (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH2F* h_rLCE_map_bottom = new TH2F("rLCE_map_bottom", "relative LCE map of ^{83m}Kr (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_map_bottom->SetXTitle("R^{2} [cm^{2}]");
 	h_rLCE_map_bottom->GetXaxis()->CenterTitle();
 	h_rLCE_map_bottom->SetYTitle("Z [cm]");
@@ -319,7 +319,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_1D->cd();
 	TCanvas *c_rLCE_LCEZ = new TCanvas("rLCE_LCEZ","rLCE_LCEZ",canvas_x,canvas_y);
 	
-	TH1F* h_rLCE_LCEZ = new TH1F("rLCE_LCEZ", "relative LCE vs. Z of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ = new TH1F("rLCE_LCEZ", "relative LCE vs. Z of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ->Sumw2();
 	double h_rLCEZ_map_mean = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
@@ -328,14 +328,14 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	}
 	h_rLCE_LCEZ->Scale(1./h_rLCEZ_map_mean);
 	
-	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ_top->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_rLCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
 	h_rLCE_LCEZ_top->Scale(1./h_rLCEZ_map_mean);
 	
-	TH1F* h_rLCE_LCEZ_bottom = new TH1F("rLCE_LCEZ_bottom", "relative LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_rLCE_LCEZ_bottom = new TH1F("rLCE_LCEZ_bottom", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ,1);
 	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ_top,-1);
 	
@@ -375,21 +375,21 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	// generate LCE vs. Z
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_LCE_LCEZ = new TH1F("LCE_LCEZ", "LCE vs. Z of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCE_LCEZ = new TH1F("LCE_LCEZ", "LCE vs. Z of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_LCE_LCEZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
 	}
 	h_LCE_LCEZ->Scale((1./50.)/0.3*100);
 
-	TH1F* h_LCE_LCEZ_top = new TH1F("LCE_LCEZ_top", "LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCE_LCEZ_top = new TH1F("LCE_LCEZ_top", "LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ_top->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_LCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
 	h_LCE_LCEZ_top->Scale((1./50.)/0.3*100);
 
-	TH1F* h_LCE_LCEZ_bottom = new TH1F("LCE_LCEZ_bottom", "LCE vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCE_LCEZ_bottom = new TH1F("LCE_LCEZ_bottom", "LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ_bottom->Add(h_LCE_LCEZ,1);
 	h_LCE_LCEZ_bottom->Add(h_LCE_LCEZ_top,-1);
 	
@@ -429,19 +429,19 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	// generate ly vs. Z
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_ly_lyZ = new TH1F("ly_lyZ", "ly vs. Z of Kr83m", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_ly_lyZ = new TH1F("ly_lyZ", "ly vs. Z of ^{83m}Kr", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_ly_lyZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
 	}
 
-	TH1F* h_ly_lyZ_top = new TH1F("ly_lyZ_top", "ly vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_ly_lyZ_top = new TH1F("ly_lyZ_top", "ly vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ_top->Sumw2();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_ly_lyZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
 	
-	TH1F* h_ly_lyZ_bottom = new TH1F("ly_lyZ_bottom", "ly vs. Z of Kr83m TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_ly_lyZ_bottom = new TH1F("ly_lyZ_bottom", "ly vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ_bottom->Add(h_ly_lyZ,1);
 	h_ly_lyZ_bottom->Add(h_ly_lyZ_top,-1);
 
