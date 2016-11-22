@@ -327,7 +327,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 				h_rLCE_map_mean += h_rLCE_map->GetBinContent(r+1,TPC.Get_nbinsZ()-z)/(TPC.Get_nbinsZ()*TPC.Get_nbinsR());
 		}
 	}
-	cout << "Mean ly: " << h_rLCE_map_mean << endl;
+	cout << "------------------------------------------------------------" << endl;
+	cout << "Mean Kr83m ly: " << h_rLCE_map_mean << endl;
+	cout << "------------------------------------------------------------" << endl;
 	h_rLCE_map->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map->SetMaximum(1.5);
 	h_rLCE_map->SetMinimum(0.5);
@@ -404,7 +406,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		h_rLCE_LCEZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
 		h_rLCE_map_meanZ += lyZ[z]/(TPC.Get_nbinsZ());
 	}
-	cout << "MeanZ ly: " << h_rLCE_map_meanZ << endl;
 	h_rLCE_LCEZ->Scale(1./h_rLCE_map_meanZ);
 
 	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
@@ -628,6 +629,18 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ly_rrZ->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
 	h_ly_rrZ->Divide(h_rrZ);
 	h_ly_rrZ->Scale(50.); 
+	double h_ly_rrZ_mean = 0;
+	for (int z=0; z<TPC.Get_nbinsZ(); z++){
+		for (int r=0; r<TPC.Get_nbinsRR() ; r++){
+				h_ly_rrZ_mean += h_ly_rrZ->GetBinContent(r+1,TPC.Get_nbinsZ()-z)/(TPC.Get_nbinsRR()*TPC.Get_nbinsZ());
+		}
+	}
+	cout << "------------------------------------------------------------" << endl;
+	cout << "Mean MC ly (calculated): " << h_ly_rrZ_mean << endl;
+	cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
+	cout << "Assume the average photon yield from NEST (50 ph/keV, " << endl;
+	cout << "at 32 keV, at 150 V/cm). QE*CE =~ 31%" << endl;
+	cout << "------------------------------------------------------------" << endl;
 	h_ly_rrZ->Draw("colz");
 	TLegend *leg_ly_rrZ = new TLegend(0.725,0.935,1.,1.);
 	leg_ly_rrZ->SetFillColor(0);     
@@ -796,6 +809,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 				h_LCE_rrZ_mean += h_rLCE_rrZ->GetBinContent(r+1,TPC.Get_nbinsZ()-z)/(TPC.Get_nbinsRR()*TPC.Get_nbinsZ());
 		}
 	}
+	cout << "------------------------------------------------------------" << endl;
+	cout << "Mean MC LCE: " << h_LCE_rrZ_mean << endl;
+	cout << "------------------------------------------------------------" << endl;
 	h_rLCE_rrZ->Scale(1./h_LCE_rrZ_mean);
 	h_rLCE_rrZ->SetMaximum(1.5);
 	h_rLCE_rrZ->SetMinimum(0.5);
@@ -1086,9 +1102,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	leg_crLCE->SetFillColor(0);
 	leg_crLCE->SetTextSize(0.04);
 	leg_crLCE->SetTextAlign(22);         
-	leg_crLCE->AddEntry(h_rLCE_LCEZ,"^{83m}Kr All PMTs","LP"); 
-	leg_crLCE->AddEntry(h_rLCE_LCEZ_top,"^{83m}Kr Top PMTs","LP");
-	leg_crLCE->AddEntry(h_rLCE_LCEZ_bottom,"^{83m}Kr Bottom PMTs","LP"); 
+	leg_crLCE->AddEntry(h_rLCE_LCEZ,"^{83m}Kr All PMTs","P"); 
+	leg_crLCE->AddEntry(h_rLCE_LCEZ_top,"^{83m}Kr Top PMTs","P");
+	leg_crLCE->AddEntry(h_rLCE_LCEZ_bottom,"^{83m}Kr Bottom PMTs","P"); 
 	leg_crLCE->AddEntry(h_LCE_LCEZ,"MC All PMTs","l"); 
 	leg_crLCE->AddEntry(h_LCE_LCEZ_top,"MC Top PMTs","l");
 	leg_crLCE->AddEntry(h_LCE_LCEZ_bottom,"MC Bottom PMTs","l"); 
