@@ -54,14 +54,6 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	
 	TPC_Definition TPC;
 	TChain *file_input_tree = new TChain("events/events");
-	if (bin_format == "big") {
-		TPC.Set_Bins(9,20,4);
-	}
-	else {
-		bin_format = "small";
-		TPC.Set_Bins(26,50,22);
-		//TPC.Set_Bins(52,20,44);
-	}
 		
 	char file_outname[10000];
 	sprintf(file_outname,"%s/%s_%s_plot_MC.dat", workingdirectory.c_str(), suffix.c_str(), bin_format.c_str());
@@ -69,6 +61,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
 	file_outstat << "============================================================" << "\n";
+	int nevents = 0;
 	
 	if (fileexists(datafile) == false) {
 		cout << endl;
@@ -119,7 +112,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 					}
 					
 					file_input_tree->AddFile(filename); 
-					const int nevents = file_input_tree->GetEntries();
+					nevents = file_input_tree->GetEntries();
 					file_outstat << " file: " << fname.Data() << " " << nevents << " events total" << "\n";
 					cout << " file: " << fname.Data() << " " << nevents << " events total" << endl;
 				}
@@ -152,12 +145,23 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 			}						
 		}
 		file_input_tree->AddFile(datafile.c_str()); 
-		const int nevents = file_input_tree->GetEntries();
+		nevents = file_input_tree->GetEntries();
 		file_outstat << " file: " << datafilename << " " << nevents << " events " << "\n";
 		cout << " file: " << datafilename << " " << nevents << " events " << endl;
 	}
 	file_outstat << "============================================================" << "\n";
 	cout << "============================================================" << endl;
+	
+	if (bin_format == "big") {
+		TPC.Set_Bins(9,20,4);
+	}
+	else {
+		bin_format = "small";
+		if (nevents < 10000000)
+			TPC.Set_Bins(26,50,22);
+		else
+			TPC.Set_Bins(52,100,44);
+	}
 	
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
@@ -889,7 +893,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	leg_LCE_rLCEZ->SetFillColor(0);
 	leg_LCE_rLCEZ->SetTextSize(0.04);
 	leg_LCE_rLCEZ->SetTextAlign(22);         
-	leg_LCE_rLCEZ->AddEntry(h_LCE_LCEZ,"Total LCE","l"); 
+	leg_LCE_rLCEZ->AddEntry(h_LCE_LCEZ,"All PMTs","l"); 
 	leg_LCE_rLCEZ->AddEntry(h_LCE_LCEZ_top,"Top PMTs","l");
 	leg_LCE_rLCEZ->AddEntry(h_LCE_LCEZ_bottom,"Bottom PMTs","l"); 
 	leg_LCE_rLCEZ->Draw();    

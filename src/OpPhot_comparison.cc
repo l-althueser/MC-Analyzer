@@ -721,6 +721,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_cly_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// comparison ly of R^{2} vs. Z TOP PMTs
 	/*=================================================================*/
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
@@ -770,9 +773,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cly_rrZ_bottom->SaveAs(canvasfile);
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// relative LCE of R^{2} vs. Z
 	/*=================================================================*/
@@ -878,6 +878,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_crLCE_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z TOP
 	/*=================================================================*/
 	style_2D_Sym->cd();
@@ -925,9 +928,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_bottom->SaveAs(canvasfile);
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// relative LCE of R^{2} vs. Z 3D
 	/*=================================================================*/
@@ -1081,7 +1081,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_rLCE_LCEZ_bottom->SetMarkerStyle(8);
 	h_rLCE_LCEZ_bottom->Draw("P same");
 
-	TLegend *leg_crLCE = new TLegend(0.45,0.7,0.95,0.94);
+	TLegend *leg_crLCE = new TLegend(0.45,0.7,0.95,0.935);
 	leg_crLCE->SetFillColor(0);
 	leg_crLCE->SetTextSize(0.04);
 	leg_crLCE->SetTextAlign(22);         
@@ -1118,11 +1118,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTZ_Kr->SetMarkerStyle(8);
 	h_AFTZ_Kr->Draw("P same");
 
-	TLegend *leg_cAFTZ = new TLegend(0.55,0.8,0.95,0.94);
+	TLegend *leg_cAFTZ = new TLegend(0.55,0.8,0.95,0.935);
 	leg_cAFTZ->SetFillColor(0);
 	leg_cAFTZ->SetTextSize(0.04);
 	leg_cAFTZ->SetTextAlign(22);         
-	leg_cAFTZ->AddEntry(h_AFTZ_Kr,"^{83m}Kr","P"); 
+	leg_cAFTZ->AddEntry(h_AFTZ_Kr,"^{83m}Kr data","P"); 
 	leg_cAFTZ->AddEntry(h_AFTZ_MC,"MC","l"); 
 	leg_cAFTZ->Draw();    
 
@@ -1182,11 +1182,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTrr_Kr->SetMarkerStyle(8);
 	h_AFTrr_Kr->Draw("P same");
 
-	TLegend *leg_cAFTrr = new TLegend(0.55,0.8,0.95,0.94);
+	TLegend *leg_cAFTrr = new TLegend(0.55,0.8,0.95,0.935);
 	leg_cAFTrr->SetFillColor(0);
 	leg_cAFTrr->SetTextSize(0.04);
 	leg_cAFTrr->SetTextAlign(22);         
-	leg_cAFTrr->AddEntry(h_AFTrr_Kr,"^{83m}Kr","P"); 
+	leg_cAFTrr->AddEntry(h_AFTrr_Kr,"^{83m}Kr data","P"); 
 	leg_cAFTrr->AddEntry(h_AFTrr_MC,"MC","l"); 
 	leg_cAFTrr->Draw();    
 
