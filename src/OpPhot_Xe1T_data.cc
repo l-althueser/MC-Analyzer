@@ -161,34 +161,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	style_3D->cd();
 	
 	gStyle->SetPalette(NCont,ColPalette);
-	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
-	/*=================================================================*/
-	// generate LCE map
-	/*=================================================================*/
-	style_2D->cd();
-	gStyle->SetPalette(NCont,ColPalette);
-	TCanvas *c_LCE_map = new TCanvas("LCE_map","LCE_map",canvas_x,canvas_y);
-	TH2F* h_LCE_map = new TH2F("LCE_map", "LCE map of ^{83m}Kr data", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	h_LCE_map->SetXTitle("R^{2} [cm^{2}]");
-	h_LCE_map->GetXaxis()->CenterTitle();
-	h_LCE_map->SetYTitle("Z [cm]");
-	h_LCE_map->GetYaxis()->CenterTitle();
-	h_LCE_map->SetZTitle("LCE [%]");
-	h_LCE_map->GetZaxis()->CenterTitle();
-	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
-		for (int r=0; r<TPC.Get_nbinsR() ; r++){
-			h_LCE_map->SetBinContent(r+1,TPC.Get_nbinsZ()-z,ly[z][r]);
-		}
-	}
-	h_LCE_map->Scale((1./50.)/0.3*100);
-	h_LCE_map->Draw("colz");
-	if (file_outplot) c_LCE_map->Write();
-	sprintf(canvasfile,"%s/%s_LCE_map.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
-	if (!(export_format=="")) c_LCE_map->SaveAs(canvasfile);
-	
+		
 	/*=================================================================*/
 	gROOT->SetBatch(kFALSE);
 	/*=================================================================*/
@@ -312,67 +285,6 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	if (file_outplot) c_rLCE_map_bottom->Write();
 	sprintf(canvasfile,"%s/%s_rLCE_map_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_bottom->SaveAs(canvasfile);
-	
-	/*=================================================================*/
-	// generate relative LCE vs. Z
-	/*=================================================================*/
-	style_1D->cd();
-	TCanvas *c_rLCE_LCEZ = new TCanvas("rLCE_LCEZ","rLCE_LCEZ",canvas_x,canvas_y);
-	
-	TH1F* h_rLCE_LCEZ = new TH1F("rLCE_LCEZ", "relative LCE vs. Z of ^{83m}Kr data", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	h_rLCE_LCEZ->Sumw2();
-	double h_rLCEZ_map_mean = 0;
-	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
-		h_rLCE_LCEZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
-		h_rLCEZ_map_mean += lyZ[z]/(TPC.Get_nbinsZ());
-	}
-	h_rLCE_LCEZ->Scale(1./h_rLCEZ_map_mean);
-	
-	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of ^{83m}Kr data TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	h_rLCE_LCEZ_top->Sumw2();
-	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
-		h_rLCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
-	}
-	h_rLCE_LCEZ_top->Scale(1./h_rLCEZ_map_mean);
-	
-	TH1F* h_rLCE_LCEZ_bottom = new TH1F("rLCE_LCEZ_bottom", "relative LCE vs. Z of ^{83m}Kr data BOTTOM", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ,1);
-	h_rLCE_LCEZ_bottom->Add(h_rLCE_LCEZ_top,-1);
-	
-	style_1D->cd();
-	TCanvas *c_rLCE_LCEZ_ALL = new TCanvas("LCE_rLCEZ_ALL","LCE_rLCEZ_ALL",canvas_x,canvas_y);
-	c_rLCE_LCEZ_ALL->SetGridy();
-	h_rLCE_LCEZ->SetTitle("relative LCE vs. Z of ^{83m}Kr data");
-	h_rLCE_LCEZ->SetXTitle("Z [cm]");
-	h_rLCE_LCEZ->GetXaxis()->CenterTitle();
-	h_rLCE_LCEZ->SetYTitle("relative LCE");
-	h_rLCE_LCEZ->GetYaxis()->CenterTitle();
-	h_rLCE_LCEZ->SetLineColor(kBlue);
-	h_rLCE_LCEZ->SetMarkerColor(kBlue);
-	h_rLCE_LCEZ->SetMarkerStyle(8);
-	h_rLCE_LCEZ->GetYaxis()->SetRangeUser(0.,2.5);
-	h_rLCE_LCEZ->Draw("P");
-	h_rLCE_LCEZ_top->SetLineColor(kRed);
-	h_rLCE_LCEZ_top->SetMarkerColor(kRed);
-	h_rLCE_LCEZ_top->SetMarkerStyle(8);
-	h_rLCE_LCEZ_top->Draw("P same");
-	h_rLCE_LCEZ_bottom->SetLineColor(kGreen);
-	h_rLCE_LCEZ_bottom->SetMarkerColor(kGreen);
-	h_rLCE_LCEZ_bottom->SetMarkerStyle(8);
-	h_rLCE_LCEZ_bottom->Draw("P same");
-
-	TLegend *leg_rLCEZ = new TLegend(0.64,0.77,0.97,0.97);
-	leg_rLCEZ->SetFillColor(0);
-	leg_rLCEZ->SetTextSize(0.04);
-	leg_rLCEZ->SetTextAlign(22);         
-	leg_rLCEZ->AddEntry(h_rLCE_LCEZ,"All PMTs","P"); 
-	leg_rLCEZ->AddEntry(h_rLCE_LCEZ_top,"Top PMTs","P");
-	leg_rLCEZ->AddEntry(h_rLCE_LCEZ_bottom,"Bottom PMTs","P");
-	leg_rLCEZ->Draw();    
-
-	if (file_outplot) c_rLCE_LCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_rLCE_LCEZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
-	if (!(export_format=="")) c_rLCE_LCEZ_ALL->SaveAs(canvasfile);
 
 	/*=================================================================*/
 	gROOT->SetBatch(kFALSE);

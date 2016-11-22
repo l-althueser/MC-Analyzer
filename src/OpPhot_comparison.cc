@@ -404,6 +404,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		h_rLCE_LCEZ->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]);
 		h_rLCE_map_meanZ += lyZ[z]/(TPC.Get_nbinsZ());
 	}
+	cout << "MeanZ ly: " << h_rLCE_map_meanZ << endl;
 	h_rLCE_LCEZ->Scale(1./h_rLCE_map_meanZ);
 
 	TH1F* h_rLCE_LCEZ_top = new TH1F("rLCE_LCEZ_top", "relative LCE vs. Z of ^{83m}Kr TOP", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
@@ -1046,7 +1047,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	c_crLCEZ_ALL->SetGridy();
 	double h_rLCE_mean = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
-		h_rLCE_mean += h_LCE_LCEZ->GetBinContent(z)/(TPC.Get_nbinsZ());
+		h_rLCE_mean += h_LCE_LCEZ->GetBinContent(z+1)/(TPC.Get_nbinsZ());
 	}
 	h_LCE_LCEZ->Scale(1./h_rLCE_mean);
 	h_LCE_LCEZ->SetXTitle("Z [cm]");

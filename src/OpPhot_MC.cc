@@ -867,7 +867,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	c_LCE_rLCEZ_ALL->SetGridy();
 	double h_rLCE_LCEZ_mean = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
-		h_rLCE_LCEZ_mean += h_LCE_LCEZ->GetBinContent(z)/(TPC.Get_nbinsZ());
+		h_rLCE_LCEZ_mean += h_LCE_LCEZ->GetBinContent(z+1)/(TPC.Get_nbinsZ());
 	}
 	file_outstat << "Mean LCE: " << h_rLCE_LCEZ_mean << "\n";
 	h_LCE_LCEZ->Scale(1./h_rLCE_LCEZ_mean);
@@ -974,7 +974,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	c_LCE_LCErr_ALL->SetGridy();
 	double h_rLCE_LCErr_mean = 0;
 	for (int R=0; R<(TPC.Get_nbinsRR()); R++){
-		h_rLCE_LCErr_mean += h_LCE_LCErr->GetBinContent(R)/(TPC.Get_nbinsRR());
+		h_rLCE_LCErr_mean += h_LCE_LCErr->GetBinContent(R+1)/(TPC.Get_nbinsRR());
 	}
 	file_outstat << "Mean LCE: " << h_rLCE_LCErr_mean << "\n";
 	h_LCE_LCErr->SetTitle("LCE vs. R^{2}");
