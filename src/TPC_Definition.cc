@@ -8,6 +8,7 @@ class TPC_Definition {
 	double chamber_minRR, chamber_maxRR, chamber_maxR;
 	double LXe_minZ, LXe_maxZ;
 	double LXe_minRR, LXe_maxRR, LXe_maxR;
+	double QE_top, QE_bottom;
 	
   public:
 	TPC_Definition ();
@@ -31,6 +32,8 @@ class TPC_Definition {
 	double Get_LXe_minRR (void) {return LXe_minRR;}
 	double Get_LXe_maxRR (void) {return LXe_maxRR;}
 	double Get_LXe_maxR (void) {return LXe_maxR;}
+	double Get_QE_top (void) {return QE_top;}
+	double Get_QE_bottom (void) {return QE_bottom;}
 };
 
 TPC_Definition::TPC_Definition () {
@@ -59,6 +62,9 @@ void TPC_Definition::TPC_Xe1T () {
 	LXe_minRR = 0.;
 	LXe_maxR  = 47.9;
 	LXe_maxRR = LXe_maxR*LXe_maxR;
+	
+	QE_top = 0.314;
+	QE_bottom = 0.366;
 }
 
 void TPC_Definition::TPC_MS () {
@@ -73,6 +79,9 @@ void TPC_Definition::TPC_MS () {
 	LXe_minRR = 0.;
 	LXe_maxR  = 4.;
 	LXe_maxRR = LXe_maxR*LXe_maxR;
+	
+	QE_top = 0.31;
+	QE_bottom = 0.31;
 }
 
 void TPC_Definition::Set_Bins (int Z, int R, int RR) {

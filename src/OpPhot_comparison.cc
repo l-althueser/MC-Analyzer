@@ -239,6 +239,72 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	raw.close();
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
+	// generate ly map
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_ly_map = new TCanvas("ly_map","ly_map",canvas_x,canvas_y);
+	TH2F* h_ly_map = new TH2F("ly_map", "ly map of Kr83m", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_map->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_map->GetXaxis()->CenterTitle();
+	h_ly_map->SetYTitle("Z [cm]");
+	h_ly_map->GetYaxis()->CenterTitle();
+	h_ly_map->SetZTitle("ly [pe/keV]");
+	h_ly_map->GetZaxis()->CenterTitle();
+	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
+		for (int r=0; r<TPC.Get_nbinsR() ; r++){
+			h_ly_map->SetBinContent(r+1,TPC.Get_nbinsZ()-z,ly[z][r]);
+		}
+	}
+	h_ly_map->Draw("colz");
+	if (file_outplot) c_ly_map->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_Kr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_map->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// generate ly map TOP PMTs
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_ly_map_top = new TCanvas("ly_map_top","ly_map_top",canvas_x,canvas_y);
+	TH2F* h_ly_map_top = new TH2F("ly_map_top", "ly map of Kr83m (TOP PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_map_top->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_map_top->GetXaxis()->CenterTitle();
+	h_ly_map_top->SetYTitle("Z [cm]");
+	h_ly_map_top->GetYaxis()->CenterTitle();
+	h_ly_map_top->SetZTitle("ly [pe/keV]");
+	h_ly_map_top->GetZaxis()->CenterTitle();
+	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
+		for (int r=0; r<TPC.Get_nbinsR() ; r++){
+			h_ly_map_top->SetBinContent(r+1,TPC.Get_nbinsZ()-z,lyareatop[z][r]);
+		}
+	}
+	h_ly_map_top->Draw("colz");
+	if (file_outplot) c_ly_map_top->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_top_Kr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_map_top->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// generate ly map BOTTOM PMTs
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_ly_map_bottom = new TCanvas("ly_map_bottom","ly_map_bottom",canvas_x,canvas_y);
+	TH2F* h_ly_map_bottom = new TH2F("ly_map_bottom", "ly map of Kr83m (BOTTOM PMTs)", TPC.Get_nbinsR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_map_bottom->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_map_bottom->GetXaxis()->CenterTitle();
+	h_ly_map_bottom->SetYTitle("Z [cm]");
+	h_ly_map_bottom->GetYaxis()->CenterTitle();
+	h_ly_map_bottom->SetZTitle("ly [pe/keV]");
+	h_ly_map_bottom->GetZaxis()->CenterTitle();
+	h_ly_map_bottom->Add(h_ly_map,1);
+	h_ly_map_bottom->Add(h_ly_map_top,-1);
+	h_ly_map_bottom->Draw("colz");
+	if (file_outplot) c_ly_map_bottom->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_bottom_Kr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_map_bottom->SaveAs(canvasfile);
+	
+	/*=================================================================*/
 	// generate relative LCE map
 	/*=================================================================*/
 	style_2D->cd();
@@ -403,6 +469,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTrr_Kr->Scale(100.);
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kFALSE);
+	/*=================================================================*/
+	/*=================================================================*/
 	/*=================================================================*/
 	// Read in MC data
 	/*=================================================================*/
@@ -505,6 +574,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// R^{2} vs. Z of generated events LXe
 	/*=================================================================*/
 	style_2D->cd();
@@ -537,8 +609,160 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_det_bottom", draw_selection, "goff");
 	
 	/*=================================================================*/
+	// ly of R^{2} vs. Z
+	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
+	style_2D->cd();
+	TCanvas *c_ly_rrZ = new TCanvas("ly_rrZ","ly_rrZ",canvas_x,canvas_y);
+	TH2F* h_ly_rrZ = new TH2F("ly_rrZ", "ly of R^{2} vs. Z (ALL PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_rrZ->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_rrZ->GetXaxis()->CenterTitle();
+	h_ly_rrZ->SetYTitle("Z [cm]");
+	h_ly_rrZ->GetYaxis()->CenterTitle();
+	h_ly_rrZ->SetZTitle("ly [pe/keV]");
+	h_ly_rrZ->GetZaxis()->CenterTitle();
+	h_ly_rrZ->Sumw2();
+	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
+	h_ly_rrZ->Add(h_rrZ_det_top, TPC.Get_QE_top());
+	h_ly_rrZ->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_rrZ->Divide(h_rrZ);
+	h_ly_rrZ->Scale(50.); 
+	h_ly_rrZ->Draw("colz");
+	if (file_outplot) c_ly_rrZ->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_rrZ->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// ly of R^{2} vs. Z TOP PMTs
+	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
+	style_2D->cd();
+	TCanvas *c_ly_rrZ_top = new TCanvas("ly_rrZ_top","ly_rrZ_top",canvas_x,canvas_y);
+	TH2F* h_ly_rrZ_top = new TH2F("ly_rrZ_top", "ly of R^{2} vs. Z (TOP PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_rrZ_top->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_rrZ_top->GetXaxis()->CenterTitle();
+	h_ly_rrZ_top->SetYTitle("Z [cm]");
+	h_ly_rrZ_top->GetYaxis()->CenterTitle();
+	h_ly_rrZ_top->SetZTitle("ly [pe/keV]");
+	h_ly_rrZ_top->GetZaxis()->CenterTitle();
+	h_ly_rrZ_top->Sumw2();
+	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
+	h_ly_rrZ_top->Add(h_rrZ_det_top, TPC.Get_QE_top());
+	h_ly_rrZ_top->Divide(h_rrZ);
+	h_ly_rrZ_top->Scale(50.); 
+	h_ly_rrZ_top->Draw("colz");
+	if (file_outplot) c_ly_rrZ_top->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_top_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_rrZ_top->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// ly of R^{2} vs. Z BOTTOM PMTs
+	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
+	style_2D->cd();
+	TCanvas *c_ly_rrZ_bottom = new TCanvas("ly_rrZ_bottom","ly_rrZ_bottom",canvas_x,canvas_y);
+	TH2F* h_ly_rrZ_bottom = new TH2F("ly_rrZ_bottom", "ly of R^{2} vs. Z (BOTTOM PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_rrZ_bottom->SetXTitle("R^{2} [cm^{2}]");
+	h_ly_rrZ_bottom->GetXaxis()->CenterTitle();
+	h_ly_rrZ_bottom->SetYTitle("Z [cm]");
+	h_ly_rrZ_bottom->GetYaxis()->CenterTitle();
+	h_ly_rrZ_bottom->SetZTitle("ly [pe/keV]");
+	h_ly_rrZ_bottom->GetZaxis()->CenterTitle();
+	h_ly_rrZ_bottom->Sumw2();
+	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
+	h_ly_rrZ_bottom->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_rrZ_bottom->Divide(h_rrZ);
+	h_ly_rrZ_bottom->Scale(50.); 
+	h_ly_rrZ_bottom->Draw("colz");
+	if (file_outplot) c_ly_rrZ_bottom->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_bottom_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_ly_rrZ_bottom->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	gROOT->SetBatch(kFALSE);
+	/*=================================================================*/
+	/*=================================================================*/
+	// comparison ly of R^{2} vs. Z
+	/*=================================================================*/
+	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_2D_Sym->cd();
+	TCanvas *c_cly_rrZ = new TCanvas("cly_rrZ","cly_rrZ",canvas_x,canvas_y);
+	TH2F* h_cly_rrZ = new TH2F("cly_rrZ", "ly of R^{2} vs. Z (ALL PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_cly_rrZ->SetXTitle("R^{2} [cm^{2}]");
+	h_cly_rrZ->GetXaxis()->CenterTitle();
+	h_cly_rrZ->SetYTitle("Z [cm]");
+	h_cly_rrZ->GetYaxis()->CenterTitle();
+	h_cly_rrZ->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ->GetZaxis()->CenterTitle();
+	h_cly_rrZ->Add(h_ly_rrZ,-1);
+	h_cly_rrZ->Add(h_ly_map,1);
+	h_cly_rrZ->Draw("colz");
+	if ( (abs(h_cly_rrZ->GetMaximum()) > abs(h_cly_rrZ->GetMinimum())) && (h_cly_rrZ->GetMaximum() > 0.) )
+		{h_cly_rrZ->SetMinimum(-abs(h_cly_rrZ->GetMaximum()));}
+	else if ( (abs(h_cly_rrZ->GetMaximum()) < abs(h_cly_rrZ->GetMinimum())) && (h_cly_rrZ->GetMinimum() < 0.) ) 
+		{h_cly_rrZ->SetMaximum(abs(h_cly_rrZ->GetMinimum()));}
+	// else do nothing; 
+	if (file_outplot) c_cly_rrZ->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_cly_rrZ->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// comparison ly of R^{2} vs. Z TOP PMTs
+	/*=================================================================*/
+	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_2D_Sym->cd();
+	TCanvas *c_cly_rrZ_top = new TCanvas("cly_rrZ_top","cly_rrZ_top",canvas_x,canvas_y);
+	TH2F* h_cly_rrZ_top = new TH2F("cly_rrZ_top", "ly of R^{2} vs. Z (TOP PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_cly_rrZ_top->SetXTitle("R^{2} [cm^{2}]");
+	h_cly_rrZ_top->GetXaxis()->CenterTitle();
+	h_cly_rrZ_top->SetYTitle("Z [cm]");
+	h_cly_rrZ_top->GetYaxis()->CenterTitle();
+	h_cly_rrZ_top->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ_top->GetZaxis()->CenterTitle();
+	h_cly_rrZ_top->Add(h_ly_rrZ_top,-1);
+	h_cly_rrZ_top->Add(h_ly_map_top,1);
+	h_cly_rrZ_top->Draw("colz");
+	if ( (abs(h_cly_rrZ_top->GetMaximum()) > abs(h_cly_rrZ_top->GetMinimum())) && (h_cly_rrZ_top->GetMaximum() > 0.) )
+		{h_cly_rrZ_top->SetMinimum(-abs(h_cly_rrZ_top->GetMaximum()));}
+	else if ( (abs(h_cly_rrZ_top->GetMaximum()) < abs(h_cly_rrZ_top->GetMinimum())) && (h_cly_rrZ_top->GetMinimum() < 0.) ) 
+		{h_cly_rrZ_top->SetMaximum(abs(h_cly_rrZ_top->GetMinimum()));}
+	// else do nothing; 
+	if (file_outplot) c_cly_rrZ_top->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_top.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_cly_rrZ_top->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// comparison ly of R^{2} vs. Z BOTTOM PMTs
+	/*=================================================================*/
+	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
+	style_2D_Sym->cd();
+	TCanvas *c_cly_rrZ_bottom = new TCanvas("cly_rrZ_bottom","cly_rrZ_bottom",canvas_x,canvas_y);
+	TH2F* h_cly_rrZ_bottom = new TH2F("cly_rrZ_bottom", "ly of R^{2} vs. Z (BOTTOM PMTs) of KR83m vs. MC", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_cly_rrZ_bottom->SetXTitle("R^{2} [cm^{2}]");
+	h_cly_rrZ_bottom->GetXaxis()->CenterTitle();
+	h_cly_rrZ_bottom->SetYTitle("Z [cm]");
+	h_cly_rrZ_bottom->GetYaxis()->CenterTitle();
+	h_cly_rrZ_bottom->SetZTitle("ly Kr83m - ly MC [pe/keV]");
+	h_cly_rrZ_bottom->GetZaxis()->CenterTitle();
+	h_cly_rrZ_bottom->Add(h_ly_rrZ_bottom,-1);
+	h_cly_rrZ_bottom->Add(h_ly_map_bottom,1);
+	h_cly_rrZ_bottom->Draw("colz");
+	if ( (abs(h_cly_rrZ_bottom->GetMaximum()) > abs(h_cly_rrZ_bottom->GetMinimum())) && (h_cly_rrZ_bottom->GetMaximum() > 0.) )
+		{h_cly_rrZ_bottom->SetMinimum(-abs(h_cly_rrZ_bottom->GetMaximum()));}
+	else if ( (abs(h_cly_rrZ_bottom->GetMaximum()) < abs(h_cly_rrZ_bottom->GetMinimum())) && (h_cly_rrZ_bottom->GetMinimum() < 0.) ) 
+		{h_cly_rrZ_bottom->SetMaximum(abs(h_cly_rrZ_bottom->GetMinimum()));}
+	// else do nothing; 
+	if (file_outplot) c_cly_rrZ_bottom->Write();
+	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_cly_rrZ_bottom->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// relative LCE of R^{2} vs. Z
 	/*=================================================================*/
+	gStyle->SetPalette(NCont,ColPalette);
 	style_2D->cd();
 	TCanvas *c_rLCE_rrZ = new TCanvas("rLCE_rrZ","rLCE_rrZ",canvas_x,canvas_y);
 	TH2F* h_rLCE_rrZ = new TH2F("rLCE_rrZ", "relative LCE of R^{2} vs. Z (ALL PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
@@ -612,6 +836,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_rLCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kFALSE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z
 	/*=================================================================*/
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
@@ -627,10 +854,10 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ->Add(h_rLCE_rrZ,-1);
 	h_crLCE_rrZ->Add(h_rLCE_map,1);
 	h_crLCE_rrZ->Draw("colz");
-	if ( (abs(h_crLCE_rrZ->GetMaximum()) > abs(h_crLCE_rrZ->GetMinimum())) && (abs(h_crLCE_rrZ->GetMaximum()) > 0.) )
-		{h_crLCE_rrZ->SetAxisRange(-abs(h_crLCE_rrZ->GetMaximum()), abs(h_crLCE_rrZ->GetMaximum()),"Z");}
-	else if ( (abs(h_crLCE_rrZ->GetMaximum()) < abs(h_crLCE_rrZ->GetMinimum())) && (abs(h_crLCE_rrZ->GetMinimum()) < 0.) ) 
-		{h_crLCE_rrZ->SetAxisRange(-abs(h_crLCE_rrZ->GetMinimum()), abs(h_crLCE_rrZ->GetMinimum()),"Z");}
+	if ( (abs(h_crLCE_rrZ->GetMaximum()) > abs(h_crLCE_rrZ->GetMinimum())) && (h_crLCE_rrZ->GetMaximum() > 0.) )
+		{h_crLCE_rrZ->SetMinimum(-abs(h_crLCE_rrZ->GetMaximum()));}
+	else if ( (abs(h_crLCE_rrZ->GetMaximum()) < abs(h_crLCE_rrZ->GetMinimum())) && (h_crLCE_rrZ->GetMinimum() < 0.) ) 
+		{h_crLCE_rrZ->SetMaximum(abs(h_crLCE_rrZ->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
@@ -651,11 +878,11 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_top->Add(h_rLCE_rrZ_top,-1);
 	h_crLCE_rrZ_top->Add(h_rLCE_map_top,1);
 	h_crLCE_rrZ_top->Draw("colz");
-	if ( (abs(h_crLCE_rrZ_top->GetMaximum()) > abs(h_crLCE_rrZ_top->GetMinimum())) && (abs(h_crLCE_rrZ_top->GetMaximum()) > 0.) )
-		{h_crLCE_rrZ_top->SetAxisRange(-abs(h_crLCE_rrZ_top->GetMaximum()), abs(h_crLCE_rrZ_top->GetMaximum()),"Z");}
-	else if ( (abs(h_crLCE_rrZ_top->GetMaximum()) < abs(h_crLCE_rrZ_top->GetMinimum())) && (abs(h_crLCE_rrZ_top->GetMinimum()) < 0.) ) 
-		{h_crLCE_rrZ_top->SetAxisRange(-abs(h_crLCE_rrZ_top->GetMinimum()), abs(h_crLCE_rrZ_top->GetMinimum()),"Z");}
-	// else do nothing; 
+	if ( (abs(h_crLCE_rrZ_top->GetMaximum()) > abs(h_crLCE_rrZ_top->GetMinimum())) && (h_crLCE_rrZ_top->GetMaximum() > 0.) )
+		{h_crLCE_rrZ_top->SetMinimum(-abs(h_crLCE_rrZ_top->GetMaximum()));}
+	else if ( (abs(h_crLCE_rrZ_top->GetMaximum()) < abs(h_crLCE_rrZ_top->GetMinimum())) && (h_crLCE_rrZ_top->GetMinimum() < 0.) ) 
+		{h_crLCE_rrZ_top->SetMaximum(abs(h_crLCE_rrZ_top->GetMinimum()));}
+	// else do nothing;
 	if (file_outplot) c_crLCE_rrZ_top->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_top.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_top->SaveAs(canvasfile);
@@ -675,16 +902,18 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_bottom->Add(h_rLCE_rrZ_bottom,-1);
 	h_crLCE_rrZ_bottom->Add(h_rLCE_map_bottom,1);
 	h_crLCE_rrZ_bottom->Draw("colz");
-	if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) > abs(h_crLCE_rrZ_bottom->GetMinimum())) && (abs(h_crLCE_rrZ_bottom->GetMaximum()) > 0.) )
-		{h_crLCE_rrZ_bottom->SetAxisRange(-abs(h_crLCE_rrZ_bottom->GetMaximum()), abs(h_crLCE_rrZ_bottom->GetMaximum()),"Z");}
-	else if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) < abs(h_crLCE_rrZ_bottom->GetMinimum())) && (abs(h_crLCE_rrZ_bottom->GetMinimum()) < 0.) ) 
-		{h_crLCE_rrZ_bottom->SetAxisRange(-abs(h_crLCE_rrZ_bottom->GetMinimum()), abs(h_crLCE_rrZ_bottom->GetMinimum()),"Z");}
+	if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) > abs(h_crLCE_rrZ_bottom->GetMinimum())) && (h_crLCE_rrZ_bottom->GetMaximum() > 0.) )
+		{h_crLCE_rrZ_bottom->SetMinimum(-abs(h_crLCE_rrZ_bottom->GetMaximum()));}
+	else if ( (abs(h_crLCE_rrZ_bottom->GetMaximum()) < abs(h_crLCE_rrZ_bottom->GetMinimum())) && (h_crLCE_rrZ_bottom->GetMinimum() < 0.) ) 
+		{h_crLCE_rrZ_bottom->SetMaximum(abs(h_crLCE_rrZ_bottom->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ_bottom->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_bottom.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_bottom->SaveAs(canvasfile);
 	
-
+	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
 	/*=================================================================*/
 	// relative LCE of R^{2} vs. Z 3D
 	/*=================================================================*/
@@ -696,9 +925,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		}
 	}
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z 3D
 	/*=================================================================*/
@@ -715,10 +941,10 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_crLCE_rrZ_3D->Add(h_rLCE_rrZ_3D,-1);
 	h_crLCE_rrZ_3D->Add(h_rLCE_map_3D,1);
 	h_crLCE_rrZ_3D->Draw("surf1");
-	if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) > abs(h_crLCE_rrZ_3D->GetMinimum())) && (abs(h_crLCE_rrZ_3D->GetMaximum()) > 0.) )
-		{h_crLCE_rrZ_3D->SetAxisRange(-abs(h_crLCE_rrZ_3D->GetMaximum()), abs(h_crLCE_rrZ_3D->GetMaximum()),"Z");}
-	else if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) < abs(h_crLCE_rrZ_3D->GetMinimum())) && (abs(h_crLCE_rrZ_3D->GetMinimum()) < 0.) ) 
-		{h_crLCE_rrZ_3D->SetAxisRange(-abs(h_crLCE_rrZ_3D->GetMinimum()), abs(h_crLCE_rrZ_3D->GetMinimum()),"Z");}
+	if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) > abs(h_crLCE_rrZ_3D->GetMinimum())) && (h_crLCE_rrZ_3D->GetMaximum() > 0.) )
+		{h_crLCE_rrZ_bottom->SetMinimum(-abs(h_crLCE_rrZ_bottom->GetMaximum()));}
+	else if ( (abs(h_crLCE_rrZ_3D->GetMaximum()) < abs(h_crLCE_rrZ_3D->GetMinimum())) && (h_crLCE_rrZ_3D->GetMinimum() < 0.) ) 
+		{h_crLCE_rrZ_bottom->SetMaximum(abs(h_crLCE_rrZ_bottom->GetMinimum()));}
 	// else do nothing; 
 	c_crLCE_rrZ_3D->SetTheta(20.);
 	c_crLCE_rrZ_3D->SetPhi(220.);
@@ -726,9 +952,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_3D.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_3D->SaveAs(canvasfile);
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kFALSE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// generated events vs. Z
 	/*=================================================================*/
@@ -798,6 +1021,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTZ_MC->Scale(100.);
 
 	/*=================================================================*/
+	gROOT->SetBatch(kFALSE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// comparison relative LCE vs. Z
 	/*=================================================================*/
 	gStyle->SetPalette(NCont,ColPalette);
@@ -809,10 +1035,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		h_rLCE_mean += h_LCE_LCEZ->GetBinContent(z)/(TPC.Get_nbinsZ());
 	}
 	h_LCE_LCEZ->Scale(1./h_rLCE_mean);
-	h_LCE_LCEZ->SetYTitle("relative LCE");
 	h_LCE_LCEZ->SetXTitle("Z [cm]");
 	h_LCE_LCEZ->GetXaxis()->CenterTitle();
-	h_LCE_LCEZ->SetYTitle("LCE [%]");
+	h_LCE_LCEZ->SetYTitle("relative LCE");
 	h_LCE_LCEZ->GetYaxis()->CenterTitle();
 	h_LCE_LCEZ->Draw();
 	h_LCE_LCEZ_bottom->Scale(1./h_rLCE_mean);
@@ -892,6 +1117,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_cAFTZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
 	// detected events vs. R^{2} (TOP + BOTTOM PMTs)
 	/*=================================================================*/
 	style_1D->cd();
@@ -916,6 +1144,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTrr_MC->Divide(h_LCErr_det_top, h_LCErr_det, 1.,1., "b");
 	h_AFTrr_MC->Scale(100.);
 	
+	/*=================================================================*/
+	gROOT->SetBatch(kFALSE);
+	/*=================================================================*/
 	/*=================================================================*/
 	// comparison AFT vs. rr
 	/*=================================================================*/

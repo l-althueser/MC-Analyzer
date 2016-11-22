@@ -202,7 +202,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	h_ly_map->GetXaxis()->CenterTitle();
 	h_ly_map->SetYTitle("Z [cm]");
 	h_ly_map->GetYaxis()->CenterTitle();
-	h_ly_map->SetZTitle("ly");
+	h_ly_map->SetZTitle("ly [pe/keV]");
 	h_ly_map->GetZaxis()->CenterTitle();
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		for (int r=0; r<TPC.Get_nbinsR() ; r++){
