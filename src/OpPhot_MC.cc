@@ -110,7 +110,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 						else {
 							cout << endl;
 							cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-							cout << "File format not known:" << endl;
+							cout << "File format not known (dir mode with .../.../):" << endl;
 							cout << "-> " << filename << endl;
 							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 							cout << endl;
