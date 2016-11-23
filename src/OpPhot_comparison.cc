@@ -1050,6 +1050,34 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTZ_MC->Sumw2();
 	h_AFTZ_MC->Divide(h_LCE_LCEZ_top, h_LCE_LCEZ, 1.,1., "b");
 	h_AFTZ_MC->Scale(100.);
+	
+	/*=================================================================*/
+	// ratio AFT vs. Z
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_AFTZ = new TH1F("ratio_AFTZ", "ratio_AFTZ", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_AFTZ->Sumw2();
+	
+	/*=================================================================*/
+	// ratio rLCE
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_rLCE = new TH1F("ratio_rLCE", "ratio_rLCE", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_rLCE->Sumw2();
+	
+	/*=================================================================*/
+	// ratio rLCE TOP PMTs
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_rLCE_top = new TH1F("ratio_rLCE_top", "ratio_rLCE_top", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_rLCE_top->Sumw2();
+	
+	/*=================================================================*/
+	// ratio rLCE BOTTOM PMTs
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_rLCE_bottom = new TH1F("ratio_rLCE_bottom", "ratio_rLCE_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_rLCE_bottom->Sumw2();
 
 	/*=================================================================*/
 	gROOT->SetBatch(kFALSE);
@@ -1057,10 +1085,21 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	/*=================================================================*/
 	// comparison relative LCE vs. Z
 	/*=================================================================*/
+	TCanvas *c_crLCEZ_ALL = new TCanvas("crLCEZ_ALL","crLCEZ_ALL",canvas_x,canvas_y);
+	TPad *top = new TPad("top", "top", 0., 0.4, 1., 1., 0, 0, 0);
+	style_1D->cd();
+	top->SetGridy();
+	top->Draw();
+	TPad *bottom = new TPad("bottom", "bottom", 0., 0., 1., 0.4, 0, 0, 0);
+	style_1D->cd();
+	bottom->SetGridy();
+	bottom->SetTopMargin(0.02);
+	bottom->SetBottomMargin(0.1);
+	bottom->SetLeftMargin(0.105);
+	bottom->Draw();
+	top->cd();
 	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
-	TCanvas *c_crLCEZ_ALL = new TCanvas("crLCEZ_ALL","crLCEZ_ALL",canvas_x,canvas_y);
-	c_crLCEZ_ALL->SetGridy();
 	double h_rLCE_mean = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_rLCE_mean += h_LCE_LCEZ->GetBinContent(z+1)/(TPC.Get_nbinsZ());
@@ -1098,7 +1137,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_rLCE_LCEZ_bottom->SetMarkerStyle(8);
 	h_rLCE_LCEZ_bottom->Draw("P same");
 
-	TLegend *leg_crLCE = new TLegend(0.45,0.7,0.95,0.935);
+	TLegend *leg_crLCE = new TLegend(0.45,0.6,0.95,0.93);
 	leg_crLCE->SetFillColor(0);
 	leg_crLCE->SetTextSize(0.04);
 	leg_crLCE->SetTextAlign(22);         
@@ -1109,7 +1148,47 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	leg_crLCE->AddEntry(h_LCE_LCEZ_top,"MC Top PMTs","l");
 	leg_crLCE->AddEntry(h_LCE_LCEZ_bottom,"MC Bottom PMTs","l"); 
 	leg_crLCE->Draw();    
-
+	
+	bottom->cd();
+	gStyle->SetPalette(NCont,ColPalette);
+	style_1D->cd();
+	h_ratio_rLCE->Add(h_rLCE_LCEZ, 1.);
+	h_ratio_rLCE->Add(h_LCE_LCEZ, -1.);
+	h_ratio_rLCE->Draw();
+	h_ratio_rLCE_top->Add(h_rLCE_LCEZ_top, 1.);
+	h_ratio_rLCE_top->Add(h_LCE_LCEZ_top, -1.);
+	h_ratio_rLCE_top->Draw();
+	h_ratio_rLCE_bottom->Add(h_rLCE_LCEZ_bottom, 1.);
+	h_ratio_rLCE_bottom->Add(h_LCE_LCEZ_bottom, -1.);
+	h_ratio_rLCE_bottom->Draw();
+	h_ratio_rLCE->SetTitle("");
+	h_ratio_rLCE->SetXTitle("Z [cm]");
+	h_ratio_rLCE->GetXaxis()->CenterTitle();
+	h_ratio_rLCE->SetYTitle("#Delta rLCE");
+	h_ratio_rLCE->GetYaxis()->CenterTitle();
+	h_ratio_rLCE->SetTitleOffset(1.,"X");
+	h_ratio_rLCE->SetTitleOffset(1.,"Y");
+	h_ratio_rLCE->GetYaxis()->SetTitleSize(0.05);
+	h_ratio_rLCE->GetYaxis()->SetLabelSize(0.05);
+	h_ratio_rLCE->GetXaxis()->SetTitleSize(0.05);
+	h_ratio_rLCE->GetXaxis()->SetLabelSize(0.05);
+	h_ratio_rLCE->SetLineColor(kBlue);
+	h_ratio_rLCE->GetYaxis()->SetRangeUser(-0.25,0.25);
+	h_ratio_rLCE->Draw("");
+	h_ratio_rLCE_bottom->SetLineColor(kGreen);
+	h_ratio_rLCE_bottom->Draw("same");
+	h_ratio_rLCE_top->SetLineColor(kRed);
+	h_ratio_rLCE_top->Draw("same");
+	
+	TLegend *leg_crLCE_ratio = new TLegend(0.65,0.8,0.95,0.99);
+	leg_crLCE_ratio->SetFillColor(0);
+	leg_crLCE_ratio->SetTextSize(0.04);
+	leg_crLCE_ratio->SetTextAlign(22);         
+	leg_crLCE_ratio->AddEntry(h_ratio_rLCE,"All PMTs","l"); 
+	leg_crLCE_ratio->AddEntry(h_ratio_rLCE_top,"Top PMTs","l");
+	leg_crLCE_ratio->AddEntry(h_ratio_rLCE_bottom,"Bottom PMTs","l"); 
+	leg_crLCE_ratio->Draw();
+	
 	if (file_outplot) c_crLCEZ_ALL->Write();	
 	sprintf(canvasfile,"%s/%s_comparison_rLCEZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCEZ_ALL->SaveAs(canvasfile);
@@ -1120,7 +1199,21 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
 	TCanvas *c_cAFTZ = new TCanvas("cAFTZ","cAFTZ",canvas_x,canvas_y);
-	c_cAFTZ->SetGridy();
+	TPad *top_AFTZ = new TPad("top_AFTZ", "top_AFTZ", 0., 0.4, 1., 1., 0, 0, 0);
+	style_1D->cd();
+	top_AFTZ->SetGridy();
+	top_AFTZ->SetTopMargin(0.095);
+	top_AFTZ->Draw();
+	TPad *bottom_AFTZ = new TPad("bottom_AFTZ", "bottom_AFTZ", 0., 0., 1., 0.4, 0, 0, 0);
+	style_1D->cd();
+	bottom_AFTZ->SetGridy();
+	bottom_AFTZ->SetTopMargin(0.02);
+	bottom_AFTZ->SetBottomMargin(0.1);
+	bottom_AFTZ->SetLeftMargin(0.105);
+	bottom_AFTZ->Draw();
+	top_AFTZ->cd();
+	gStyle->SetPalette(NCont,ColPalette);
+	style_1D->cd();
 	h_AFTZ_MC->SetTitle("AreaFractionTop vs. Z of ^{83m}Kr vs. MC");
 	h_AFTZ_MC->SetXTitle("Z [cm]");
 	h_AFTZ_MC->GetXaxis()->CenterTitle();
@@ -1135,13 +1228,34 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTZ_Kr->SetMarkerStyle(8);
 	h_AFTZ_Kr->Draw("P same");
 
-	TLegend *leg_cAFTZ = new TLegend(0.55,0.8,0.95,0.935);
+	TLegend *leg_cAFTZ = new TLegend(0.55,0.8,0.95,0.93);
 	leg_cAFTZ->SetFillColor(0);
 	leg_cAFTZ->SetTextSize(0.04);
 	leg_cAFTZ->SetTextAlign(22);         
 	leg_cAFTZ->AddEntry(h_AFTZ_Kr,"^{83m}Kr data","P"); 
 	leg_cAFTZ->AddEntry(h_AFTZ_MC,"MC","l"); 
 	leg_cAFTZ->Draw();    
+	
+	bottom_AFTZ->cd();
+	gStyle->SetPalette(NCont,ColPalette);
+	style_1D->cd();
+	h_ratio_AFTZ->Add(h_AFTZ_Kr, 1.);
+	h_ratio_AFTZ->Add(h_AFTZ_MC, -1.);
+	h_ratio_AFTZ->Draw();
+	h_ratio_AFTZ->SetTitle("");
+	h_ratio_AFTZ->SetXTitle("Z [cm]");
+	h_ratio_AFTZ->GetXaxis()->CenterTitle();
+	h_ratio_AFTZ->SetYTitle("#Delta AreaFractionTop [%]");
+	h_ratio_AFTZ->GetYaxis()->CenterTitle();
+	h_ratio_AFTZ->SetTitleOffset(1.,"X");
+	h_ratio_AFTZ->SetTitleOffset(1.,"Y");
+	h_ratio_AFTZ->GetYaxis()->SetTitleSize(0.05);
+	h_ratio_AFTZ->GetYaxis()->SetLabelSize(0.05);
+	h_ratio_AFTZ->GetXaxis()->SetTitleSize(0.05);
+	h_ratio_AFTZ->GetXaxis()->SetLabelSize(0.05);
+	h_ratio_AFTZ->SetLineColor(kRed);
+	h_ratio_AFTZ->GetYaxis()->SetRangeUser(-10.,10.);
+	h_ratio_AFTZ->Draw("");
 
 	if (file_outplot) c_cAFTZ->Write();	
 	sprintf(canvasfile,"%s/%s_comparison_AFTZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
@@ -1199,7 +1313,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_AFTrr_Kr->SetMarkerStyle(8);
 	h_AFTrr_Kr->Draw("P same");
 
-	TLegend *leg_cAFTrr = new TLegend(0.55,0.8,0.95,0.935);
+	TLegend *leg_cAFTrr = new TLegend(0.55,0.8,0.95,0.93);
 	leg_cAFTrr->SetFillColor(0);
 	leg_cAFTrr->SetTextSize(0.04);
 	leg_cAFTrr->SetTextAlign(22);         
