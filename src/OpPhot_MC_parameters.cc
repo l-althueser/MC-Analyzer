@@ -75,6 +75,7 @@ void OpPhot_MC_parameters(string datafile, string export_format, string paramete
 	TStyle *style_1D = new TStyle("1D","1D");
 	style_1D->SetCanvasColor(10);
 	style_1D->SetTitleFillColor(0);
+	style_1D->SetTitleBorderSize(1);
 	style_1D->SetOptStat(0);
 	style_1D->SetMarkerStyle(20);
 	style_1D->SetMarkerSize(1.5);

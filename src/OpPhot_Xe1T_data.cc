@@ -112,6 +112,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	TStyle *style_1D = new TStyle("1D","1D");
 	style_1D->SetCanvasColor(10);
 	style_1D->SetTitleFillColor(0);
+	style_1D->SetTitleBorderSize(1);
 	style_1D->SetOptStat(0);
 	style_1D->SetPadLeftMargin(0.105);
 	style_1D->SetPadRightMargin(0.09);
@@ -129,6 +130,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	TStyle *style_2D = new TStyle("2D","2D");
 	style_2D->SetCanvasColor(10);
 	style_2D->SetTitleFillColor(0);
+	style_2D->SetTitleBorderSize(1);
 	style_2D->SetOptStat(0);
 	style_2D->SetPadLeftMargin(0.105);
 	style_2D->SetPadRightMargin(0.15);
@@ -146,6 +148,7 @@ void OpPhot_Xe1T_data(string datafile, string export_format, string suffix) {
 	TStyle *style_3D = new TStyle("3D","3D");
 	style_3D->SetCanvasColor(10);
 	style_3D->SetTitleFillColor(0);
+	style_3D->SetTitleBorderSize(1);
 	style_3D->SetOptStat(0);
 	style_3D->SetPadLeftMargin(0.15);
 	style_3D->SetPadRightMargin(0.05);

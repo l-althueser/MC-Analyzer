@@ -1,6 +1,8 @@
 #ifndef __TPC_DEFINITION_H__
 #define __TPC_DEFINITION_H__
 
+#include "TApplication.h"
+
 class TPC_Definition {
     int nbinsZ, nbinsRR, nbinsR;
 	int LCE_min, LCE_max;
@@ -85,6 +87,15 @@ void TPC_Definition::TPC_MS () {
 }
 
 void TPC_Definition::Set_Bins (int Z, int R, int RR) {
+	if ( (Z>=200) || (R>=200) || (RR>=200) ) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "The amount of Bins can not be above 200x200:" << endl;
+		cout << "-> Z: " << Z << " R: " << R << " RR: " << RR << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
 	nbinsZ  = Z;
 	nbinsRR = RR;
 	nbinsR  = R;
