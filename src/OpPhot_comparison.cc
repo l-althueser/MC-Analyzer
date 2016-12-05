@@ -1528,9 +1528,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_cAFTZ_QE->SetFillColor(0);   
 	pt_cAFTZ_QE->SetBorderSize(1);
 	pt_cAFTZ_QE->SetTextAlign(22);  
-	sprintf(canvasfile,"MC_QE_top: %0.2f", TPC.Get_QE_top());
+	sprintf(canvasfile,"MC_QE_top: %0.3f", TPC.Get_QE_top());
 	pt_cAFTZ_QE->AddText(canvasfile);
-	sprintf(canvasfile,"MC_QE_bottom: %0.2f", TPC.Get_QE_bottom());
+	sprintf(canvasfile,"MC_QE_bottom: %0.3f", TPC.Get_QE_bottom());
 	pt_cAFTZ_QE->AddText(canvasfile);
 	pt_cAFTZ_QE->Draw();
 
@@ -1576,9 +1576,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_ratio_AFTZ->SetFillColor(0);   
 	pt_ratio_AFTZ->SetBorderSize(1);
 	pt_ratio_AFTZ->SetTextAlign(22);  
-	sprintf(canvasfile,"sum of squares: %0.3f", h_ratio_AFTZ_sos);
+	sprintf(canvasfile,"sum of squares: %0.2f", h_ratio_AFTZ_sos);
 	pt_ratio_AFTZ->AddText(canvasfile);
-	sprintf(canvasfile,"maximum deviation: %0.3f", h_ratio_AFTZ_md);
+	sprintf(canvasfile,"maximum deviation: %0.2f", h_ratio_AFTZ_md);
 	pt_ratio_AFTZ->AddText(canvasfile);
 	pt_ratio_AFTZ->Draw();
 
@@ -1621,7 +1621,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	// detected events vs. R^{2} (TOP + BOTTOM PMTs) with QE
 	/*=================================================================*/
 	style_1D->cd();
-	TH1F* h_LCErr_det_QE = new TH1F("LCErr_det", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
+	TH1F* h_LCErr_det_QE = new TH1F("LCErr_det_QE", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
 	h_LCErr_det_QE->Add(h_LCErr_det_top, TPC.Get_QE_top());
 	h_LCErr_det_QE->Add(h_LCErr_det_bottom, TPC.Get_QE_bottom());
 
@@ -1665,7 +1665,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_cAFTrr_QE->AddText(canvasfile);
 	pt_cAFTrr_QE->Draw();
 	
-	TLegend *leg_cAFTrr = new TLegend(0.59,0.8,0.99,0.925);
+	TLegend *leg_cAFTrr = new TLegend(0.59,0.85,0.99,0.925);
 	leg_cAFTrr->SetFillColor(0);
 	leg_cAFTrr->SetTextSize(0.04);
 	leg_cAFTrr->SetBorderSize(1);
@@ -1679,5 +1679,4 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_cAFTrr->SaveAs(canvasfile);
 	
 	gStyle->SetPalette(NCont,ColPalette);
-		
 }

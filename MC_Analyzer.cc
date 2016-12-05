@@ -21,6 +21,7 @@ using namespace std;
 #include "src/OpPhot_MC.cc"
 #include "src/OpPhot_Xe1T_data.cc"
 #include "src/OpPhot_comparison.cc"
+#include "src/OpPhot_comparison_matcher.cc"
 #include "src/OpPhot_MC_parameters.cc"
 #include "src/Source_MC.cc"
 
@@ -48,6 +49,8 @@ void MC_Analyzer() {
 	cout << "= (4) OpPhot - analyze parameter dir =======================" << endl;
 	cout << "============================================================" << endl;
 	cout << "= (5) Source - MC analysis =================================" << endl;
+	cout << "============================================================" << endl;
+	cout << "= (6) OpPhot - Comparison matcher ==========================" << endl;
 	cout << "============================================================" << endl;
 	
 	string cinput;
@@ -135,7 +138,7 @@ void MC_Analyzer() {
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
 		cout << "= OpPhot - analyze parameter dir ===========================" << endl;
 		cout << "============================================================" << endl;
-		cout << "Which datafile(s) do you want to analyse (only directories)?" << endl;
+		cout << "Which datafiles do you want to analyse (only directories)?" << endl;
 		cout << "------------------------------------------------------------" << endl;
 		cout << "(l) for: " << lastfile_parameters << endl;
 		string datafile;
@@ -176,6 +179,41 @@ void MC_Analyzer() {
 		}
 		
 		Source_MC(datafile,"png","small","OpPhotStudy");
+		
+	}
+	if (( cinput == "6" )){
+		// execute LCE map generator
+		cout << "= OpPhot - Comparison of Kr83m data vs. MC (matcher) =======" << endl;
+		cout << "============================================================" << endl;
+		cout << "Which Kr83m datafile do you want to analyse?" << endl;
+		cout << "------------------------------------------------------------" << endl;
+		cout << "(l) for: " << lastfile_Kr83m << endl;
+		string datafile_kr;
+		cin >> datafile_kr;
+		cin.ignore();
+		
+		if (datafile_kr=="l") {
+			datafile_kr = lastfile_Kr83m;
+		}
+		else {
+			lastfile_Kr83m = datafile_kr;
+		}
+		cout << "------------------------------------------------------------" << endl;
+		cout << "Which MC datafiles do you want to analyse? (only directories)" << endl;
+		cout << "------------------------------------------------------------" << endl;
+		cout << "(l) for: " << lastfile_parameters << endl;
+		string datafile_mc;
+		cin >> datafile_mc;
+		cin.ignore();
+		
+		if (datafile_mc=="l") {
+			datafile_mc = lastfile_parameters;
+		}
+		else {
+			lastfile_parameters = datafile_mc;
+		}
+		
+		OpPhot_comparison_matcher(datafile_kr,datafile_mc,"OpPhotStudy");
 		
 	}
 
