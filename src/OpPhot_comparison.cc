@@ -469,7 +469,12 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_Kr_LCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
-	//h_rLCE_LCEZ_top->Draw("");
+	
+	TH1F* h_Kr_LCE_LCEZ_bottom = new TH1F("Kr_LCE_LCEZ_bottom", "^{83m}Kr: LCE vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_Kr_LCE_LCEZ_bottom->Sumw2();
+	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
+		h_Kr_LCE_LCEZ_bottom->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]-lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
+	}
 	
 	/*=================================================================*/
 	// AFT vs. Z
@@ -815,9 +820,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_ly_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
-	gROOT->SetBatch(kFALSE);
-	/*=================================================================*/
-	/*=================================================================*/
 	// comparison ly of R^{2} vs. Z
 	/*=================================================================*/
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
@@ -853,9 +855,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"%s/%s_comparison_ly_rrZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cly_rrZ->SaveAs(canvasfile);
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// comparison ly of R^{2} vs. Z TOP PMTs
 	/*=================================================================*/
@@ -1043,9 +1042,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_rLCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
-	gROOT->SetBatch(kFALSE);
-	/*=================================================================*/
-	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z
 	/*=================================================================*/
 	gStyle->SetPalette(NCont_Sym,ColPalette_Sym);
@@ -1081,9 +1077,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ->SaveAs(canvasfile);
 	
-	/*=================================================================*/
-	gROOT->SetBatch(kTRUE);
-	/*=================================================================*/
 	/*=================================================================*/
 	// comparison relative LCE of R^{2} vs. Z TOP
 	/*=================================================================*/
@@ -1269,6 +1262,35 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_LCE_LCEZ_bottom->Scale(100.);
 	
 	/*=================================================================*/
+	// ly vs. Z
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ly_lyZ = new TH1F("ly_lyZ", "MC: ly vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_lyZ->Sumw2();
+	h_ly_lyZ->Add(h_LCEZ_det_top, TPC.Get_QE_top());
+	h_ly_lyZ->Add(h_LCEZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_lyZ->Divide(h_LCEZ_gen);
+	h_ly_lyZ->Scale(50.);
+	
+	/*=================================================================*/
+	// ly vs. Z (TOP PMTs)
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ly_lyZ_top = new TH1F("ly_lyZ_top", "MC: ly vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_lyZ_top->Sumw2();
+	h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+	h_ly_lyZ_top->Scale(50.);
+	
+	/*=================================================================*/
+	// ly vs. Z (BOTTOM PMTs)
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ly_lyZ_bottom = new TH1F("ly_lyZ_bottom", "MC: ly vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ly_lyZ_bottom->Sumw2();
+	h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+	h_ly_lyZ_bottom->Scale(50.);
+	
+	/*=================================================================*/
 	// AFT vs. Z
 	/*=================================================================*/
 	style_1D->cd();
@@ -1304,6 +1326,27 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->cd();
 	TH1F* h_ratio_rLCE_bottom = new TH1F("ratio_rLCE_bottom", "ratio_rLCE_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ratio_rLCE_bottom->Sumw2();
+	
+	/*=================================================================*/
+	// ratio ly
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_ly = new TH1F("ratio_ly", "ratio_ly", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_ly->Sumw2();
+	
+	/*=================================================================*/
+	// ratio ly TOP PMTs
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_ly_top = new TH1F("ratio_ly_top", "ratio_ly_top", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_ly_top->Sumw2();
+	
+	/*=================================================================*/
+	// ratio ly BOTTOM PMTs
+	/*=================================================================*/
+	style_1D->cd();
+	TH1F* h_ratio_ly_bottom = new TH1F("ratio_ly_bottom", "ratio_ly_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_ratio_ly_bottom->Sumw2();
 
 	/*=================================================================*/
 	gROOT->SetBatch(kFALSE);
@@ -1391,13 +1434,10 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->cd();
 	h_ratio_rLCE->Add(h_rLCE_LCEZ, 1.);
 	h_ratio_rLCE->Add(h_LCE_LCEZ, -1.);
-	h_ratio_rLCE->Draw();
 	h_ratio_rLCE_top->Add(h_rLCE_LCEZ_top, 1.);
 	h_ratio_rLCE_top->Add(h_LCE_LCEZ_top, -1.);
-	h_ratio_rLCE_top->Draw();
 	h_ratio_rLCE_bottom->Add(h_rLCE_LCEZ_bottom, 1.);
 	h_ratio_rLCE_bottom->Add(h_LCE_LCEZ_bottom, -1.);
-	h_ratio_rLCE_bottom->Draw();
 	h_ratio_rLCE->SetTitle("");
 	h_ratio_rLCE->SetXTitle("Z [cm]");
 	h_ratio_rLCE->GetXaxis()->CenterTitle();
@@ -1411,11 +1451,17 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ratio_rLCE->GetXaxis()->SetLabelSize(0.05);
 	h_ratio_rLCE->SetLineColor(kBlue);
 	h_ratio_rLCE->GetYaxis()->SetRangeUser(-0.25,0.25);
-	h_ratio_rLCE->Draw("");
+	h_ratio_rLCE->SetFillStyle(3001);
+	h_ratio_rLCE->SetFillColor(kBlue);
+	h_ratio_rLCE->Draw("hist same");
 	h_ratio_rLCE_bottom->SetLineColor(kGreen);
-	h_ratio_rLCE_bottom->Draw("same");
+	h_ratio_rLCE_bottom->SetFillStyle(3002);
+	h_ratio_rLCE_bottom->SetFillColor(kGreen);
+	h_ratio_rLCE_bottom->Draw("hist same");
 	h_ratio_rLCE_top->SetLineColor(kRed);
-	h_ratio_rLCE_top->Draw("same");
+	h_ratio_rLCE_top->SetFillStyle(3003);
+	h_ratio_rLCE_top->SetFillColor(kRed);
+	h_ratio_rLCE_top->Draw("hist same");
 	
 	double h_ratio_AFTZ_sos_all = 0; //sum of squares
 	double h_ratio_AFTZ_md_all = 0; //maximum deviation
@@ -1490,6 +1536,180 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	if (!(export_format=="")) c_crLCEZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
+	// comparison ly vs. Z
+	/*=================================================================*/
+	TCanvas *c_clyZ_ALL = new TCanvas("clyZ_ALL","clyZ_ALL",canvas_x,canvas_y);
+	TPad *ly_top = new TPad("ly_top", "ly_top", 0., 0.4, 1., 1., 0, 0, 0);
+	style_1D->cd();
+	ly_top->SetGridy();
+	ly_top->Draw();
+	TPad *ly_bottom = new TPad("ly_bottom", "ly_bottom", 0., 0., 1., 0.4, 0, 0, 0);
+	style_1D->cd();
+	ly_bottom->SetGridy();
+	ly_bottom->SetTopMargin(0.02);
+	ly_bottom->SetBottomMargin(0.1);
+	ly_bottom->SetLeftMargin(0.105);
+	ly_bottom->Draw();
+	ly_top->cd();
+	gStyle->SetPalette(NCont,ColPalette);
+	style_1D->cd();
+	h_ly_lyZ->SetXTitle("Z [cm]");
+	h_ly_lyZ->GetXaxis()->CenterTitle();
+	h_ly_lyZ->SetYTitle("ly [pe/keV]");
+	h_ly_lyZ->GetYaxis()->CenterTitle();
+	
+	h_ly_lyZ->SetTitle("Comparison: ly vs. Z");
+	h_ly_lyZ->SetLineColor(kBlue);
+	h_ly_lyZ->GetYaxis()->SetRangeUser(0,9);
+	h_ly_lyZ->Draw("");
+	h_ly_lyZ_bottom->SetLineColor(kGreen);
+	h_ly_lyZ_bottom->Draw("same");
+	h_ly_lyZ_top->SetLineColor(kRed);
+	h_ly_lyZ_top->Draw("same");
+	
+	h_Kr_LCE_LCEZ->SetLineColor(kBlue);
+	h_Kr_LCE_LCEZ->SetMarkerColor(kBlue);
+	h_Kr_LCE_LCEZ->SetMarkerStyle(8);
+	h_Kr_LCE_LCEZ->Draw("P same");
+	h_Kr_LCE_LCEZ_top->SetLineColor(kRed);
+	h_Kr_LCE_LCEZ_top->SetMarkerColor(kRed);
+	h_Kr_LCE_LCEZ_top->SetMarkerStyle(8);
+	h_Kr_LCE_LCEZ_top->Draw("P same");
+	h_Kr_LCE_LCEZ_bottom->SetLineColor(kGreen);
+	h_Kr_LCE_LCEZ_bottom->SetMarkerColor(kGreen);
+	h_Kr_LCE_LCEZ_bottom->SetMarkerStyle(8);
+	h_Kr_LCE_LCEZ_bottom->Draw("P same");
+	
+	TPaveText *pt_cly_QE = new TPaveText(0.725,0.93,0.99,0.99,"NDC");
+	pt_cly_QE->SetFillColor(0);   
+	pt_cly_QE->SetBorderSize(1);
+	pt_cly_QE->SetTextAlign(22);  
+	sprintf(canvasfile,"MC_QE_top: %0.3f", TPC.Get_QE_top());
+	pt_cly_QE->AddText(canvasfile);
+	sprintf(canvasfile,"MC_QE_bottom: %0.3f", TPC.Get_QE_bottom());
+	pt_cly_QE->AddText(canvasfile);
+	pt_cly_QE->Draw();
+	
+	TLegend *leg_clyZ = new TLegend(0.49,0.6,0.99,0.925);
+	leg_clyZ->SetFillColor(0);
+	leg_clyZ->SetTextSize(0.04);
+	leg_clyZ->SetBorderSize(1);
+	leg_clyZ->SetTextAlign(22);         
+	leg_clyZ->AddEntry(h_Kr_LCE_LCEZ,"^{83m}Kr All PMTs","P"); 
+	leg_clyZ->AddEntry(h_Kr_LCE_LCEZ_top,"^{83m}Kr Top PMTs","P");
+	leg_clyZ->AddEntry(h_Kr_LCE_LCEZ_bottom,"^{83m}Kr Bottom PMTs","P"); 
+	leg_clyZ->AddEntry(h_ly_lyZ,"MC All PMTs","l"); 
+	leg_clyZ->AddEntry(h_ly_lyZ_top,"MC Top PMTs","l");
+	leg_clyZ->AddEntry(h_ly_lyZ_bottom,"MC Bottom PMTs","l"); 
+	leg_clyZ->Draw();  
+	
+	ly_bottom->cd();
+	gStyle->SetPalette(NCont,ColPalette);
+	style_1D->cd();
+	h_ratio_ly->Add(h_Kr_LCE_LCEZ, 1.);
+	h_ratio_ly->Add(h_ly_lyZ, -1.);
+	h_ratio_ly_top->Add(h_Kr_LCE_LCEZ_top, 1.);
+	h_ratio_ly_top->Add(h_ly_lyZ_top, -1.);
+	h_ratio_ly_bottom->Add(h_Kr_LCE_LCEZ_bottom, 1.);
+	h_ratio_ly_bottom->Add(h_ly_lyZ_bottom, -1.);
+	h_ratio_ly->SetTitle("");
+	h_ratio_ly->SetXTitle("Z [cm]");
+	h_ratio_ly->GetXaxis()->CenterTitle();
+	h_ratio_ly->SetYTitle("#Delta ly");
+	h_ratio_ly->GetYaxis()->CenterTitle();
+	h_ratio_ly->SetTitleOffset(1.,"X");
+	h_ratio_ly->SetTitleOffset(1.,"Y");
+	h_ratio_ly->GetYaxis()->SetTitleSize(0.05);
+	h_ratio_ly->GetYaxis()->SetLabelSize(0.05);
+	h_ratio_ly->GetXaxis()->SetTitleSize(0.05);
+	h_ratio_ly->GetXaxis()->SetLabelSize(0.05);
+	h_ratio_ly->SetLineColor(kBlue);
+	h_ratio_ly->GetYaxis()->SetRangeUser(-1,1);
+	h_ratio_ly->SetFillStyle(3001);
+	h_ratio_ly->SetFillColor(kBlue);
+	h_ratio_ly->Draw("hist same");
+	h_ratio_ly_bottom->SetLineColor(kGreen);
+	h_ratio_ly_bottom->SetFillStyle(3002);
+	h_ratio_ly_bottom->SetFillColor(kGreen);
+	h_ratio_ly_bottom->Draw("hist same");
+	h_ratio_ly_top->SetLineColor(kRed);
+	h_ratio_ly_top->SetFillStyle(3003);
+	h_ratio_ly_top->SetFillColor(kRed);
+	h_ratio_ly_top->Draw("hist same");
+	
+	double h_ratio_ly_sos_all = 0; //sum of squares
+	double h_ratio_ly_md_all = 0; //maximum deviation
+	double h_ratio_ly_sos_top = 0; //sum of squares
+	double h_ratio_ly_md_top = 0; //maximum deviation
+	double h_ratio_ly_sos_bottom = 0; //sum of squares
+	double h_ratio_ly_md_bottom = 0; //maximum deviation
+	for (int z=0; z<TPC.Get_nbinsZ(); z++){
+		h_ratio_ly_sos_all += h_ratio_ly->GetBinContent(z)*h_ratio_ly->GetBinContent(z);
+		if (abs(h_ratio_ly->GetBinContent(z)) > h_ratio_ly_md_all) {h_ratio_ly_md_all = abs(h_ratio_ly->GetBinContent(z));}
+		h_ratio_ly_sos_top += h_ratio_ly_top->GetBinContent(z)*h_ratio_ly_top->GetBinContent(z);
+		if (abs(h_ratio_ly_top->GetBinContent(z)) > h_ratio_ly_md_top) {h_ratio_ly_md_top = abs(h_ratio_ly_top->GetBinContent(z));}
+		h_ratio_ly_sos_bottom += h_ratio_ly_bottom->GetBinContent(z)*h_ratio_ly_bottom->GetBinContent(z);
+		if (abs(h_ratio_ly_bottom->GetBinContent(z)) > h_ratio_ly_md_bottom) {h_ratio_ly_md_bottom = abs(h_ratio_ly_bottom->GetBinContent(z));}
+	}
+	
+	TPaveText *pt_ratio_ly = new TPaveText(0.105,0.88,0.305,0.98,"NDC");
+	pt_ratio_ly->SetFillColor(0);   
+	pt_ratio_ly->SetBorderSize(1);
+	pt_ratio_ly->SetTextAlign(32);  
+	sprintf(canvasfile,"sum of squares:");
+	pt_ratio_ly->AddText(canvasfile);
+	sprintf(canvasfile,"maximum deviation:");
+	pt_ratio_ly->AddText(canvasfile);
+	pt_ratio_ly->Draw();
+	
+	TPaveText *pt_ratio_ly_all = new TPaveText(0.305,0.88,0.375,0.98,"NDC");
+	pt_ratio_ly_all->SetFillColor(0);   
+	pt_ratio_ly_all->SetBorderSize(1);
+	pt_ratio_ly_all->SetTextAlign(22);
+	pt_ratio_ly_all->SetTextColor(kBlue);	
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_sos_all);
+	pt_ratio_ly_all->AddText(canvasfile);
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_md_all);
+	pt_ratio_ly_all->AddText(canvasfile);
+	pt_ratio_ly_all->Draw();
+	
+	TPaveText *pt_ratio_ly_top = new TPaveText(0.375,0.88,0.445,0.98,"NDC");
+	pt_ratio_ly_top->SetFillColor(0);   
+	pt_ratio_ly_top->SetBorderSize(1);
+	pt_ratio_ly_top->SetTextAlign(22);
+	pt_ratio_ly_top->SetTextColor(kRed);	
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_sos_top);
+	pt_ratio_ly_top->AddText(canvasfile);
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_md_top);
+	pt_ratio_ly_top->AddText(canvasfile);
+	pt_ratio_ly_top->Draw();
+	
+	TPaveText *pt_ratio_ly_bottom = new TPaveText(0.445,0.88,0.515,0.98,"NDC");
+	pt_ratio_ly_bottom->SetFillColor(0);   
+	pt_ratio_ly_bottom->SetBorderSize(1);
+	pt_ratio_ly_bottom->SetTextAlign(22);
+	pt_ratio_ly_bottom->SetTextColor(kGreen);	
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_sos_bottom);
+	pt_ratio_ly_bottom->AddText(canvasfile);
+	sprintf(canvasfile,"%0.3f", h_ratio_ly_md_bottom);
+	pt_ratio_ly_bottom->AddText(canvasfile);
+	pt_ratio_ly_bottom->Draw();
+	
+	TLegend *leg_cly_ratio = new TLegend(0.69,0.8,0.99,0.98);
+	leg_cly_ratio->SetFillColor(0);
+	leg_cly_ratio->SetTextSize(0.04);
+	leg_cly_ratio->SetBorderSize(1);
+	leg_cly_ratio->SetTextAlign(22);         
+	leg_cly_ratio->AddEntry(h_ratio_ly,"All PMTs","l"); 
+	leg_cly_ratio->AddEntry(h_ratio_ly_top,"Top PMTs","l");
+	leg_cly_ratio->AddEntry(h_ratio_ly_bottom,"Bottom PMTs","l"); 
+	leg_cly_ratio->Draw();
+	
+	if (file_outplot) c_clyZ_ALL->Write();	
+	sprintf(canvasfile,"%s/%s_comparison_lyZ.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	if (!(export_format=="")) c_clyZ_ALL->SaveAs(canvasfile);
+	
+	/*=================================================================*/
 	// comparison AFT vs. Z
 	/*=================================================================*/
 	gStyle->SetPalette(NCont,ColPalette);
@@ -1534,7 +1754,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_cAFTZ_QE->AddText(canvasfile);
 	pt_cAFTZ_QE->Draw();
 
-	TLegend *leg_cAFTZ = new TLegend(0.59,0.7,0.99,0.905);
+	TLegend *leg_cAFTZ = new TLegend(0.59,0.75,0.99,0.905);
 	leg_cAFTZ->SetFillColor(0);
 	leg_cAFTZ->SetTextSize(0.04);
 	leg_cAFTZ->SetBorderSize(1);
@@ -1556,7 +1776,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		if (abs(h_ratio_AFTZ->GetBinContent(z)) > h_ratio_AFTZ_md) {h_ratio_AFTZ_md = abs(h_ratio_AFTZ->GetBinContent(z));}
 	}
 	
-	h_ratio_AFTZ->Draw();
 	h_ratio_AFTZ->SetTitle("");
 	h_ratio_AFTZ->SetXTitle("Z [cm]");
 	h_ratio_AFTZ->GetXaxis()->CenterTitle();
@@ -1570,7 +1789,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ratio_AFTZ->GetXaxis()->SetLabelSize(0.05);
 	h_ratio_AFTZ->SetLineColor(kRed);
 	h_ratio_AFTZ->GetYaxis()->SetRangeUser(-10.,10.);
-	h_ratio_AFTZ->Draw("");
+	h_ratio_AFTZ->SetFillStyle(3002);
+	h_ratio_AFTZ->SetFillColor(kRed);
+	h_ratio_AFTZ->Draw("hist same");
 	
 	TPaveText *pt_ratio_AFTZ = new TPaveText(0.105,0.88,0.375,0.98,"NDC");
 	pt_ratio_AFTZ->SetFillColor(0);   

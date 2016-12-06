@@ -81,7 +81,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
 	// VERSIONTAG_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
-	file_outstat << "#" << " " << "VERSIONTAG" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "\n";
+	file_outstat << "#" << " " << "VERSIONTAG" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << "\n";
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -173,6 +173,12 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 		h_Kr_LCE_LCEZ_top->SetBinContent(TPC.Get_nbinsZ()-z,lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
 	}
 	
+	TH1F* h_Kr_LCE_LCEZ_bottom = new TH1F("Kr_LCE_LCEZ_bottom", "^{83m}Kr: LCE vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	h_Kr_LCE_LCEZ_bottom->Sumw2();
+	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
+		h_Kr_LCE_LCEZ_bottom->SetBinContent(TPC.Get_nbinsZ()-z,lyZ[z]-lyareatopZ[z]); // (peak.area_fraction_top * peak.area)/32.1498, so (S1Top/S1Total)*S1Total/Energy
+	}
+	
 	/*=================================================================*/
 	// AFT vs. Z
 	/*=================================================================*/
@@ -236,6 +242,21 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 		TH1F* h_LCE_LCEZ_bottom = new TH1F("LCE_LCEZ_bottom", "MC: LCE vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 		h_LCE_LCEZ_bottom->Sumw2();
 		/*=================================================================*/
+		// ly vs. Z
+		/*=================================================================*/
+		TH1F* h_ly_lyZ = new TH1F("ly_lyZ", "MC: ly vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ly_lyZ->Sumw2();
+		/*=================================================================*/
+		// ly vs. Z (TOP PMTs)
+		/*=================================================================*/
+		TH1F* h_ly_lyZ_top = new TH1F("ly_lyZ_top", "MC: ly vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ly_lyZ_top->Sumw2();
+		/*=================================================================*/
+		// ly vs. Z (BOTTOM PMTs)
+		/*=================================================================*/
+		TH1F* h_ly_lyZ_bottom = new TH1F("ly_lyZ_bottom", "MC: ly vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ly_lyZ_bottom->Sumw2();
+		/*=================================================================*/
 		// AFT vs. Z
 		/*=================================================================*/
 		TH1F* h_AFTZ_MC = new TH1F("AFTZ_MC", "MC: AFT vs. Z", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
@@ -260,6 +281,21 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 		/*=================================================================*/
 		TH1F* h_ratio_rLCE_bottom = new TH1F("ratio_rLCE_bottom", "ratio_rLCE_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 		h_ratio_rLCE_bottom->Sumw2();
+		/*=================================================================*/
+		// ratio ly
+		/*=================================================================*/
+		TH1F* h_ratio_ly = new TH1F("ratio_ly", "ratio_ly", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ratio_ly->Sumw2();
+		/*=================================================================*/
+		// ratio ly TOP PMTs
+		/*=================================================================*/
+		TH1F* h_ratio_ly_top = new TH1F("ratio_ly_top", "ratio_ly_top", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ratio_ly_top->Sumw2();
+		/*=================================================================*/
+		// ratio ly BOTTOM PMTs
+		/*=================================================================*/
+		TH1F* h_ratio_ly_bottom = new TH1F("ratio_ly_bottom", "ratio_ly_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		h_ratio_ly_bottom->Sumw2();
 		
 		string ext = ".root";
 		TSystemDirectory dir(workingdirectory.c_str(), workingdirectory.c_str());
@@ -270,11 +306,14 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 			TIter next(files);
 			int filenumber = 0;
 			char min_filename_rLCE[10000];
+			char min_filename_ly[10000];
 			char min_filename_AFTZ[10000];
 			char min_filename[10000];
 			double min_ratio_rLCE_sos_all = 0; //sum of squares
 			double min_ratio_AFTZ_sos = 0; //sum of squares
+			double min_ratio_ly_sos_all = 0; //sum of squares
 			double min_ratio_sos_all = 0; //sum of squares
+			double min_ratio_sos_all_ly = 0; //sum of squares
 			double min_ratio_sos = 0; //sum of squares
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
@@ -357,6 +396,26 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					h_LCE_LCEZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
 					h_LCE_LCEZ_bottom->Scale(100.);
 					/*=================================================================*/
+					// ly vs. Z
+					/*=================================================================*/
+					h_ly_lyZ->Reset();
+					h_ly_lyZ->Add(h_LCEZ_det_top, TPC.Get_QE_top());
+					h_ly_lyZ->Add(h_LCEZ_det_bottom, TPC.Get_QE_bottom());
+					h_ly_lyZ->Divide(h_LCEZ_gen);
+					h_ly_lyZ->Scale(50.);
+					/*=================================================================*/
+					// ly vs. Z (TOP PMTs)
+					/*=================================================================*/
+					h_ly_lyZ_top->Reset();
+					h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+					h_ly_lyZ_top->Scale(50.);
+					/*=================================================================*/
+					// ly vs. Z (BOTTOM PMTs)
+					/*=================================================================*/
+					h_ly_lyZ_bottom->Reset();
+					h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+					h_ly_lyZ_bottom->Scale(50.);
+					/*=================================================================*/
 					// AFT vs. Z
 					/*=================================================================*/
 					h_AFTZ_MC->Reset();
@@ -378,6 +437,18 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					// ratio rLCE BOTTOM PMTs
 					/*=================================================================*/
 					h_ratio_rLCE_bottom->Reset();
+					/*=================================================================*/
+					// ratio ly
+					/*=================================================================*/
+					h_ratio_ly->Reset();
+					/*=================================================================*/
+					// ratio ly TOP PMTs
+					/*=================================================================*/
+					h_ratio_ly_top->Reset();
+					/*=================================================================*/
+					// ratio ly BOTTOM PMTs
+					/*=================================================================*/
+					h_ratio_ly_bottom->Reset();
 					/*=================================================================*/
 					// comparison relative LCE vs. Z
 					/*=================================================================*/
@@ -413,6 +484,32 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 						if (abs(h_ratio_rLCE_bottom->GetBinContent(z)) > h_ratio_rLCE_md_bottom) {h_ratio_rLCE_md_bottom = abs(h_ratio_rLCE_bottom->GetBinContent(z));}
 					}
 					/*=================================================================*/
+					// comparison ly vs. Z
+					/*=================================================================*/
+					h_ratio_ly->Add(h_Kr_LCE_LCEZ, 1.);
+					h_ratio_ly->Add(h_ly_lyZ, -1.);
+
+					h_ratio_ly_top->Add(h_Kr_LCE_LCEZ_top, 1.);
+					h_ratio_ly_top->Add(h_ly_lyZ_top, -1.);
+
+					h_ratio_ly_bottom->Add(h_Kr_LCE_LCEZ_bottom, 1.);
+					h_ratio_ly_bottom->Add(h_ly_lyZ_bottom, -1.);
+					
+					double h_ratio_ly_sos_all = 0; //sum of squares
+					double h_ratio_ly_md_all = 0; //maximum deviation
+					double h_ratio_ly_sos_top = 0; //sum of squares
+					double h_ratio_ly_md_top = 0; //maximum deviation
+					double h_ratio_ly_sos_bottom = 0; //sum of squares
+					double h_ratio_ly_md_bottom = 0; //maximum deviation
+					for (int z=0; z<TPC.Get_nbinsZ(); z++){
+						h_ratio_ly_sos_all += h_ratio_ly->GetBinContent(z)*h_ratio_ly->GetBinContent(z);
+						if (abs(h_ratio_ly->GetBinContent(z)) > h_ratio_ly_md_all) {h_ratio_ly_md_all = abs(h_ratio_ly->GetBinContent(z));}
+						h_ratio_ly_sos_top += h_ratio_ly_top->GetBinContent(z)*h_ratio_ly_top->GetBinContent(z);
+						if (abs(h_ratio_ly_top->GetBinContent(z)) > h_ratio_ly_md_top) {h_ratio_ly_md_top = abs(h_ratio_ly_top->GetBinContent(z));}
+						h_ratio_ly_sos_bottom += h_ratio_ly_bottom->GetBinContent(z)*h_ratio_ly_bottom->GetBinContent(z);
+						if (abs(h_ratio_ly_bottom->GetBinContent(z)) > h_ratio_ly_md_bottom) {h_ratio_ly_md_bottom = abs(h_ratio_ly_bottom->GetBinContent(z));}
+					}
+					/*=================================================================*/
 					// comparison AFT vs. Z
 					/*=================================================================*/
 					h_ratio_AFTZ->Add(h_AFTZ_Kr, 1.);
@@ -428,10 +525,13 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					if (filenumber == 1) {
 						strcpy(min_filename_rLCE,filename);
 						strcpy(min_filename_AFTZ,filename);
+						strcpy(min_filename_ly,filename);
 						strcpy(min_filename,filename);
 						min_ratio_rLCE_sos_all = h_ratio_rLCE_sos_all;
 						min_ratio_AFTZ_sos = h_ratio_AFTZ_sos;
+						min_ratio_ly_sos_all = h_ratio_ly_sos_all;
 						min_ratio_sos_all = h_ratio_rLCE_sos_all;
+						min_ratio_sos_all_ly = h_ratio_ly_sos_all;
 						min_ratio_sos = h_ratio_AFTZ_sos;
 					}
 					else {
@@ -443,22 +543,29 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 							strcpy(min_filename_AFTZ,filename);
 							min_ratio_AFTZ_sos = h_ratio_AFTZ_sos;
 						}
-						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) ) {
+						if (h_ratio_ly_sos_all < min_ratio_ly_sos_all) {
+							strcpy(min_filename_ly,filename);
+							min_ratio_ly_sos_all = h_ratio_ly_sos_all;
+						}
+						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) && (h_ratio_ly_sos_all <= min_ratio_sos_all_ly) ) {
 							strcpy(min_filename,filename);
 							min_ratio_sos_all = h_ratio_rLCE_sos_all;
+							min_ratio_sos_all_ly = h_ratio_ly_sos_all;
 							min_ratio_sos = h_ratio_AFTZ_sos;
 						}
 					}
 					
-					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md << "\n";
+					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << "\n";
 				}
 			}
 			cout << "------------------------------------------------------------" << endl;
 			cout << "Minimum rLCE sos of " << min_ratio_rLCE_sos_all << " in " << min_filename_rLCE << endl;
 			cout << "Minimum AFTZ sos of " << min_ratio_AFTZ_sos << " in " << min_filename_AFTZ << endl;
+			cout << "Minimum ly sos of " << min_ratio_ly_sos_all << " in " << min_filename_ly << endl;
 			cout << "------------------------------------------------------------" << endl;
 			cout << "Minimum rLCE sos of " << min_ratio_sos_all << endl;
 			cout << "Minimum AFTZ sos of " << min_ratio_sos << endl;
+			cout << "Minimum ly sos of " << min_ratio_sos_all_ly << endl;
 			cout << "File " << min_filename << endl;
 		}		
 	}
