@@ -43,14 +43,16 @@ void MC_Analyzer() {
 	cout << "= Starting MC-Analyzer =====================================" << endl;
 	cout << "============================================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (1) OpPhot - MC analysis =================================" << endl;
-	cout << "= (2) OpPhot - Kr83m data LCE map ==========================" << endl;
-	cout << "= (3) OpPhot - Comparison of Kr83m data vs. MC =============" << endl;
-	cout << "= (4) OpPhot - analyze parameter dir =======================" << endl;
+	cout << "= (1) S1 - MC analysis =====================================" << endl;
+	cout << "= (2) S1 - Kr83m data LCE map ==============================" << endl;
+	cout << "= (3) S1 - Comparison of Kr83m data vs. MC =================" << endl;
+	cout << "= (4) S1 - Analyse parameter dir ===========================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (5) Source - MC analysis =================================" << endl;
+	cout << "= (5) Events - MC analysis =================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (6) OpPhot - Comparison matcher ==========================" << endl;
+	cout << "= (6) S1 - Comparison matcher ==============================" << endl;
+	cout << "= (6)    | Analyse matcher output ==========================" << endl;
+	cout << "= (6)    | Analyse per parameter ===========================" << endl;
 	cout << "============================================================" << endl;
 	
 	string cinput;
@@ -59,7 +61,7 @@ void MC_Analyzer() {
 	
 	if (( cinput == "1" ) || ( cinput == "MC" )){
 		// execute MC analysis
-		cout << "= OpPhot - MC analysis =====================================" << endl;
+		cout << "= S1 - MC analysis =========================================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -81,7 +83,7 @@ void MC_Analyzer() {
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
 		// execute LCE map generator
-		cout << "= OpPhot - Kr83m data LCE map ==============================" << endl;
+		cout << "= S1 - Kr83m data LCE map ==================================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -102,7 +104,7 @@ void MC_Analyzer() {
 	}
 	if (( cinput == "3" )){
 		// execute LCE map generator
-		cout << "= OpPhot - Comparison of Kr83m data vs. MC =================" << endl;
+		cout << "= S1 - Comparison of Kr83m data vs. MC =====================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which Kr83m datafile do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -136,7 +138,7 @@ void MC_Analyzer() {
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
-		cout << "= OpPhot - analyze parameter dir ===========================" << endl;
+		cout << "= S1 - analyze parameter dir ===============================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafiles do you want to analyse (only directories)?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -162,7 +164,7 @@ void MC_Analyzer() {
 		
 	}
 	if ( cinput == "5" ){
-		cout << "= Source - MC analysis =====================================" << endl;
+		cout << "= Events - MC analysis =====================================" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
@@ -183,7 +185,7 @@ void MC_Analyzer() {
 	}
 	if (( cinput == "6" )){
 		// execute LCE map generator
-		cout << "= OpPhot - Comparison of Kr83m data vs. MC (matcher) =======" << endl;
+		cout << "= S1 - Comparison of Kr83m data vs. MC (matcher) ===========" << endl;
 		cout << "============================================================" << endl;
 		cout << "Which Kr83m datafile do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;

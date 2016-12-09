@@ -1,0 +1,51 @@
+/control/verbose  0
+/run/verbose      0     
+/event/verbose    0
+/tracking/verbose 0
+/tracking/verbose 0
+
+/Xe/detector/setLXeScintillation true
+/Xe/detector/setLXeRefractionIndex [LXeR]
+
+#set the reflectivity for the Teflon components
+#in the LXe volume.
+#Default value is 0.99
+/Xe/detector/setTeflonReflectivity [LXeTR]
+
+#set the reflectivity for the Teflon components
+#in the GXe volume.
+#Default value is 0.99
+/Xe/detector/setGXeTeflonReflectivity [GXeTR]
+
+/Xe/detector/setLXeAbsorbtionLength [LXeAbsL] 
+/Xe/detector/setGXeAbsorbtionLength [GXeAbsL]
+/Xe/detector/setLXeRayScatterLength [LXeRSL]
+/Xe/detector/setGridMeshTransparency 0.94
+
+# default case + classic
+/Xe/detector/setTopScreeningMeshTransparency 0.966
+/Xe/detector/setBottomScreeningMeshTransparency 0.972
+/Xe/detector/setAnodeMeshTransparency 0.905
+/Xe/detector/setGateMeshTransparency 0.931
+/Xe/detector/setCathodeMeshTransparency 0.972
+
+/run/random/setRandomSeed 0
+
+/xe/gun/particle opticalphoton
+/xe/gun/energy   6.98 eV
+
+/xe/gun/type   Volume
+/xe/gun/shape  Cylinder
+
+# in the gas gap for S2 generation
+/xe/gun/center 0. 0. 4.9 mm
+/xe/gun/halfz  0.3 mm
+/xe/gun/radius 500  mm
+# 5000 photons per event
+/xe/gun/numberofparticles 2500
+
+/xe/gun/confine GXe
+
+# Tree Filling options
+/run/writeEmpty true
+

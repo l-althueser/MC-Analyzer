@@ -80,8 +80,8 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
-	// VERSIONTAG_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
-	file_outstat << "#" << " " << "VERSIONTAG" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << "\n";
+	// VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
+	file_outstat << "#" << " " << "VERSIONTAG" << " " << "SIGNTYPE" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << "\n";
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -339,7 +339,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					cout << " file(" << filenumber << "): " << fname.Data() << " " << nevents << " events total." <<  endl;
 					
 					// read in parameter value
-					// e.g.: rev338_90_90_5000_30_30_163_01 -> VERSIONTAG_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
+					// e.g.: rev338_S1_90_90_5000_30_30_163_01 -> VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
 					char* buf = strdup(fname.Data());
 					token[0] = strtok(buf, DELIMITER_); // first token
 					for (int n = 1; n < 10; n++) {
@@ -350,7 +350,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					/*=================================================================*/
 					// FILTER PARAMETER SETTINGS
 					/*=================================================================*/
-					//if (atoi(token[4])!=10000) {cout << "Skip!" << endl; continue;}
+					//if (atoi(token[5])!=10000) {cout << "Skip!" << endl; continue;}
 					
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 					/*=================================================================*/
@@ -539,17 +539,17 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 							strcpy(min_filename_ly,filename);
 							min_ratio_ly_sos_all = h_ratio_ly_sos_all;
 						}
-						//(max_param <= atoi(token[4])) &&
+						//(max_param <= atoi(token[5])) &&
 						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) && (h_ratio_ly_sos_all <= min_ratio_sos_all_ly) ) {
 							strcpy(min_filename,filename);
 							min_ratio_sos_all = h_ratio_rLCE_sos_all;
 							min_ratio_sos_all_ly = h_ratio_ly_sos_all;
 							min_ratio_sos = h_ratio_AFTZ_sos;
-							//max_param = atoi(token[4]);
+							//max_param = atoi(token[5]);
 						}
 					}
 					
-					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << "\n";
+					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << "\n";
 					
 					delete file_input_tree;
 				}
