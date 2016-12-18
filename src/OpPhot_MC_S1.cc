@@ -40,7 +40,7 @@ using namespace std;
 
 /*=================================================================*/
 
-void OpPhot_MC(string datafile, string export_format, string bin_format, string suffix) {
+void OpPhot_MC_S1(string datafile, string export_format, string bin_format, string suffix) {
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
 	string workingdirectory = datafile.substr(0,found);
@@ -56,7 +56,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	TChain *file_input_tree = new TChain("events/events");
 		
 	char file_outname[10000];
-	sprintf(file_outname,"%s/%s_%s_plot_MC.dat", workingdirectory.c_str(), suffix.c_str(), bin_format.c_str());
+	sprintf(file_outname,"%s/%s_%s_plot_MC_S1.dat", workingdirectory.c_str(), suffix.c_str(), bin_format.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -166,7 +166,7 @@ void OpPhot_MC(string datafile, string export_format, string bin_format, string 
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
 	// generate plots  
-	sprintf(file_outname,"%s/%s_%s_plot_MC.root", workingdirectory.c_str(), suffix.c_str(),bin_format.c_str());
+	sprintf(file_outname,"%s/%s_%s_plot_MC_S1.root", workingdirectory.c_str(), suffix.c_str(),bin_format.c_str());
 	TFile *file_outplot = new TFile(file_outname,"RECREATE");
 	
 	file_outstat << "= geometry parameters ======================================" << "\n";

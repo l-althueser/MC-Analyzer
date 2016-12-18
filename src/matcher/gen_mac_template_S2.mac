@@ -41,8 +41,8 @@
 /xe/gun/center 0. 0. 4.9 mm
 /xe/gun/halfz  0.3 mm
 /xe/gun/radius 500  mm
-# 5000 photons per event
-/xe/gun/numberofparticles 2500
+# only for per PMT maps
+# /xe/gun/numberofparticles 2500
 
 /xe/gun/confine GXe
 

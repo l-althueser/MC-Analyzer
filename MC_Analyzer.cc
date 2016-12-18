@@ -18,7 +18,8 @@
 using namespace std;
 
 // include own functions
-#include "src/OpPhot_MC.cc"
+#include "src/OpPhot_MC_S1.cc"
+#include "src/OpPhot_MC_S2.cc"
 #include "src/OpPhot_Xe1T_data.cc"
 #include "src/OpPhot_comparison.cc"
 #include "src/OpPhot_comparison_matcher.cc"
@@ -77,8 +78,8 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		OpPhot_MC(datafile,"png","big","OpPhotStudy");
-		OpPhot_MC(datafile,"png","small","OpPhotStudy");
+		OpPhot_MC_S1(datafile,"png","big","OpPhotStudy");
+		OpPhot_MC_S1(datafile,"png","small","OpPhotStudy");
 		
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
@@ -216,6 +217,27 @@ void MC_Analyzer() {
 		}
 		
 		OpPhot_comparison_matcher(datafile_kr,datafile_mc,"OpPhotStudy");
+		
+	}
+	if (( cinput == "7" )){
+		// execute MC analysis
+		cout << "= S2 - MC analysis =========================================" << endl;
+		cout << "============================================================" << endl;
+		cout << "Which datafile(s) do you want to analyse?" << endl;
+		cout << "------------------------------------------------------------" << endl;
+		cout << "(l) for: " << lastfile_MC << endl;
+		string datafile;
+		cin >> datafile;
+		cin.ignore();
+		
+		if (datafile=="l") {
+			datafile = lastfile_MC;
+		}
+		else {
+			lastfile_MC = datafile;
+		}
+		
+		OpPhot_MC_S2(datafile,"png","small","OpPhotStudy");
 		
 	}
 
