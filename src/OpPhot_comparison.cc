@@ -71,8 +71,13 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	file_outplot = new TFile(file_outname,"RECREATE");
 	
 	TPC_Definition TPC;
-	TPC.Set_Bins(9,4,4);
+	//TPC.Set_Bins(9,4,4);
+	TPC.Set_Bins(49,1,1);
+	//float nbinst[4] = {4.,6.,8.,12.}; // number of Bins in theta
+	float nbinst[4] = {1.,1.,1.,1.};
 	string bin_format = "big";
+	double AFT_S2_Kr = 0.645;
+	double AFT_S2 = 0;
 	
 	const Int_t canvas_x = 650;
 	const Int_t canvas_y = 800;
@@ -219,7 +224,6 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	float lyareatopZ[200]={0};
 	float lyareatoprr[200]={0};
 	float lyareatopsigma[200][200]={0};
-	float nbinst[4] = {4.,6.,8.,12.};
 	
 	// open datafile
 	raw.open(datafile_kr.c_str());
@@ -608,6 +612,39 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		file_input_tree->AddFile(datafile_mc.c_str()); 
 		const int nevents = file_input_tree->GetEntries();
 		cout << " file: " << datafilename << " " << nevents << " events " << endl;
+	}
+	cout << "============================================================" << endl;
+	
+	cout << "= reading S2 datafile ===== single file ====================" << endl;
+	// Search for S2 sim
+	string S1_Tag = "_S1_";
+	string datafilename_S2 = datafilename.replace(datafilename.find(S1_Tag),S1_Tag.length(),"_S2_");
+	char filename_S2[10000];
+	sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
+	
+	if (fileexists(filename_S2) == true) {
+		TChain *file_input_tree_S2 = new TChain("events/events");
+		file_input_tree_S2->AddFile(filename_S2); 
+		const int nevents_S2 = file_input_tree_S2->GetEntries();
+		cout << " file: " << datafilename_S2 << " " << nevents_S2 << " events " << endl;
+		double AFT_S2_ratio = 0;
+		//double AFT_S2 = 0;
+		//double AFT_S2_Kr = 0.64; // defined above!
+		
+		if (nevents_S2 > 0) {	
+			file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
+			TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
+
+			file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
+			TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
+			
+			AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
+			AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+		}
+		delete file_input_tree_S2;
+	}
+	else {
+		cout << "No S2 file found!" << endl;
 	}
 	cout << "============================================================" << endl;
 	
@@ -1384,7 +1421,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_LCE_LCEZ_top->Scale(1./h_rLCE_mean);
 	h_LCE_LCEZ_top->Draw();
 	
-	h_LCE_LCEZ->SetTitle("Comparison: relative LCE vs. Z");
+	h_LCE_LCEZ->SetTitle("Comparison S1: relative LCE vs. Z");
 	h_LCE_LCEZ->SetLineColor(kBlue);
 	h_LCE_LCEZ->GetYaxis()->SetRangeUser(0,2.5);
 	h_LCE_LCEZ->Draw("");
@@ -1558,9 +1595,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ly_lyZ->SetYTitle("ly [pe/keV]");
 	h_ly_lyZ->GetYaxis()->CenterTitle();
 	
-	h_ly_lyZ->SetTitle("Comparison: ly vs. Z");
+	h_ly_lyZ->SetTitle("Comparison S1: ly vs. Z");
 	h_ly_lyZ->SetLineColor(kBlue);
-	h_ly_lyZ->GetYaxis()->SetRangeUser(0,9);
+	h_ly_lyZ->GetYaxis()->SetRangeUser(0,10);
 	h_ly_lyZ->Draw("");
 	h_ly_lyZ_bottom->SetLineColor(kGreen);
 	h_ly_lyZ_bottom->Draw("same");
@@ -1730,7 +1767,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	top_AFTZ->cd();
 	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
-	h_AFTZ_MC->SetTitle("Comparison: AreaFractionTop vs. Z");
+	h_AFTZ_MC->SetTitle("Comparison S1/S2: AreaFractionTop vs. Z");
 	h_AFTZ_MC->SetXTitle("Z [cm]");
 	h_AFTZ_MC->GetXaxis()->CenterTitle();
 	h_AFTZ_MC->SetYTitle("AreaFractionTop [%]");
@@ -1753,6 +1790,16 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	sprintf(canvasfile,"MC_QE_bottom: %0.3f", TPC.Get_QE_bottom());
 	pt_cAFTZ_QE->AddText(canvasfile);
 	pt_cAFTZ_QE->Draw();
+	
+	TPaveText *pt_AFT_S2 = new TPaveText(0.105,0.80,0.375,0.905,"NDC");
+	pt_AFT_S2->SetFillColor(0);   
+	pt_AFT_S2->SetBorderSize(1);
+	pt_AFT_S2->SetTextAlign(22);  
+	sprintf(canvasfile,"^{83m}Kr data AFT S2: %0.2f", AFT_S2_Kr);
+	pt_AFT_S2->AddText(canvasfile);
+	sprintf(canvasfile,"MC data AFT S2: %0.2f", AFT_S2);
+	pt_AFT_S2->AddText(canvasfile);
+	pt_AFT_S2->Draw();
 
 	TLegend *leg_cAFTZ = new TLegend(0.59,0.75,0.99,0.905);
 	leg_cAFTZ->SetFillColor(0);
@@ -1862,7 +1909,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	style_1D->cd();
 	TCanvas *c_cAFTrr = new TCanvas("cAFTrr","cAFTrr",canvas_x,canvas_y);
 	c_cAFTrr->SetGridy();
-	h_AFTrr_MC->SetTitle("Comparison: AreaFractionTop vs. R^{2}");
+	h_AFTrr_MC->SetTitle("Comparison S1: AreaFractionTop vs. R^{2}");
 	h_AFTrr_MC->SetXTitle("R^{2} [cm^{2}]");
 	h_AFTrr_MC->GetXaxis()->CenterTitle();
 	h_AFTrr_MC->SetYTitle("AreaFractionTop [%]");

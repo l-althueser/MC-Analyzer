@@ -63,8 +63,12 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	}
 	
 	TPC_Definition TPC;
-	TPC.Set_Bins(9,4,4);
+	//TPC.Set_Bins(9,4,4);
+	TPC.Set_Bins(49,1,1);
+	//float nbinst[4] = {4.,6.,8.,12.}; // number of Bins in theta
+	float nbinst[4] = {1.,1.,1.,1.};
 	string bin_format = "big";
+	double AFT_S2_Kr = 0.645;
 	
 	const Int_t canvas_x = 650;
 	const Int_t canvas_y = 800;
@@ -81,7 +85,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
 	// VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
-	file_outstat << "#" << " " << "VERSIONTAG" << " " << "SIGNTYPE" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << " " << "AFT_S2" << "\n";
+	file_outstat << "#" << " " << "VERSIONTAG" << " " << "SIGNTYPE" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << " " << "AFT_S2" << " " << "Sum_Min" << "\n";
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -106,7 +110,6 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	float lyareatopZ[200]={0};
 	float lyareatoprr[200]={0};
 	float lyareatopsigma[200][200]={0};
-	float nbinst[4] = {4.,6.,8.,12.};
 	
 	// open datafile
 	raw.open(datafile_kr.c_str());
@@ -127,7 +130,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 			lyZ[atoi(token[0])] += atof(token[6])/(nbinst[atoi(token[2])]*TPC.Get_nbinsR());
 			lyrr[atoi(token[2])] += atof(token[6])/(nbinst[atoi(token[2])]*TPC.Get_nbinsZ());
 			lysigma[atoi(token[0])][atoi(token[2])] += atof(token[8])/nbinst[atoi(token[2])];
-
+			
 			lyareatop[atoi(token[0])][atoi(token[2])] += atof(token[10])/nbinst[atoi(token[2])];
 			lyareatopZ[atoi(token[0])] += atof(token[10])/(nbinst[atoi(token[2])]*TPC.Get_nbinsR());
 			lyareatoprr[atoi(token[2])] += atof(token[10])/(nbinst[atoi(token[2])]*TPC.Get_nbinsZ());
@@ -353,17 +356,17 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					const int nevents_S2 = file_input_tree_S2->GetEntries();
 					double AFT_S2_ratio = 0;
 					double AFT_S2 = 0;
-					double AFT_S2_Kr = 0.64;
+					//double AFT_S2_Kr = 0.64; // defined above!
 					if (nevents_S2 > 0) {
 						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total." <<  endl;
 						
 						file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
 						TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
 
-						file_input_tree_S2->Draw(">>elist_all_S2","(nbpmthits > 0 || ntpmthits > 0)","goff");
-						TEntryList *elist_all_S2 = (TEntryList*)gDirectory->Get("elist_all_S2");
+						file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
+						TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
 						
-						AFT_S2 = (double)elist_top_S2->GetEntriesToProcess()/(double)elist_all_S2->GetEntriesToProcess();
+						AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
 						AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
 					}
 					else {
@@ -546,8 +549,6 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 						if (abs(h_ratio_AFTZ->GetBinContent(z)) > h_ratio_AFTZ_md) {h_ratio_AFTZ_md = abs(h_ratio_AFTZ->GetBinContent(z));}
 					}
 					
-					min_ratio_sos_S2_AFT = 3;
-					
 					/*=================================================================*/
 					/*=================================================================*/
 					if (filenumber == 1) {
@@ -577,7 +578,8 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 							min_ratio_ly_sos_all = h_ratio_ly_sos_all;
 						}
 						//(max_param <= atoi(token[5])) &&
-						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) && (h_ratio_ly_sos_all <= min_ratio_sos_all_ly) && (AFT_S2_ratio <= min_ratio_sos_S2_AFT) ) {
+						//(h_ratio_ly_sos_all <= min_ratio_sos_all_ly) &&
+						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) && (AFT_S2_ratio <= min_ratio_sos_S2_AFT) ) {
 							strcpy(min_filename,filename);
 							min_ratio_sos_all = h_ratio_rLCE_sos_all;
 							min_ratio_sos_all_ly = h_ratio_ly_sos_all;
@@ -587,7 +589,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 						}
 					}
 					
-					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << " " << AFT_S2_ratio << "\n";
+					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md  << " " << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << " " << AFT_S2_ratio << " " << h_ratio_rLCE_sos_all+h_ratio_ly_sos_all+h_ratio_AFTZ_sos+AFT_S2_ratio*100 << "\n";
 					
 					delete file_input_tree;
 				}
@@ -604,6 +606,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 			cout << "Minimum S2AFT diff of " << min_ratio_sos_S2_AFT << endl;
 			//cout << "max_param " << max_param << endl;
 			cout << "------------------------------------------------------------" << endl;
+			cout << "sort with: sort -k25 -g OpPhotStudy_matcher.dat -o OpPhotStudy_matcher_sort.dat" << endl;
 		}		
 	}
 	else {
