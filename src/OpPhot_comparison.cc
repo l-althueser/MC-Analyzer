@@ -1795,9 +1795,9 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_AFT_S2->SetFillColor(0);   
 	pt_AFT_S2->SetBorderSize(1);
 	pt_AFT_S2->SetTextAlign(22);  
-	sprintf(canvasfile,"^{83m}Kr data AFT S2: %0.2f", AFT_S2_Kr);
+	sprintf(canvasfile,"^{83m}Kr data AFT S2: %0.3f", AFT_S2_Kr);
 	pt_AFT_S2->AddText(canvasfile);
-	sprintf(canvasfile,"MC data AFT S2: %0.2f", AFT_S2);
+	sprintf(canvasfile,"MC data AFT S2: %0.3f", AFT_S2);
 	pt_AFT_S2->AddText(canvasfile);
 	pt_AFT_S2->Draw();
 

@@ -348,6 +348,11 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 						if (!token[n]) break; // no more tokens
 					}
 					
+					/*=================================================================*/
+					// FILTER PARAMETER SETTINGS
+					/*=================================================================*/
+					//if (atoi(token[5])!=10000) {cout << "Skip!" << endl; continue;}
+					
 					// Search for S2 sim
 					char filename_S2[10000];
 					sprintf(filename_S2,"%s/%s_S2_%s_%s_%s_%s_%s_%s_%s.root", workingdirectory.c_str(), token[0], token[2], token[3], token[4], token[5], token[6], token[7], token[8]);
@@ -381,11 +386,6 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					const int nevents = file_input_tree->GetEntries();
 					
 					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
-					
-					/*=================================================================*/
-					// FILTER PARAMETER SETTINGS
-					/*=================================================================*/
-					//if (atoi(token[5])!=10000) {cout << "Skip!" << endl; delete file_input_tree; continue;}
 					
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 					/*=================================================================*/
@@ -589,7 +589,7 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 						}
 					}
 					
-					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md  << " " << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << " " << AFT_S2_ratio << " " << h_ratio_rLCE_sos_all+h_ratio_ly_sos_all+h_ratio_AFTZ_sos+AFT_S2_ratio*100 << "\n";
+					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md  << " " << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << " " << AFT_S2_ratio << " " << h_ratio_rLCE_sos_all+h_ratio_ly_sos_all/10.+h_ratio_AFTZ_sos/10.+AFT_S2_ratio*100 << "\n";
 					
 					delete file_input_tree;
 				}
