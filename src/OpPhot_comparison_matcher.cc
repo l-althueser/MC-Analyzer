@@ -84,8 +84,11 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
+	file_outstat.precision(6);
+	file_outstat.setf(ios::fixed);
+	file_outstat.setf(ios::showpoint);
 	// VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
-	file_outstat << "#" << " " << "VERSIONTAG" << " " << "SIGNTYPE" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "rLCE_sos_all" << " " << "rLCE_md_all" << " " << "rLCE_sos_top" << " " << "rLCE_md_top" << " " << "rLCE_sos_bottom" << " " << "rLCE_md_bottom" << " " << "AFTZ_sos" << " " << "AFTZ_md" << "ly_sos_all" << " " << "ly_md_all" << " " << "ly_sos_top" << " " << "ly_md_top" << " " << "ly_sos_bottom" << " " << "ly_md_bottom" << " " << "AFT_S2" << " " << "Sum_Min" << "\n";
+	file_outstat << "#" << "VERSIONTAG" << " " << "SIGNTYPE" << " " << "LXeTR" << " " << "GXeTR" << " " << "LXeAbsL" << " " << "GXeAbsL" << " " << "LXeRSL" << " " << "LXeRef" << " " << "#" << " " << "SOS_rLCE_S1" << " " << "SOS_AFT_S1" << " " << "SOS_ly_S1" << " " << "SOS_AFT_S2" << " " << "SOS_sum" << "\n";
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -304,18 +307,13 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 			TString fname;
 			TIter next(files);
 			int filenumber = 0;
-			char min_filename_rLCE[10000];
-			char min_filename_ly[10000];
-			char min_filename_AFTZ[10000];
-			char min_filename[10000];
-			double min_ratio_rLCE_sos_all = 0; //sum of squares
-			double min_ratio_AFTZ_sos = 0; //sum of squares
-			double min_ratio_ly_sos_all = 0; //sum of squares
-			
-			double min_ratio_sos_all = 0; //sum of squares
-			double min_ratio_sos_all_ly = 0; //sum of squares
-			double min_ratio_sos = 0; //sum of squares
-			double min_ratio_sos_S2_AFT = 0;
+			double SOS_sum = 0;
+			char SOS_sum_min_filename[10000];
+			double SOS_sum_min = 0; //sum of squares
+			double SOS_sum_min_rLCE = 0;
+			double SOS_sum_min_ly = 0;
+			double SOS_sum_min_AFT_S1 = 0;
+			double SOS_sum_min_AFT_S2 = 0;
 			
 			double max_param = 0;
 			while ((file=(TSystemFile*)next())) {
@@ -551,62 +549,42 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					
 					/*=================================================================*/
 					/*=================================================================*/
+					SOS_sum = (h_ratio_rLCE_sos_all/(TPC.Get_nbinsZ()*0.05))+(h_ratio_ly_sos_all/(TPC.Get_nbinsZ()*0.2))+(h_ratio_AFTZ_sos/(TPC.Get_nbinsZ()*2.))+(AFT_S2_ratio/(1.*0.05));
+					
 					if (filenumber == 1) {
-						strcpy(min_filename_rLCE,filename);
-						strcpy(min_filename_AFTZ,filename);
-						strcpy(min_filename_ly,filename);
-						strcpy(min_filename,filename);
-						min_ratio_rLCE_sos_all = h_ratio_rLCE_sos_all;
-						min_ratio_AFTZ_sos = h_ratio_AFTZ_sos;
-						min_ratio_ly_sos_all = h_ratio_ly_sos_all;
-						min_ratio_sos_all = h_ratio_rLCE_sos_all;
-						min_ratio_sos_all_ly = h_ratio_ly_sos_all;
-						min_ratio_sos = h_ratio_AFTZ_sos;
-						min_ratio_sos_S2_AFT = AFT_S2_ratio;
+						strcpy(SOS_sum_min_filename,filename);
+						SOS_sum_min_rLCE = h_ratio_rLCE_sos_all;
+						SOS_sum_min_ly = h_ratio_ly_sos_all;
+						SOS_sum_min_AFT_S1 = h_ratio_AFTZ_sos;
+						SOS_sum_min_AFT_S2 = AFT_S2_ratio;
+						SOS_sum_min = SOS_sum;
 					}
 					else {
-						if (h_ratio_rLCE_sos_all < min_ratio_rLCE_sos_all) {
-							strcpy(min_filename_rLCE,filename);
-							min_ratio_rLCE_sos_all = h_ratio_rLCE_sos_all;
-						}
-						if (h_ratio_AFTZ_sos < min_ratio_AFTZ_sos) {
-							strcpy(min_filename_AFTZ,filename);
-							min_ratio_AFTZ_sos = h_ratio_AFTZ_sos;
-						}
-						if (h_ratio_ly_sos_all < min_ratio_ly_sos_all) {
-							strcpy(min_filename_ly,filename);
-							min_ratio_ly_sos_all = h_ratio_ly_sos_all;
-						}
-						//(max_param <= atoi(token[5])) &&
-						//(h_ratio_ly_sos_all <= min_ratio_sos_all_ly) &&
-						if ( (h_ratio_rLCE_sos_all <= min_ratio_sos_all) && (h_ratio_AFTZ_sos <= min_ratio_sos) && (AFT_S2_ratio <= min_ratio_sos_S2_AFT) ) {
-							strcpy(min_filename,filename);
-							min_ratio_sos_all = h_ratio_rLCE_sos_all;
-							min_ratio_sos_all_ly = h_ratio_ly_sos_all;
-							min_ratio_sos = h_ratio_AFTZ_sos;
-							min_ratio_sos_S2_AFT = AFT_S2_ratio;
-							//max_param = atoi(token[5]);
+						if (SOS_sum < SOS_sum_min) {
+							strcpy(SOS_sum_min_filename,filename);
+							SOS_sum_min_rLCE = h_ratio_rLCE_sos_all;
+							SOS_sum_min_ly = h_ratio_ly_sos_all;
+							SOS_sum_min_AFT_S1 = h_ratio_AFTZ_sos;
+							SOS_sum_min_AFT_S2 = AFT_S2_ratio;
+							SOS_sum_min = SOS_sum;
 						}
 					}
-					
-					file_outstat << token[0] << " " << token[1] << " " << token[2] << " " << token[3] << " " << token[4] << " " << token[5] << " " << token[6] << " " << token[7] << " " << token[8] << " " << h_ratio_rLCE_sos_all << " " << h_ratio_rLCE_md_all << " " << h_ratio_rLCE_sos_top << " " << h_ratio_rLCE_md_top << " " << h_ratio_rLCE_sos_bottom << " " << h_ratio_rLCE_md_bottom << " " << h_ratio_AFTZ_sos << " " << h_ratio_AFTZ_md  << " " << h_ratio_ly_sos_all << " " << h_ratio_ly_md_all << " " << h_ratio_ly_sos_top << " " << h_ratio_ly_md_top << " " << h_ratio_ly_sos_bottom << " " << h_ratio_ly_md_bottom << " " << AFT_S2_ratio << " " << h_ratio_rLCE_sos_all+h_ratio_ly_sos_all/10.+h_ratio_AFTZ_sos/10.+AFT_S2_ratio*100 << "\n";
+
+					file_outstat << token[0] << "\t" << token[1] << "\t" << token[2] << "\t" << token[3] << "\t" << token[4] << "\t" << token[5] << "\t" << token[6] << "\t" << token[7] << "\t" << token[8] << "\t" << h_ratio_rLCE_sos_all << "\t" << h_ratio_AFTZ_sos << "\t" << h_ratio_ly_sos_all << "\t" << AFT_S2_ratio << "\t" << SOS_sum << "\n";
 					
 					delete file_input_tree;
 				}
 			}
 			cout << "------------------------------------------------------------" << endl;
-			cout << "Minimum rLCE sos of " << min_ratio_rLCE_sos_all << " in " << min_filename_rLCE << endl;
-			cout << "Minimum AFT  sos of " << min_ratio_AFTZ_sos << " in " << min_filename_AFTZ << endl;
-			cout << "Minimum ly   sos of " << min_ratio_ly_sos_all << " in " << min_filename_ly << endl;
+			cout << "Best match file:" << SOS_sum_min_filename << endl;
+			cout << "Minimum sos sum    of " << SOS_sum_min << endl;
+			cout << "Minimum rLCE  sos  of " << SOS_sum_min_rLCE << endl;
+			cout << "Minimum S1AFT sos  of " << SOS_sum_min_AFT_S1 << endl;
+			cout << "Minimum ly    sos  of " << SOS_sum_min_ly << endl;
+			cout << "Minimum S2AFT diff of " << SOS_sum_min_AFT_S2 << endl;
 			cout << "------------------------------------------------------------" << endl;
-			cout << "Best match file:" << min_filename << endl;
-			cout << "Minimum rLCE  sos  of " << min_ratio_sos_all << endl;
-			cout << "Minimum AFT   sos  of " << min_ratio_sos << endl;
-			cout << "Minimum ly    sos  of " << min_ratio_sos_all_ly << endl;
-			cout << "Minimum S2AFT diff of " << min_ratio_sos_S2_AFT << endl;
-			//cout << "max_param " << max_param << endl;
-			cout << "------------------------------------------------------------" << endl;
-			cout << "sort with: sort -k25 -g OpPhotStudy_matcher.dat -o OpPhotStudy_matcher_sort.dat" << endl;
+			cout << "sort with: LC_ALL=C sort -k14 -g OpPhotStudy_matcher.dat -o OpPhotStudy_matcher_sort.dat" << endl;
+			//gROOT->ProcessLine("LC_ALL=C sort -k14 -g OpPhotStudy_matcher.dat -o OpPhotStudy_matcher_sort.dat"); 
 		}		
 	}
 	else {
