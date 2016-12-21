@@ -549,7 +549,11 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					
 					/*=================================================================*/
 					/*=================================================================*/
+					// S1 + S2
 					SOS_sum = (h_ratio_rLCE_sos_all/(TPC.Get_nbinsZ()*0.05))+(h_ratio_ly_sos_all/(TPC.Get_nbinsZ()*0.2))+(h_ratio_AFTZ_sos/(TPC.Get_nbinsZ()*2.))+(AFT_S2_ratio/(1.*0.05));
+					
+					// S1
+					//SOS_sum = (h_ratio_rLCE_sos_all/(TPC.Get_nbinsZ()*0.05))+(h_ratio_ly_sos_all/(TPC.Get_nbinsZ()*0.2))+(h_ratio_AFTZ_sos/(TPC.Get_nbinsZ()*2.));
 					
 					if (filenumber == 1) {
 						strcpy(SOS_sum_min_filename,filename);
