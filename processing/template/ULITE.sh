@@ -21,6 +21,6 @@ echo "Start simulation ([OUTPUT];[EVENTS]) ..."
 echo "Use macro: [MACRO] ..."
 
 . /usr/local/Geant495p01/share/Geant4-9.5.1/geant4make/geant4make.sh
-cd /home/althueser/geant4_workdir/xenon1t_rev338_GXeAbsL/
+cd [MCPATH]
 
-xenon1t_G4_GXeAbsL -p macros/preinit.mac -f [MACRO] -o [OUTPUT] -n [EVENTS]
+[MCNAME] -p macros/preinit.mac -s [OPSETUP] -f [MACRO] -o [OUTPUT] -n [EVENTS]
