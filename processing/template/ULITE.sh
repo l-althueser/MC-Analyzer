@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #PBS -q xe-long
-#PBS -N MC-Xe1T-optPhot
+#PBS -N [JOBNAME]
 #PBS -S /bin/bash
 #PBS -o localhost:~/ULITE_output/
 #PBS -e localhost:~/ULITE_error/
 #PBS -W umask=0133 
 #PBS -v variable=mypreferredvar
 #PBS -m ae 
-#PBS -M l.althueser@uni-muenster.de
+#PBS -M [MAIL]
 
 sleep 60
 echo "Welcome user: $USER"

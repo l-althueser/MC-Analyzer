@@ -4,9 +4,9 @@
 # is not already present in "./<mac folder>_processed/*".
 
 # Which MC version is used?
-MCTAG="GitHub"
+MCTAG="0.1.6"
 # work in a specific path
-WDIR="/archive_lngs100TB/mc/xe1tsim/althueser/testing_${MCTAG}"
+WDIR="/archive_lngs15TB/mc/althueser/optPhot/${MCTAG}_test"
 
 # Save generated files to
 MACNEW="mac_new"
@@ -17,7 +17,8 @@ MACPREVGEN="mac_processed"
 SIMULATION=("S1" "S2")
 # Define all possible values for matching simulations
 LXeR=(63) # "1." is added automatically
-TR=(99) # % | "0." is added automatically | for GXeTR and LXeTR
+LXeTR=(99) # % | "0." is added automatically 
+GXeTR=(99) # % | "0." is added automatically 
 LXeAbsL=(5000) # cm
 GXeAbsL=(10000) # cm
 LXeRSL=(30) # cm
@@ -27,7 +28,7 @@ verbose=1
 
 if [ ! -d "${WDIR}" ]; 
 then
-	echo "You have to create: ${WDIR}"
+	echo "Directory not found: ${WDIR}"
 	exit
 fi
 	
@@ -37,7 +38,8 @@ echo "------------------------------------------------------"
 echo "MCTAG: ${MCTAG}"
 echo "SIMULATION: ${SIMULATION[@]}"
 echo "LXeR: ${LXeR[@]}"
-echo "TR: ${TR[@]}"
+echo "LXeTR: ${LXeTR[@]}"
+echo "GXeTR: ${GXeTR[@]}"
 echo "LXeAbsL: ${LXeAbsL[@]}"
 echo "GXeAbsL: ${GXeAbsL[@]}"
 echo "LXeRSL: ${LXeRSL[@]}"
@@ -53,30 +55,33 @@ then
 	do
 		for i in "${LXeR[@]}"
 		do
-		   for j in "${TR[@]}"
-			do
-			   for k in "${LXeAbsL[@]}"
+		    for j in "${LXeTR[@]}"
+		    do
+				for n in "${GXeTR[@]}"
 				do
-				   for l in "${GXeAbsL[@]}"
+				   for k in "${LXeAbsL[@]}"
 					do
-					   for m in "${LXeRSL[@]}"
+					   for l in "${GXeAbsL[@]}"
 						do
-							if [ -f "${WDIR}/${MACPREVGEN}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac" ];
-							then
-								if ((verbose)); then echo "Skip: ${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac"; fi
-							else
-								if ((verbose)); then echo "${S}: LXeR $i, LXeTR $j, GXeTR $j, LXeAbsL $k, GXeAbsL $l, LXeRSL $m"; fi
-								# copy from template and generate folder (if needed)
-								cp -f ./template/${S}.mac ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								# change values
-								sed -i -- "s/\[LXeR\]/1.${i}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								sed -i -- "s/\[LXeTR\]/0.${j}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								sed -i -- "s/\[GXeTR\]/0.${j}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								sed -i -- "s/\[LXeAbsL\]/${k} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								sed -i -- "s/\[GXeAbsL\]/${l} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								sed -i -- "s/\[LXeRSL\]/${m} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${j}_${k}_${l}_${m}_1${i}.mac
-								((FILESGENERATED++))
-							fi
+						   for m in "${LXeRSL[@]}"
+							do
+								if [ -f "${WDIR}/${MACPREVGEN}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac" ];
+								then
+									if ((verbose)); then echo "Skip: ${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac"; fi
+								else
+									if ((verbose)); then echo "${S}: LXeR $i, LXeTR $j, GXeTR $n, LXeAbsL $k, GXeAbsL $l, LXeRSL $m"; fi
+									# copy from template and generate folder (if needed)
+									cp -f ./template/${S}.mac ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									# change values
+									sed -i -- "s/\[LXeR\]/1.${i}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									sed -i -- "s/\[LXeTR\]/0.${j}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									sed -i -- "s/\[GXeTR\]/0.${n}/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									sed -i -- "s/\[LXeAbsL\]/${k} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									sed -i -- "s/\[GXeAbsL\]/${l} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									sed -i -- "s/\[LXeRSL\]/${m} cm/g" ${WDIR}/${MACNEW}/${MCTAG}_${S}_${j}_${n}_${k}_${l}_${m}_1${i}.mac
+									((FILESGENERATED++))
+								fi
+							done
 						done
 					done
 				done

@@ -1,33 +1,23 @@
-/control/verbose  0
+/control/verbose  0 
 /run/verbose      0     
-/event/verbose    0
-/tracking/verbose 0
-/tracking/verbose 0
+/event/verbose    0 
+/tracking/verbose 0 
 
 /Xe/detector/setLXeScintillation true
 /Xe/detector/setLXeRefractionIndex [LXeR]
 
-#set the reflectivity for the Teflon components
-#in the LXe volume.
-#Default value is 0.99
 /Xe/detector/setTeflonReflectivity [LXeTR]
-
-#set the reflectivity for the Teflon components
-#in the GXe volume.
-#Default value is 0.99
 /Xe/detector/setGXeTeflonReflectivity [GXeTR]
 
 /Xe/detector/setLXeAbsorbtionLength [LXeAbsL] 
 /Xe/detector/setGXeAbsorbtionLength [GXeAbsL]
 /Xe/detector/setLXeRayScatterLength [LXeRSL]
-/Xe/detector/setGridMeshTransparency 0.94
 
-# default case + classic
 /Xe/detector/setTopScreeningMeshTransparency 0.966
-/Xe/detector/setBottomScreeningMeshTransparency 0.972
 /Xe/detector/setAnodeMeshTransparency 0.905
 /Xe/detector/setGateMeshTransparency 0.931
 /Xe/detector/setCathodeMeshTransparency 0.972
+/Xe/detector/setBottomScreeningMeshTransparency 0.972
 
 /run/random/setRandomSeed 0
 
@@ -37,12 +27,21 @@
 /xe/gun/type   Volume
 /xe/gun/shape  Cylinder
 
-/xe/gun/center 0. 0. -500. mm
-/xe/gun/radius 550.  mm
-/xe/gun/halfz 1000. mm
+# in the TPC, above cathode
+#/xe/gun/center 0. 0. -483.5 mm
+#/xe/gun/halfz  483.5  mm
+#/xe/gun/radius 479.25  mm
 
-/xe/gun/confine LXe
+# in the TPC, also below cathode
+/xe/gun/center 0. 0. -522.3 mm
+/xe/gun/halfz  522.3  mm
+/xe/gun/radius 479.25  mm
+
+# not used (see preinit.mac): LXeTop LXeAroundBell
+/xe/gun/confine LXe GXe 
+
+#/analysis/settings/setOptStepInfos true
+/analysis/settings/setPMTdetails true
 
 # Tree Filling options
 /run/writeEmpty true
-
