@@ -4,6 +4,12 @@
 # Custom for Visual Studio
 *.cs     diff=csharp
 
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.c text
+*.h text
+*.mac text eol=lf
+
 # Standard to msysgit
 *.doc	 diff=astextplain
 *.DOC	 diff=astextplain
