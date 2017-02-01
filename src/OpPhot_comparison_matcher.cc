@@ -323,7 +323,9 @@ void OpPhot_comparison_matcher(string datafile_kr, string datafile_mc, string su
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
 					TFile *f = new TFile(filename,"READ");
-					if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
+					TNamed *G4MCname;
+					f->GetObject("MC_TAG",G4MCname);
+					if ( strcmp(G4MCname->GetTitle(),"Xenon1t") == 0 ) {
 						f->Close();
 					}
 					else {

@@ -55,6 +55,10 @@ void OpPhot_MC_parameters(string datafile, string export_format, string paramete
 	char canvasfile[10000];
 	char draw_selection[10000];
 	
+	const char* const DELIMITER = " ";
+	const char* const DELIMITER_ = "._";
+	char* token[100] = {}; // initialize to 0
+	
 	TPC_Definition TPC;
 	
 	TGaxis::SetMaxDigits(3);
@@ -161,25 +165,10 @@ void OpPhot_MC_parameters(string datafile, string export_format, string paramete
 					TChain *file_input_tree = new TChain("events/events");
 					if (file_input_tree->GetEntries() == 0) {
 						TFile *f = new TFile(filename,"READ");
-						if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
-							TPC.TPC_Xe1T();
-							TPC.Set_LCE_max(50);
-							f->Close();
-						}
-						else if ( (f->GetListOfKeys()->Contains("MC_TAG")) && (f->GetListOfKeys()->Contains("events")) ){
-							TPC.TPC_MS();
-							TPC.Set_LCE_max(30);
-							f->Close();
-						}
-						else {
-							cout << endl;
-							cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-							cout << "File format not known:" << endl;
-							cout << "-> " << filename << endl;
-							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-							cout << endl;
-							gApplication->Terminate();
-						}						
+						TNamed *G4MCname;
+						f->GetObject("MC_TAG",G4MCname);
+						TPC.Init(G4MCname);
+						f->Close();
 					}
 					file_input_tree->AddFile(filename); 
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
@@ -188,10 +177,38 @@ void OpPhot_MC_parameters(string datafile, string export_format, string paramete
 					cout << "= file: " << input_file << " " << nevents << " events total" << endl;
 					
 					// read in parameter value
-					size_t found_score=input_file.find_last_of("_");
-					string parameter_value = input_file.substr(found_score+1);
-					size_t found_dot=parameter_value.find_last_of(".");
-					parameter_value = parameter_value.substr(0,found_dot);
+					string parameter_value;
+					// e.g.: rev338_S1_90_90_5000_30_30_163_01 -> VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
+					char* buf = strdup(fname.Data());
+					token[0] = strtok(buf, DELIMITER_); // first token
+					for (int n = 1; n < 10; n++) {
+						token[n] = strtok(0, DELIMITER_); // subsequent tokens
+						if (!token[n]) break; // no more tokens
+					}
+					
+					if (strcmp(token[1],"S2") == 0) {cout << "Skip S2!" << endl; continue;}
+					
+					if ((parameter == "LXeTR") || (parameter=="LXeTeflonReflectivity")) {
+						parameter_value=token[2];  
+						parameter="LXeTeflonReflectivity";
+					} else if ((parameter == "GXeTR") || (parameter=="GXeTeflonReflectivity")) {
+						parameter_value=token[3];  
+						parameter="GXeTeflonReflectivity";
+					} else if ((parameter == "LXeAbsL") || (parameter=="LXeAbsorbtionLength")) {
+						parameter_value=token[4];  
+						parameter="LXeAbsorbtionLength";
+					} else if ((parameter == "GXeAbsL") || (parameter=="GXeAbsorbtionLength")) {
+						parameter_value=token[5];  
+						parameter="GXeAbsorbtionLength";
+					} else if ((parameter == "LXeRSL") || (parameter=="LXeRayScatterLength")) {
+						parameter_value=token[6];  
+						parameter="LXeRayScatterLength";
+					} else if ((parameter == "LXeRef") || (parameter=="LXeRefractionIndex")) {
+						parameter_value=token[7];  
+						parameter="LXeRefractionIndex";
+					} else {
+						return;  
+					}  
 					
 					if (h_LCE_paramter->GetEntries() == 0) {
 						param_min = atoi(parameter_value.c_str());

@@ -557,25 +557,10 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 					
 					if (file_input_tree->GetEntries() == 0) {
 						TFile *f = new TFile(filename,"READ");
-						if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
-							TPC.TPC_Xe1T();
-							TPC.Set_LCE_max(50);
-							f->Close();
-						}
-						else if ( (f->GetListOfKeys()->Contains("MC_TAG")) && (f->GetListOfKeys()->Contains("events")) ){
-							TPC.TPC_MS();
-							TPC.Set_LCE_max(30);
-							f->Close();
-						}
-						else {
-							cout << endl;
-							cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-							cout << "File format not known:" << endl;
-							cout << "-> " << filename << endl;
-							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-							cout << endl;
-							gApplication->Terminate();
-						}						
+						TNamed *G4MCname;
+						f->GetObject("MC_TAG",G4MCname);
+						TPC.Init(G4MCname);
+						f->Close();
 					}
 					
 					file_input_tree->AddFile(filename); 
@@ -589,25 +574,10 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 		cout << "= reading datafile ===== single file =======================" << endl;
 		if (file_input_tree->GetEntries() == 0) {
 			TFile *f = new TFile(datafile_mc.c_str(),"READ");
-			if ( (f->GetListOfKeys()->Contains("events")) && !(f->GetListOfKeys()->Contains("MC_TAG")) ) {
-				TPC.TPC_Xe1T();
-				TPC.Set_LCE_max(50);
-				f->Close();
-			}
-			else if ( (f->GetListOfKeys()->Contains("MC_TAG")) && (f->GetListOfKeys()->Contains("events")) ){
-				TPC.TPC_MS();
-				TPC.Set_LCE_max(30);
-				f->Close();
-			}
-			else {
-				cout << endl;
-				cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-				cout << "File format not known:" << endl;
-				cout << "-> " << datafile_mc << endl;
-				cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-				cout << endl;
-				gApplication->Terminate();
-			}						
+			TNamed *G4MCname;
+			f->GetObject("MC_TAG",G4MCname);
+			TPC.Init(G4MCname);
+			f->Close();
 		}
 		file_input_tree->AddFile(datafile_mc.c_str()); 
 		const int nevents = file_input_tree->GetEntries();

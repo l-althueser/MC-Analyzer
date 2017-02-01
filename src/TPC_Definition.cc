@@ -17,6 +17,7 @@ class TPC_Definition {
 	TPC_Definition (int,int,int);
     void TPC_Xe1T ();
 	void TPC_MS ();
+	void Init (TNamed*);
 	void Set_Bins (int,int,int);
 	void Set_LCE_max (int);
     int Get_nbinsZ (void) {return nbinsZ;}
@@ -84,6 +85,25 @@ void TPC_Definition::TPC_MS () {
 	
 	QE_top = 0.31;
 	QE_bottom = 0.31;
+}
+
+void TPC_Definition::Init (TNamed *G4MCname) {
+  	if ( strcmp(G4MCname->GetTitle(),"Xenon1t") == 0 ) {
+		TPC_Xe1T();
+		Set_LCE_max(50);
+	}
+	else if ( strcmp(G4MCname->GetTitle(),"muensterTPC") == 0 ){
+		TPC_MS();
+		Set_LCE_max(30);
+	}
+	else {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "File format not known .." << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
 }
 
 void TPC_Definition::Set_Bins (int Z, int R, int RR) {
