@@ -275,7 +275,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	h_ly_sigma_map->Draw("colz");
 	if (file_outplot) c_ly_sigma_map->Write();
 	sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_Kr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
-	if (!(export_format=="")) c_ly_sigma_map->SaveAs(canvasfile);
+	//if (!(export_format=="")) c_ly_sigma_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
@@ -588,30 +588,36 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	cout << "= reading S2 datafile ===== single file ====================" << endl;
 	// Search for S2 sim
 	string S1_Tag = "_S1_";
-	string datafilename_S2 = datafilename.replace(datafilename.find(S1_Tag),S1_Tag.length(),"_S2_");
-	char filename_S2[10000];
-	sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
 	
-	if (fileexists(filename_S2) == true) {
-		TChain *file_input_tree_S2 = new TChain("events/events");
-		file_input_tree_S2->AddFile(filename_S2); 
-		const int nevents_S2 = file_input_tree_S2->GetEntries();
-		cout << " file: " << datafilename_S2 << " " << nevents_S2 << " events " << endl;
-		double AFT_S2_ratio = 0;
-		//double AFT_S2 = 0;
-		//double AFT_S2_Kr = 0.64; // defined above!
+	if (datafilename.find(S1_Tag) != std::string::npos) {
+		string datafilename_S2 = datafilename.replace(datafilename.find(S1_Tag),S1_Tag.length(),"_S2_");
+		char filename_S2[10000];
+		sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
 		
-		if (nevents_S2 > 0) {	
-			file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
-			TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
-
-			file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
-			TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
+		if (fileexists(filename_S2) == true) {
+			TChain *file_input_tree_S2 = new TChain("events/events");
+			file_input_tree_S2->AddFile(filename_S2); 
+			const int nevents_S2 = file_input_tree_S2->GetEntries();
+			cout << " file: " << datafilename_S2 << " " << nevents_S2 << " events " << endl;
+			double AFT_S2_ratio = 0;
+			//double AFT_S2 = 0;
+			//double AFT_S2_Kr = 0.64; // defined above!
 			
-			AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
-			AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+			if (nevents_S2 > 0) {	
+				file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
+				TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
+
+				file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
+				TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
+				
+				AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
+				AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+			}
+			delete file_input_tree_S2;
 		}
-		delete file_input_tree_S2;
+		else {
+			cout << "No S2 file found!" << endl;
+		}
 	}
 	else {
 		cout << "No S2 file found!" << endl;
@@ -753,7 +759,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	
 	if (file_outplot) c_ly_rms_rrZ->Write();
 	sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
-	if (!(export_format=="")) c_ly_rms_rrZ->SaveAs(canvasfile);
+	//if (!(export_format=="")) c_ly_rms_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
@@ -1201,7 +1207,7 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	c_crLCE_rrZ_3D->SetPhi(220.);
 	if (file_outplot) c_crLCE_rrZ_3D->Write();
 	sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_3D.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
-	if (!(export_format=="")) c_crLCE_rrZ_3D->SaveAs(canvasfile);
+	//if (!(export_format=="")) c_crLCE_rrZ_3D->SaveAs(canvasfile);
 	
 	/*=================================================================*/
 	// generated events vs. Z
@@ -1761,15 +1767,17 @@ void OpPhot_comparison(string datafile_kr, string datafile_mc, string export_for
 	pt_cAFTZ_QE->AddText(canvasfile);
 	pt_cAFTZ_QE->Draw();
 	
-	TPaveText *pt_AFT_S2 = new TPaveText(0.105,0.80,0.375,0.905,"NDC");
-	pt_AFT_S2->SetFillColor(0);   
-	pt_AFT_S2->SetBorderSize(1);
-	pt_AFT_S2->SetTextAlign(22);  
-	sprintf(canvasfile,"^{83m}Kr data AFT S2: %0.3f", AFT_S2_Kr);
-	pt_AFT_S2->AddText(canvasfile);
-	sprintf(canvasfile,"MC data AFT S2: %0.3f", AFT_S2);
-	pt_AFT_S2->AddText(canvasfile);
-	pt_AFT_S2->Draw();
+	if (AFT_S2 > 0) {
+		TPaveText *pt_AFT_S2 = new TPaveText(0.105,0.80,0.375,0.905,"NDC");
+		pt_AFT_S2->SetFillColor(0);   
+		pt_AFT_S2->SetBorderSize(1);
+		pt_AFT_S2->SetTextAlign(22);  
+		sprintf(canvasfile,"^{83m}Kr data AFT S2: %0.3f", AFT_S2_Kr);
+		pt_AFT_S2->AddText(canvasfile);
+		sprintf(canvasfile,"MC data AFT S2: %0.3f", AFT_S2);
+		pt_AFT_S2->AddText(canvasfile);
+		pt_AFT_S2->Draw();		
+	}
 
 	TLegend *leg_cAFTZ = new TLegend(0.59,0.75,0.99,0.905);
 	leg_cAFTZ->SetFillColor(0);

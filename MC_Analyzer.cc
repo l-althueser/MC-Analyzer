@@ -78,7 +78,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		OpPhot_MC_S1(datafile,"png","big","OpPhotStudy");
+		//OpPhot_MC_S1(datafile,"png","big","OpPhotStudy");
 		OpPhot_MC_S1(datafile,"png","small","OpPhotStudy");
 		
 	}

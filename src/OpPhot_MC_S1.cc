@@ -46,7 +46,7 @@ void OpPhot_MC_S1(string datafile, string export_format, string bin_format, stri
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
 	
-	Int_t canvas_x = 650;
+	Int_t canvas_x = 850;
 	Int_t canvas_y = 800;
 
 	char canvasfile[10000];
@@ -176,7 +176,7 @@ void OpPhot_MC_S1(string datafile, string export_format, string bin_format, stri
 	style_1D->SetTitleBorderSize(1);
 	style_1D->SetOptStat(0);
 	style_1D->SetPadLeftMargin(0.105);
-	style_1D->SetPadRightMargin(0.09);
+	style_1D->SetPadRightMargin(0.085);
 	style_1D->SetPadTopMargin(0.075);
 	style_1D->SetPadBottomMargin(0.075);
 	
@@ -194,8 +194,8 @@ void OpPhot_MC_S1(string datafile, string export_format, string bin_format, stri
 	style_2D->SetTitleBorderSize(1);
 	style_2D->SetOptStat(0);
 	style_2D->SetPadLeftMargin(0.105);
-	style_2D->SetPadRightMargin(0.15);
-	style_2D->SetPadTopMargin(0.075);
+	style_2D->SetPadRightMargin(0.145);
+	style_2D->SetPadTopMargin(0.08);
 	style_2D->SetPadBottomMargin(0.075);
 	
 	style_2D->SetTitleOffset(1.,"X");
@@ -798,7 +798,7 @@ void OpPhot_MC_S1(string datafile, string export_format, string bin_format, stri
 	// LCE vs. Z (ALL)
 	/*=================================================================*/
 	style_1D->cd();
-	TCanvas *c_LCE_LCEZ_ALL = new TCanvas("LCE_LCEZ_ALL","LCE_LCEZ_ALL",canvas_x,canvas_y);
+	TCanvas *c_LCE_LCEZ_ALL = new TCanvas("LCE_LCEZ_ALL","LCE_LCEZ_ALL",canvas_y,canvas_x);
 	c_LCE_LCEZ_ALL->SetGridy();
 	h_LCE_LCEZ->SetTitle("LCE vs. Z");
 	h_LCE_LCEZ->SetXTitle("Z [cm]");
@@ -835,7 +835,7 @@ void OpPhot_MC_S1(string datafile, string export_format, string bin_format, stri
 	// relative LCE vs. Z (ALL)
 	/*=================================================================*/
 	style_1D->cd();
-	TCanvas *c_LCE_rLCEZ_ALL = new TCanvas("LCE_rLCEZ_ALL","LCE_rLCEZ_ALL",canvas_x,canvas_y);
+	TCanvas *c_LCE_rLCEZ_ALL = new TCanvas("LCE_rLCEZ_ALL","LCE_rLCEZ_ALL",canvas_y,canvas_x);
 	
 	c_LCE_rLCEZ_ALL->SetGridy();
 	double h_rLCE_LCEZ_mean = 0;
