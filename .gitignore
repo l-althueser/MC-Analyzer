@@ -1,6 +1,4 @@
 .MC_Analyzer.config
-*.root
-testing/*
 
 # Compiled Object files
 *.slo
