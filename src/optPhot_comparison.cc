@@ -39,17 +39,22 @@
 using namespace std;
 
 void optPhot_comparison(string, double, string, int, int, int, string, string);
-void optPhot_comparison(string, double, string, int, int, int, string, string, bool);
+void optPhot_comparison(string, string, double, string, int, int, int, string, string);
+void optPhot_comparison(string, string, double, string, int, int, int, string, string, bool);
 
 /*=================================================================*/
 
 void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
-	optPhot_comparison(datafile_kr,AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
+	optPhot_comparison(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
+}
+
+void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
+	optPhot_comparison(datafile_kr,datafile_PMT,AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
 }
 
 /*=================================================================*/
-
-void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
+// .x ../src/optPhot_comparison.cc++("./comparison/Xe_Kr83m.txt",0.645,"./comparison/MC_Xe_TPC_optPhot_S1_1e5.root",9,4,4,"4 6 8 12","png")
+void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
 	
 	if (fileexists(datafile_kr) == false) {
 		cout << endl;
@@ -59,6 +64,16 @@ void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc
 		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 		cout << endl;
 		gApplication->Terminate();
+	}
+	
+	if (fileexists(datafile_PMT) == false) {
+		cout << endl;
+		cout << "x WARNING xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "PMT definition file not found:" << endl;
+		cout << "-> " << datafile_PMT << endl;
+		cout << "Equal QEs and all PMTs On assumed." << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
 	}
 	
 	if (fileexists(datafile_mc) == false) {
@@ -89,12 +104,8 @@ void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc
 	file_outplot = new TFile(file_outname,"RECREATE");
 	
 	TPC_Definition TPC;
-	//TPC.Set_Bins(9,4,4);
-	//TPC.Set_Bins(49,1,1);
 	TPC.Set_Bins(bin_z,bin_r,bin_rr);
-	//float nbinst[4] = {4.,6.,8.,12.}; // number of Bins in theta
-	//float nbinst[4] = {1.,1.,1.,1.};
-	
+
 	stringstream stream(strnbinst);
 	std::vector<int> nbinst;
 	int element;
@@ -664,7 +675,13 @@ void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc
 	TH2F* h_rrZ = new TH2F("rrZ_pri", "MC: R^{2} vs. Z generated events", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
 	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_pri", draw_selection, "goff");
-
+	//cout << "Events: " << h_rrZ->GetEntries() << endl;
+	//TH2F* h_rrZ_temp = new TH2F("rrZ_pri_temp", "MC: R^{2} vs. Z generated events", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	//sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
+	//file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_pri_temp", draw_selection, "goff");
+	//h_rrZ->Add(h_rrZ_temp, 1.);
+	//cout << "Events t2: " << h_rrZ->GetEntries() << endl;
+	
 	/*=================================================================*/
 	// R^{2} vs. Z detected events (TOP PMTs)
 	/*=================================================================*/
