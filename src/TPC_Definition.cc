@@ -43,7 +43,7 @@ class TPC_Definition {
 };
 
 TPC_Definition::TPC_Definition () {
-	TPC_Xe1T();
+	TPC_Xe1T ();
 	nbinsZ  = 26;
 	nbinsRR = 22;
 	nbinsR  = 50;
@@ -52,7 +52,9 @@ TPC_Definition::TPC_Definition () {
 }
 
 TPC_Definition::TPC_Definition (int Z, int R, int RR) {
-	TPC_Definition ();
+	TPC_Xe1T ();
+	LCE_min = 0;
+	LCE_max = 100;
 	Set_Bins (Z, R, RR);
 }
 

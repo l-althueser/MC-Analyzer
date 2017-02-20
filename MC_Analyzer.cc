@@ -22,8 +22,9 @@ using namespace std;
 #include "src/optPhot_S2.cc"
 #include "src/data_maps.cc"
 #include "src/optPhot_comparison.cc"
-#include "src/OpPhot_comparison_matcher.cc"
-#include "src/OpPhot_MC_parameters.cc"
+#include "src/optPhot_matching_prepare.cc"
+#include "src/optPhot_matching_process.cc"
+#include "src/optPhot_parameter_variations.cc"
 #include "src/calibration_source.cc"
 
 /*=================================================================*/
@@ -48,16 +49,15 @@ void MC_Analyzer() {
 	cout << "============================================================" << endl;
 	cout << "= (2) data maps (Kr83m) ====================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (3) S1 - Comparison of Kr83m data vs. MC =================" << endl;
-	cout << "= (4) S1 - Analyse parameter dir ===========================" << endl;
+	cout << "= (3) S1 - comparison of MC vs. data maps ==================" << endl;
+	cout << "= (4) S1 - parameter variations (of dir) ===================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (5) Events - MC analysis =================================" << endl;
+	cout << "= (5) calibration source ===================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (6) S1 - Comparison matcher ==============================" << endl;
-	cout << "= (6)    | Analyse matcher output ==========================" << endl;
-	cout << "= (6)    | Analyse per parameter ===========================" << endl;
+	cout << "= (6) matching prepare MC values ===========================" << endl;
+	cout << "= (7) matching process =====================================" << endl;
 	cout << "============================================================" << endl;
-	cout << "= (7) S2 - MC analysis =====================================" << endl;
+	cout << "= (8) S2 - MC analysis =====================================" << endl;
 	cout << "============================================================" << endl;
 	
 	string cinput;
@@ -165,7 +165,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile;
 		}
 		
-		OpPhot_MC_parameters(datafile,"png",parameter,"OpPhotStudy");
+		optPhot_parameter_variations(datafile,parameter,"png",);
 		
 	}
 	if ( cinput == "5" ){
@@ -188,7 +188,8 @@ void MC_Analyzer() {
 		calibration_source(datafile,"png");
 		
 	}
-	if (( cinput == "6" )){
+
+	if (( cinput == "7" ) && ( cinput == "6" )){
 		// execute LCE map generator
 		cout << "= S1 - Comparison of Kr83m data vs. MC (matcher) ===========" << endl;
 		cout << "============================================================" << endl;
@@ -220,10 +221,10 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile_mc;
 		}
 		
-		OpPhot_comparison_matcher(datafile_kr,datafile_mc,"OpPhotStudy");
+		optPhot_matching(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12");
 		
 	}
-	if (( cinput == "7" )){
+	if (( cinput == "8" )){
 		// execute MC analysis
 		cout << "= S2 - MC analysis =========================================" << endl;
 		cout << "============================================================" << endl;

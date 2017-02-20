@@ -3,7 +3,7 @@
 # kill all jobs: qdel -u <user>
 
 # Which MC version is used?
-MCTAG="0.1.6"
+MCTAG="0.1.7"
 # work in a specific path
 WDIR="/archive_lngs15TB/mc/althueser/optPhot/${MCTAG}_test"
 # simulation path
@@ -17,8 +17,10 @@ RNUMBER="01"
 MACNEW="mac_new"
 # move processed files to (if root file exists)
 MACPROCESSED="mac_processed"
-# generated rootfiles
+# generated rootfiles dir
 ROOTFILES="rootfiles"
+# number of events to simulate
+EVENTS="10000"
 # Cluster type
 CLUSTER="ULITE" #xecluster
 CLUSTERMAIL="coding@l-althueser.de"
@@ -66,13 +68,11 @@ do
 			if [[ $file == *"S1"* ]];
 			then
 				if ((verbose)); then echo echo "S1 simulation"; fi
-				sed -i -- "s#\[EVENTS\]#100#g" ${WDIR}/run_mac_tmp.sh
-				#sed -i -- "s#\[EVENTS\]#1000000#g" ${WDIR}/run_mac_tmp.sh
+				sed -i -- "s#\[EVENTS\]#${EVENTS}#g" ${WDIR}/run_mac_tmp.sh
 				sed -i -- "s#\[OPSETUP\]#macros/setup\_optical\_S1.mac#g" ${WDIR}/run_mac_tmp.sh
 			else
 				if ((verbose)); then echo echo "S2 simulation"; fi
-				sed -i -- "s#\[EVENTS\]#100#g" ${WDIR}/run_mac_tmp.sh
-				#sed -i -- "s#\[EVENTS\]#100000#g" ${WDIR}/run_mac_tmp.sh
+				sed -i -- "s#\[EVENTS\]#${EVENTS}#g" ${WDIR}/run_mac_tmp.sh
 				sed -i -- "s#\[OPSETUP\]#macros/setup\_optical\_S2.mac#g" ${WDIR}/run_mac_tmp.sh
 			fi
 			

@@ -1,0 +1,53 @@
+============================================================
+= geometry parameters ======================================
+parameter: LXeTR
+binning: 10 
+chamber_minZ: -140
+chamber_maxZ: 6
+chamber_minRR: 0
+chamber_maxRR: 3600
+LXe_minZ: -96.7
+LXe_maxZ: 0
+LXe_minRR: 0
+LXe_maxRR: 2294.41
+LCE_min: 0
+LCE_max: 100
+============================================================
+= reading datafiles ==== dir mode ==========================
+= file: 0.1.6_S1_90_99_5000_10000_30_163_01.root 10000 events total. param: 90
+generated events (LXe): 9252
+detected events (LXe): 2668
+Mean LCE LXe(detected/generated): 28.837
+detected events (LXe TOP): 759
+Mean LCE LXe(detected TOP/generated): 8.20363
+AreaFractionTop LXe(detected TOP/detected): 28.4483
+detected events (LXe BOT): 1909
+Mean LCE LXe(detected Bot/generated): 20.6334
+AreaFractionBot LXe(detected BOT/detected): 71.5517
+= file: 0.1.6_S1_95_99_5000_10000_30_163_01.root 10000 events total. param: 95
+generated events (LXe): 9246
+detected events (LXe): 3201
+Mean LCE LXe(detected/generated): 34.6204
+detected events (LXe TOP): 923
+Mean LCE LXe(detected TOP/generated): 9.9827
+AreaFractionTop LXe(detected TOP/detected): 28.8347
+detected events (LXe BOT): 2278
+Mean LCE LXe(detected Bot/generated): 24.6377
+AreaFractionBot LXe(detected BOT/detected): 71.1653
+= file: 0.1.6_S1_99_99_5000_10000_30_163_01.root 10000 events total. param: 99
+generated events (LXe): 9269
+detected events (LXe): 3670
+Mean LCE LXe(detected/generated): 39.5943
+detected events (LXe TOP): 991
+Mean LCE LXe(detected TOP/generated): 10.6916
+AreaFractionTop LXe(detected TOP/detected): 27.0027
+detected events (LXe BOT): 2679
+Mean LCE LXe(detected Bot/generated): 28.9028
+AreaFractionBot LXe(detected BOT/detected): 72.9973
+= file: 0.1.6_S2_90_99_5000_10000_30_163_01.root 10000 events total. param: 90
+AreaFractionTop S2 (detected Top/detected): 71.5116
+= file: 0.1.6_S2_95_99_5000_10000_30_163_01.root 10000 events total. param: 95
+AreaFractionTop S2 (detected Top/detected): 67.505
+= file: 0.1.6_S2_99_99_5000_10000_30_163_01.root 10000 events total. param: 99
+AreaFractionTop S2 (detected Top/detected): 65.0508
+============================================================

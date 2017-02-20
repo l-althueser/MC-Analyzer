@@ -4,7 +4,7 @@
 # is not already present in "./<mac folder>_processed/*".
 
 # Which MC version is used?
-MCTAG="0.1.6"
+MCTAG="0.1.7"
 # work in a specific path
 WDIR="/archive_lngs15TB/mc/althueser/optPhot/${MCTAG}_test"
 
@@ -17,7 +17,7 @@ MACPREVGEN="mac_processed"
 SIMULATION=("S1" "S2")
 # Define all possible values for matching simulations
 LXeR=(63) # "1." is added automatically
-LXeTR=(99) # % | "0." is added automatically 
+LXeTR=(99 95 90) # % | "0." is added automatically 
 GXeTR=(99) # % | "0." is added automatically 
 LXeAbsL=(5000) # cm
 GXeAbsL=(10000) # cm
