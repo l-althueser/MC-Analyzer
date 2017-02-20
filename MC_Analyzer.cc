@@ -22,8 +22,7 @@ using namespace std;
 #include "src/optPhot_S2.cc"
 #include "src/data_maps.cc"
 #include "src/optPhot_comparison.cc"
-#include "src/optPhot_matching_prepare.cc"
-#include "src/optPhot_matching_process.cc"
+#include "src/optPhot_matching.cc"
 #include "src/optPhot_parameter_variations.cc"
 #include "src/calibration_source.cc"
 
