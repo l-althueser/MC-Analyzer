@@ -22,6 +22,7 @@ git clone https://github.com/l-althueser/MC-Analyzer.git
 
 ## `MC-Analyzer` Tutorial
 This section assumes that the `MC-Analyzer` is installed and all prerequisites are given.  
+See [MC-Analyzer_example.ipynb](./examples/MC-Analyzer_example.ipynb) or the following...  
 
 To start the Analyzer `cd` to the installation directory and type:
 ```

@@ -9,6 +9,7 @@ class TPC_Definition {
 	double chamber_minZ, chamber_maxZ;
 	double chamber_minRR, chamber_maxRR, chamber_maxR;
 	double LXe_minZ, LXe_maxZ;
+	double GXe_minZ, GXe_maxZ;
 	double LXe_minRR, LXe_maxRR, LXe_maxR;
 	double QE_top, QE_bottom;
 	
@@ -32,6 +33,8 @@ class TPC_Definition {
 	double Get_chamber_maxR (void) {return chamber_maxR;}
 	double Get_LXe_minZ (void) {return LXe_minZ;}
 	double Get_LXe_maxZ (void) {return LXe_maxZ;}
+	double Get_GXe_minZ (void) {return GXe_minZ;}
+	double Get_GXe_maxZ (void) {return GXe_maxZ;}
 	double Get_LXe_minRR (void) {return LXe_minRR;}
 	double Get_LXe_maxRR (void) {return LXe_maxRR;}
 	double Get_LXe_maxR (void) {return LXe_maxR;}
@@ -62,6 +65,8 @@ void TPC_Definition::TPC_Xe1T () {
 	
 	LXe_minZ  = -96.7;
 	LXe_maxZ  = 0.;
+	GXe_minZ  = 0.;
+	GXe_maxZ  = 6.;
 	LXe_minRR = 0.;
 	LXe_maxR  = 47.9;
 	LXe_maxRR = LXe_maxR*LXe_maxR;
@@ -79,6 +84,8 @@ void TPC_Definition::TPC_MS () {
 	
 	LXe_minZ  = -16.9;
 	LXe_maxZ  = -0.2;
+	GXe_minZ  = -0.2;
+	GXe_maxZ  = 0.5;
 	LXe_minRR = 0.;
 	LXe_maxR  = 4.;
 	LXe_maxRR = LXe_maxR*LXe_maxR;

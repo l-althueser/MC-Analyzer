@@ -18,13 +18,13 @@
 using namespace std;
 
 // include own functions
-#include "src/OpPhot_MC_S1.cc"
-#include "src/OpPhot_MC_S2.cc"
-#include "src/OpPhot_Xe1T_data.cc"
-#include "src/OpPhot_comparison.cc"
+#include "src/optPhot_S1.cc"
+#include "src/optPhot_S2.cc"
+#include "src/data_maps.cc"
+#include "src/optPhot_comparison.cc"
 #include "src/OpPhot_comparison_matcher.cc"
 #include "src/OpPhot_MC_parameters.cc"
-#include "src/Source_MC.cc"
+#include "src/calibration_source.cc"
 
 /*=================================================================*/
 
@@ -45,7 +45,9 @@ void MC_Analyzer() {
 	cout << "============================================================" << endl;
 	cout << "============================================================" << endl;
 	cout << "= (1) S1 - MC analysis =====================================" << endl;
-	cout << "= (2) S1 - Kr83m data LCE map ==============================" << endl;
+	cout << "============================================================" << endl;
+	cout << "= (2) data maps (Kr83m) ====================================" << endl;
+	cout << "============================================================" << endl;
 	cout << "= (3) S1 - Comparison of Kr83m data vs. MC =================" << endl;
 	cout << "= (4) S1 - Analyse parameter dir ===========================" << endl;
 	cout << "============================================================" << endl;
@@ -54,6 +56,8 @@ void MC_Analyzer() {
 	cout << "= (6) S1 - Comparison matcher ==============================" << endl;
 	cout << "= (6)    | Analyse matcher output ==========================" << endl;
 	cout << "= (6)    | Analyse per parameter ===========================" << endl;
+	cout << "============================================================" << endl;
+	cout << "= (7) S2 - MC analysis =====================================" << endl;
 	cout << "============================================================" << endl;
 	
 	string cinput;
@@ -78,8 +82,8 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		//OpPhot_MC_S1(datafile,"png","big","OpPhotStudy");
-		OpPhot_MC_S1(datafile,"png","small","OpPhotStudy");
+		//optPhot_S1(datafile,26,50,22,"png");
+		optPhot_S1(datafile,"png");
 		
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
@@ -100,7 +104,7 @@ void MC_Analyzer() {
 			lastfile_Kr83m = datafile;
 		}
 		
-		OpPhot_Xe1T_data(datafile,"png","OpPhotStudy");
+		data_maps(datafile,9,4,4,"png");
 		
 	}
 	if (( cinput == "3" )){
@@ -135,7 +139,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile_mc;
 		}
 		
-		OpPhot_comparison(datafile_kr,datafile_mc,"png","OpPhotStudy");
+		optPhot_comparison(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
@@ -181,7 +185,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		Source_MC(datafile,"png","small","OpPhotStudy");
+		calibration_source(datafile,"png");
 		
 	}
 	if (( cinput == "6" )){
@@ -237,7 +241,8 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		OpPhot_MC_S2(datafile,"png","small","OpPhotStudy");
+		//optPhot_S1(datafile,26,50,22,"png");
+		optPhot_S2(datafile,"png");
 		
 	}
 
