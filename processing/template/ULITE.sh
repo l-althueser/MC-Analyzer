@@ -8,7 +8,7 @@
 #PBS -W umask=0133 
 #PBS -v variable=mypreferredvar
 #PBS -m ae 
-#PBS -M [MAIL]
+[MAIL]
 
 sleep 60
 echo "Welcome user: $USER"

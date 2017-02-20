@@ -23,7 +23,7 @@ ROOTFILES="rootfiles"
 EVENTS="10000"
 # Cluster type
 CLUSTER="ULITE" #xecluster
-CLUSTERMAIL="coding@l-althueser.de"
+CLUSTERMAIL="#PBS -M coding@l-althueser.de"
 CLUSTERJOBNAME="Xe1T-${MCTAG}-optPhot"
 
 FILESSUBMITTED=0
