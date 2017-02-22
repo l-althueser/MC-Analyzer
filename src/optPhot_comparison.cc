@@ -35,6 +35,7 @@
 #include "TColor.h"
 #include "TEntryList.h"
 #include "TGaxis.h"
+#include "TError.h"
 
 using namespace std;
 
@@ -55,6 +56,9 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 /*=================================================================*/
 //.x ../src/optPhot_comparison.cc++("./comparison_perPMT_QE/Xe_Kr83m.txt","./comparison_perPMT_QE/Xe_Kr83m_PMT.ini",0.645,"./comparison_perPMT_QE/MC_Xe_TPC_optPhot_S1_1e5.root",9,4,4,"4 6 8 12","png");
 void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
+	
+	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
+	gErrorIgnoreLevel = kWarning;
 	
 	if (fileexists(datafile_kr) == false) {
 		cout << endl;
@@ -118,8 +122,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		nbinst.push_back(element);
 	}
 
-	//double AFT_S2_Kr = 0.645;
 	double AFT_S2 = 0;
+	double AFT_S2_ratio = 0;
 	
 	const Int_t canvas_x = 650;
 	const Int_t canvas_y = 800;
@@ -569,7 +573,13 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	
 	TChain *file_input_tree = new TChain("events/events");
+	TChain *file_input_tree_S2 = new TChain("events/events");
 	TNamed *G4MCname;
+	string S1_Tag = "_S1_";
+	char filename[10000];
+	char filename_S2[10000];
+	long nevents = 0;
+	long nevents_S2 = 0;
 	
 	if (fileexists(datafile_mc) == false) {
 		cout << endl;
@@ -592,8 +602,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == rawdatafilename_mc)) {
-					char filename[10000];
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains("comparison_")) && !(fname.Contains("_S2_"))) {
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
 					if (file_input_tree->GetEntries() == 0) {
@@ -609,8 +618,19 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 					}
 					
 					file_input_tree->AddFile(filename); 
-					const int nevents = file_input_tree->GetEntries();
+					nevents = file_input_tree->GetEntries();
 					cout << " file: " << fname.Data() << " " << nevents << " events total" << endl;
+					
+					// Search for S2 sim
+					if (((string)fname).find(S1_Tag) != std::string::npos) {
+						string datafilename_S2 = ((string)fname).replace(((string)fname).find(S1_Tag),S1_Tag.length(),"_S2_");
+						sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
+						if (fileexists(filename_S2) == true) {
+							file_input_tree_S2->AddFile(filename_S2); 
+							nevents_S2 = file_input_tree->GetEntries();
+							cout << " file: " << datafilename_S2 << " " << nevents_S2 << " events " << endl;
+						}
+					}
 				}
 			}
 		}		
@@ -629,49 +649,24 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			f->Close();
 		}
 		file_input_tree->AddFile(datafile_mc.c_str()); 
-		const int nevents = file_input_tree->GetEntries();
+		nevents = file_input_tree->GetEntries();
 		cout << " file: " << datafilename_mc << " " << nevents << " events " << endl;
-	}
-	cout << "============================================================" << endl;
-	
-	cout << "= reading S2 datafile ===== single file ====================" << endl;
-	// Search for S2 sim
-	string S1_Tag = "_S1_";
-	
-	if (datafilename_mc.find(S1_Tag) != std::string::npos) {
-		string datafilename_S2 = datafilename_mc.replace(datafilename_mc.find(S1_Tag),S1_Tag.length(),"_S2_");
-		char filename_S2[10000];
-		sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
 		
-		if (fileexists(filename_S2) == true) {
-			TChain *file_input_tree_S2 = new TChain("events/events");
-			file_input_tree_S2->AddFile(filename_S2); 
-			const int nevents_S2 = file_input_tree_S2->GetEntries();
-			cout << " file: " << datafilename_S2 << " " << nevents_S2 << " events " << endl;
-			double AFT_S2_ratio = 0;
-			//double AFT_S2 = 0;
-			//double AFT_S2_Kr = 0.64; // defined above!
+		// Search for S2 sim
+		if (datafilename_mc.find(S1_Tag) != std::string::npos) {
+			string datafilename_S2 = datafilename_mc.replace(datafilename_mc.find(S1_Tag),S1_Tag.length(),"_S2_");
+			sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
 			
-			if (nevents_S2 > 0) {	
-				file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
-				TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
-
-				file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
-				TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
-				
-				AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
-				AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+			if (fileexists(filename_S2) == true) {
+				file_input_tree_S2->AddFile(filename_S2); 
+				nevents_S2 = file_input_tree->GetEntries();
+				cout << " file: " << filename_S2 << " " << nevents_S2 << " events " << endl;
 			}
-			delete file_input_tree_S2;
 		}
-		else {
-			cout << "No S2 file found!" << endl;
-		}
-	}
-	else {
-		cout << "No S2 file found!" << endl;
 	}
 	cout << "============================================================" << endl;
+	cout << "= reading PMT.ini ==========================================" << endl;
+	
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
 	TH2F* check_pmt_details = new TH2F("check_pmt_details", "check_pmt_details", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
@@ -727,21 +722,87 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		raw.close();
 	}
 	
-	long nbentries = file_input_tree->GetEntries();
-
+	cout << "============================================================" << endl;
+	
+	float progress = 0.0;
+	int barWidth = 53;
+	
+	long nbentries = 0;
 	Int_t ntpmthits = 0;
-	file_input_tree->SetBranchAddress("ntpmthits", &ntpmthits);
 	Int_t nbpmthits = 0;
-	file_input_tree->SetBranchAddress("nbpmthits", &nbpmthits);
 	vector<int> *pmthitID = 0;
-	file_input_tree->SetBranchAddress("pmthitID", &pmthitID);
 	Float_t xp_pri = 0;
-	file_input_tree->SetBranchAddress("xp_pri", &xp_pri);
 	Float_t yp_pri = 0;
-	file_input_tree->SetBranchAddress("yp_pri", &yp_pri);
 	Float_t zp_pri = 0;
-	file_input_tree->SetBranchAddress("zp_pri", &zp_pri);
 	Float_t rrp_pri = 0;
+	int pmtID = 0;
+	double S2_hits_top = 0;
+	double S2_hits_bottom = 0;
+	
+	nevents_S2 = file_input_tree_S2->GetEntries();
+
+	if (nevents_S2 > 0) {	
+		cout << "Calculating maps with per-PMT values (S2):" << endl;
+		nbentries = nevents_S2;
+
+		file_input_tree_S2->SetBranchAddress("ntpmthits", &ntpmthits);
+		file_input_tree_S2->SetBranchAddress("nbpmthits", &nbpmthits);
+		file_input_tree_S2->SetBranchAddress("pmthitID", &pmthitID);
+		file_input_tree_S2->SetBranchAddress("xp_pri", &xp_pri);
+		file_input_tree_S2->SetBranchAddress("yp_pri", &yp_pri);
+		file_input_tree_S2->SetBranchAddress("zp_pri", &zp_pri);
+		
+		for (long i=0; i<nbentries; i++){
+			// little progress bar
+			if (i%10000 == 0 || i==0) {
+				progress = (float)i/(float)nbentries;
+				std::cout << "[";
+				int pos = barWidth * progress;
+				for (int g = 0; g < barWidth; ++g) {
+					if (g < pos) std::cout << "=";
+					else if (g == pos) std::cout << ">";
+					else std::cout << " ";
+				}
+				std::cout << "] " << int(progress * 100.0) << " %\r";
+				std::cout.flush();
+			}
+			file_input_tree_S2->GetEntry(i);
+			
+			// This calculation works only with one simulated photon per event
+			if ((ntpmthits+nbpmthits) > 1) {
+				cout << endl;
+				cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+				cout << "Only one photon per event is allowed!" << endl;
+				cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+				cout << endl;
+				gApplication->Terminate();
+			}
+			if ((ntpmthits+nbpmthits) == 1) {
+				if (no_PMT_details) {
+					if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
+					else {pmtID = TPC.Get_PMTs_top();}
+				} else { pmtID = (*pmthitID)[0]; }
+				
+				S2_hits_top += ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID];
+				S2_hits_bottom += nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID];
+			}
+		
+			AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
+			AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+		}
+		std::cout << std::endl;	
+	} else {
+		cout << "No S2 file found!" << endl;
+	}
+
+	nbentries = file_input_tree->GetEntries();
+	
+	file_input_tree->SetBranchAddress("ntpmthits", &ntpmthits);
+	file_input_tree->SetBranchAddress("nbpmthits", &nbpmthits);
+	file_input_tree->SetBranchAddress("pmthitID", &pmthitID);
+	file_input_tree->SetBranchAddress("xp_pri", &xp_pri);
+	file_input_tree->SetBranchAddress("yp_pri", &yp_pri);
+	file_input_tree->SetBranchAddress("zp_pri", &zp_pri);
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
@@ -761,10 +822,9 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	TH1F* h_LCErr_det_top = new TH1F("LCErr_det_top", "MC: detected events vs. R^{2} (TOP PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 	TH1F* h_LCErr_det = new TH1F("LCErr_det", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
 
-	cout << "Calculating maps with per-PMT values:" << endl;
-	float progress = 0.0;
-	int barWidth = 53;
-	int pmtID = 0;
+	cout << "Calculating maps with per-PMT values (S1):" << endl;
+	progress = 0.0;
+	barWidth = 53;
 	
 	for (long i=0; i<nbentries; i++){
 		// little progress bar

@@ -59,6 +59,9 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 
 void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format, bool batch) {
 	
+	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
+	gErrorIgnoreLevel = kWarning;
+	
 	// read in datafilename and get working directory
 	size_t found=datadir.find_last_of("/\\");
 	string workingdirectory = datadir.substr(0,found);

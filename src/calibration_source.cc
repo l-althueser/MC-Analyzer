@@ -55,6 +55,10 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 /*=================================================================*/
 
 void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+	
+	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
+	gErrorIgnoreLevel = kWarning;
+	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
 	string workingdirectory = datafile.substr(0,found);
@@ -82,6 +86,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
 	file_outstat << "============================================================" << "\n";
+	sprintf(file_outname,"%s_calsource.root", rawdatafilename.c_str());
 	
 	if (fileexists(datafile) == false) {
 		cout << endl;
@@ -104,7 +109,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == rawdatafilename)) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == file_outname)) {
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					

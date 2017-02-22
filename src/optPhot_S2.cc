@@ -56,6 +56,10 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 /*=================================================================*/
 
 void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+	
+	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
+	gErrorIgnoreLevel = kWarning;
+	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
 	string workingdirectory = datafile.substr(0,found);
@@ -84,6 +88,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
 	file_outstat << "============================================================" << "\n";
+	sprintf(file_outname,"%s_S2.root", rawdatafilename.c_str());
 	int nevents = 0;
 	
 	if (fileexists(datafile) == false) {
@@ -107,7 +112,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == rawdatafilename)) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == file_outname)) {
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
