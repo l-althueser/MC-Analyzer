@@ -35,21 +35,27 @@
 #include "TColor.h"
 #include "TEntryList.h"
 #include "TGaxis.h"
+#include "TError.h"
 
 using namespace std;
 
 void optPhot_matching(string, double, string, int, int, int, string, string);
-void optPhot_matching(string, double, string, int, int, int, string, string, bool);
+void optPhot_matching(string, string, double, string, int, int, int, string, string);
+void optPhot_matching(string, string, double, string, int, int, int, string, string, bool);
 
 /*=================================================================*/
 
 void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
-	optPhot_matching(datafile_kr,AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
+	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
+}
+
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
+	optPhot_matching(datafile_kr,datafile_PMT,AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
 }
 
 /*=================================================================*/
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -62,6 +68,15 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 		cout << endl;
 		gApplication->Terminate();
+	}
+	
+	if (fileexists(datafile_PMT) == false) {
+		cout << endl;
+		cout << "x WARNING xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "PMT definition file not found (or defined):" << endl;
+		cout << "-> " << datafile_PMT << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
 	}
 	
 	if (fileexists(datafile_mc) == false) {
@@ -122,6 +137,7 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 	const char* const DELIMITER = " ";
 	const char* const DELIMITER_ = "_";
 	const char* const DELIMITER_p = "._";
+	const char* const DELIMITER_t = " \t";
 	char* token[100] = {}; // initialize to 0
 	
 	// store LCE data
@@ -213,11 +229,59 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 	h_AFTZ_Kr->Divide(h_Kr_LCE_LCEZ_top, h_Kr_LCE_LCEZ, 1.,1., "b");
 	h_AFTZ_Kr->Scale(100.);
 	
-	/*=================================================================*/
-	/*=================================================================*/
-	// Read in MC data
-	/*=================================================================*/
-	/*=================================================================*/
+	cout << "============================================================" << endl;
+	cout << "= reading PMT.ini ==========================================" << endl;
+	
+	vector<double> QE_PMT;
+	vector<double> On_PMT;
+	
+	if ((datafile_PMT == "")) {
+		cout << endl;
+		cout << "x WARNING xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "No PMT details in MC or no PMT.ini found." << endl;
+		cout << "Assuming average values!" << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		
+		// generate PMT values with average QEs and all On
+		for (int i = 0; i < TPC.Get_PMTs_top(); i++) {
+			QE_PMT.push_back(TPC.Get_QE_top());
+			On_PMT.push_back(1.);
+		}
+		for (int i = TPC.Get_PMTs_top(); i < (TPC.Get_PMTs_top()+TPC.Get_PMTs_bottom()); i++) {
+			QE_PMT.push_back(TPC.Get_QE_bottom());
+			On_PMT.push_back(1.);
+		}
+	} else {
+		// read PMT.ini file 
+		raw.open(datafile_PMT.c_str());
+		// check if the file could be opened successfully 
+		if(!raw) {cout << "-> Error opening PMT.ini file." << endl; gApplication->Terminate();}
+			getline(raw, linebuffer);
+			// read the data file line by line
+			while (getline(raw, linebuffer)) {
+				// parse the line
+				char* buf = strdup(linebuffer.c_str());
+				token[0] = strtok(buf, DELIMITER_t); // first token
+				for (int n = 1; n < 100; n++) {
+					token[n] = strtok(0, DELIMITER_t); // subsequent tokens
+					if (!token[n]) break; // no more tokens
+				}
+				if (!(QE_PMT.size() == (unsigned)atoi(token[0]))) {
+					cout << endl;
+					cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+					cout << "PMT numbering in bad order!" << endl;
+					cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+					cout << endl;
+					gApplication->Terminate();
+				}
+				QE_PMT.push_back(atof(token[1]));
+				On_PMT.push_back(atoi(token[2]));
+			}
+		raw.close();
+	}
+	
+	cout << "============================================================" << endl;
 	
 	if (fileexists(datafile_mc) == false) {
 		cout << endl;
@@ -314,6 +378,8 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 		TH1F* h_ratio_ly_bottom = new TH1F("ratio_ly_bottom", "ratio_ly_bottom", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 		h_ratio_ly_bottom->Sumw2();
 		
+		TH2F* check_pmt_details = new TH2F("check_pmt_details", "check_pmt_details", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+		
 		string ext = ".root";
 		TSystemDirectory dir(workingdirectory.c_str(), workingdirectory.c_str());
 		TList *files = dir.GetListOfFiles();
@@ -333,7 +399,7 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 			double max_param = 0;
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains("_S2_"))) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains("comparison_")) && !(fname.Contains("_S2_"))) {
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
@@ -372,6 +438,18 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 						if (!token[n]) break; // no more tokens
 					}
 					
+					TChain *file_input_tree = new TChain("events/events");
+					file_input_tree->AddFile(filename); 
+					long nevents = file_input_tree->GetEntries();
+					
+					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
+					
+					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
+					
+					check_pmt_details->Reset();
+					file_input_tree->Draw("zp_pri/10. : rrp_pri >> check_pmt_details","pmthitID[0]>0","goff");
+					bool no_PMT_details = (bool)(check_pmt_details->GetEntries() == 0);
+					
 					/*=================================================================*/
 					// FILTER PARAMETER SETTINGS
 					/*=================================================================*/
@@ -385,18 +463,56 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 					const int nevents_S2 = file_input_tree_S2->GetEntries();
 					double AFT_S2_ratio = 0;
 					double AFT_S2 = 0;
-					//double AFT_S2_Kr = 0.64; // defined above!
+					
+					long nbentries = 0;
+					Int_t ntpmthits = 0;
+					Int_t nbpmthits = 0;
+					vector<int> *pmthitID = 0;
+					Float_t xp_pri = 0;
+					Float_t yp_pri = 0;
+					Float_t zp_pri = 0;
+					Float_t rrp_pri = 0;
+					int pmtID = 0;
+					double S2_hits_top = 0;
+					double S2_hits_bottom = 0;
+					
+					
 					if (nevents_S2 > 0) {
 						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total." <<  endl;
 						
-						file_input_tree_S2->Draw(">>elist_top_S2","(ntpmthits > 0)","goff");
-						TEntryList *elist_top_S2 = (TEntryList*)gDirectory->Get("elist_top_S2");
-
-						file_input_tree_S2->Draw(">>elist_bottom_S2","(nbpmthits > 0)","goff");
-						TEntryList *elist_bottom_S2 = (TEntryList*)gDirectory->Get("elist_bottom_S2");
+						nbentries = nevents_S2;
 						
-						AFT_S2 = ((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top())/(((double)elist_bottom_S2->GetEntriesToProcess()*TPC.Get_QE_bottom())+((double)elist_top_S2->GetEntriesToProcess()*TPC.Get_QE_top()));
-						AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+						file_input_tree_S2->SetBranchAddress("ntpmthits", &ntpmthits);
+						file_input_tree_S2->SetBranchAddress("nbpmthits", &nbpmthits);
+						file_input_tree_S2->SetBranchAddress("pmthitID", &pmthitID);
+						file_input_tree_S2->SetBranchAddress("xp_pri", &xp_pri);
+						file_input_tree_S2->SetBranchAddress("yp_pri", &yp_pri);
+						file_input_tree_S2->SetBranchAddress("zp_pri", &zp_pri);
+						
+						for (long i=0; i<nbentries; i++) {
+							file_input_tree_S2->GetEntry(i);
+							
+							// This calculation works only with one simulated photon per event
+							if ((ntpmthits+nbpmthits) > 1) {
+								cout << endl;
+								cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+								cout << "Only one photon per event is allowed!" << endl;
+								cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+								cout << endl;
+								gApplication->Terminate();
+							}
+							if ((ntpmthits+nbpmthits) == 1) {
+								if (no_PMT_details) {
+									S2_hits_top += ntpmthits*TPC.Get_QE_top();
+									S2_hits_bottom += nbpmthits*TPC.Get_QE_bottom();
+								} else { 
+									S2_hits_top += ntpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]];
+									S2_hits_bottom += nbpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]];
+								}
+							}
+							AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
+							AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
+						}
 					}
 					else {
 						cout << " Skip file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << "no S2 found." <<  endl;
@@ -405,42 +521,62 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 					}
 					delete file_input_tree_S2;
 					
-					TChain *file_input_tree = new TChain("events/events");
-					file_input_tree->AddFile(filename); 
-					const int nevents = file_input_tree->GetEntries();
+					nbentries = file_input_tree->GetEntries();
+	
+					file_input_tree->SetBranchAddress("ntpmthits", &ntpmthits);
+					file_input_tree->SetBranchAddress("nbpmthits", &nbpmthits);
+					file_input_tree->SetBranchAddress("pmthitID", &pmthitID);
+					file_input_tree->SetBranchAddress("xp_pri", &xp_pri);
+					file_input_tree->SetBranchAddress("yp_pri", &yp_pri);
+					file_input_tree->SetBranchAddress("zp_pri", &zp_pri);
 					
-					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
-					
-					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
-					/*=================================================================*/
-					// generated events vs. Z
-					/*=================================================================*/
 					h_LCEZ_gen->Reset();
-					sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-					file_input_tree->Draw("zp_pri/10. >> LCEZ_gen", draw_selection, "goff");
-					/*=================================================================*/
-					// detected events vs. Z (TOP PMTs)
-					/*=================================================================*/
 					h_LCEZ_det_top->Reset();
-					sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-					file_input_tree->Draw("zp_pri/10. >> LCEZ_det_top", draw_selection, "goff");
-					/*=================================================================*/
-					// detected events vs. Z (BOTTOM PMTs)
-					/*=================================================================*/
 					h_LCEZ_det_bottom->Reset();
-					sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-					file_input_tree->Draw("zp_pri/10. >> LCEZ_det_bottom", draw_selection, "goff");
+					
+					for (long i=0; i<nbentries; i++){
+						file_input_tree->GetEntry(i);
+						rrp_pri = (xp_pri*xp_pri + yp_pri*yp_pri)/10.;
+						
+						if (!( (zp_pri/10.<=TPC.Get_LXe_maxZ()) && (zp_pri/10.>=TPC.Get_LXe_minZ()) && 
+							   (rrp_pri/10.>=TPC.Get_LXe_minRR()) && (rrp_pri/10.<=TPC.Get_LXe_maxRR()) )) {
+							// event outside TPC
+							continue;
+						}
+						
+						// This calculation works only with one simulated photon per event
+						if ((ntpmthits+nbpmthits) > 1) {
+							cout << endl;
+							cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+							cout << "Only one photon per event is allowed!" << endl;
+							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+							cout << endl;
+							gApplication->Terminate();
+						}
+						if ((ntpmthits+nbpmthits) == 1) {
+							if (no_PMT_details) {
+								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*TPC.Get_QE_top());
+								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*TPC.Get_QE_bottom());
+							} else { 
+								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]]);
+								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]]);
+							}
+						}
+						// All events
+						h_LCEZ_gen->Fill(zp_pri/10., 1.);
+					}
+					
 					/*=================================================================*/
 					// LCE vs. Z (TOP PMTs)
 					/*=================================================================*/
 					h_LCE_LCEZ_top->Reset();
-					h_LCE_LCEZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+					h_LCE_LCEZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, 1., 1., "b");
 					h_LCE_LCEZ_top->Scale(100.);
 					/*=================================================================*/
 					// LCE vs. Z (BOTTOM PMTs)
 					/*=================================================================*/
 					h_LCE_LCEZ_bottom->Reset();
-					h_LCE_LCEZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+					h_LCE_LCEZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, 1., 1., "b");
 					h_LCE_LCEZ_bottom->Scale(100.);
 					/*=================================================================*/
 					// LCE vs. Z
@@ -452,13 +588,13 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 					// ly vs. Z (TOP PMTs)
 					/*=================================================================*/
 					h_ly_lyZ_top->Reset();
-					h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+					h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, 1., 1., "b");
 					h_ly_lyZ_top->Scale(50.);
 					/*=================================================================*/
 					// ly vs. Z (BOTTOM PMTs)
 					/*=================================================================*/
 					h_ly_lyZ_bottom->Reset();
-					h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+					h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, 1., 1., "b");
 					h_ly_lyZ_bottom->Scale(50.);
 					/*=================================================================*/
 					// ly vs. Z

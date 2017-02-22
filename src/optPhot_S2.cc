@@ -35,6 +35,7 @@
 #include "TColor.h"
 #include "TEntryList.h"
 #include "TGaxis.h"
+#include "TError.h"
 
 using namespace std;
 

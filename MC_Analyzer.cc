@@ -15,6 +15,8 @@
 
 #include <stdlib.h>
 
+#include "TError.h"
+
 using namespace std;
 
 // include own functions

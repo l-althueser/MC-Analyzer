@@ -89,7 +89,6 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		gApplication->Terminate();
 	}
 	
-	// generate plots
 	TFile *file_outplot;  
 	char file_outname[10000];
 	size_t found=datafile_mc.find_last_of("/\\");
@@ -752,7 +751,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		file_input_tree_S2->SetBranchAddress("yp_pri", &yp_pri);
 		file_input_tree_S2->SetBranchAddress("zp_pri", &zp_pri);
 		
-		for (long i=0; i<nbentries; i++){
+		for (long i=0; i<nbentries; i++) {
 			// little progress bar
 			if (i%10000 == 0 || i==0) {
 				progress = (float)i/(float)nbentries;
