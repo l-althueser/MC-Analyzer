@@ -80,7 +80,6 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 	while(stream >> element){
 		nbinst.push_back(element);
 	}
-
 	
 	const Int_t canvas_x = 650;
 	const Int_t canvas_y = 800;
@@ -217,11 +216,6 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 	/*=================================================================*/
 	/*=================================================================*/
 	
-	// read in datafilename and get working directory
-	found=datafile_mc.find_last_of("/\\");
-	workingdirectory = datafile_mc.substr(0,found);
-	datafilename = datafile_mc.substr(found+1);
-	
 	if (fileexists(datafile_mc) == false) {
 		cout << endl;
 		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
@@ -342,7 +336,12 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 					
 					TFile *f = new TFile(filename,"READ");
 					TNamed *G4MCname;
-					f->GetObject("MC_TAG",G4MCname);
+					if (f->GetListOfKeys()->Contains("MC_TAG")) {
+						f->GetObject("MC_TAG",G4MCname);
+					}
+					else {
+						G4MCname = new TNamed("MC_TAG","Xenon1t");
+					}
 					if ( strcmp(G4MCname->GetTitle(),"Xenon1t") == 0 ) {
 						f->Close();
 					}

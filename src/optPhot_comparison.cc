@@ -53,7 +53,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 }
 
 /*=================================================================*/
-// .x ../src/optPhot_comparison.cc++("./comparison/Xe_Kr83m.txt",0.645,"./comparison/MC_Xe_TPC_optPhot_S1_1e5.root",9,4,4,"4 6 8 12","png")
+//.x ../src/optPhot_comparison.cc++("./comparison_perPMT_QE/Xe_Kr83m.txt","./comparison_perPMT_QE/Xe_Kr83m_PMT.ini",0.645,"./comparison_perPMT_QE/MC_Xe_TPC_optPhot_S1_1e5.root",9,4,4,"4 6 8 12","png");
 void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
 	
 	if (fileexists(datafile_kr) == false) {
@@ -69,9 +69,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	if (fileexists(datafile_PMT) == false) {
 		cout << endl;
 		cout << "x WARNING xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-		cout << "PMT definition file not found:" << endl;
+		cout << "PMT definition file not found (or defined):" << endl;
 		cout << "-> " << datafile_PMT << endl;
-		cout << "Equal QEs and all PMTs On assumed." << endl;
 		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 		cout << endl;
 	}
@@ -92,8 +91,14 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	size_t found=datafile_mc.find_last_of("/\\");
 	string workingdirectory = datafile_mc.substr(0,found);
 	string datafilename_mc = datafile_mc.substr(found+1);
-	size_t lastindex = datafilename_mc.find_last_of("."); 
-	string rawdatafilename_mc = datafilename_mc.substr(0, lastindex); 
+	string rawdatafilename_mc = "";
+	size_t lastindex = 0;
+	if (datafilename_mc == "") {
+		rawdatafilename_mc = "optPhot";
+	} else {
+		lastindex = datafilename_mc.find_last_of("."); 
+		rawdatafilename_mc = datafilename_mc.substr(0, lastindex); 
+	}
 	
 	found=datafile_kr.find_last_of("/\\");
 	string datafilename_kr = datafile_kr.substr(found+1);
@@ -250,6 +255,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	string linebuffer;
 	
 	const char* const DELIMITER = " ";
+	const char* const DELIMITER_t = " \t";
 	char* token[100] = {}; // initialize to 0
 	
 	// store LCE data
@@ -288,6 +294,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			lyareatopsigma[atoi(token[0])][atoi(token[2])] += atof(token[12])/nbinst[atoi(token[2])]; // same as lysigma @20161129
 		}
 	raw.close();
+	
+	cout << "============================================================" << endl;
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
@@ -560,12 +568,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	/*=================================================================*/
 	
-	// read in datafilename and get working directory
-	found=datafile_mc.find_last_of("/\\");
-	workingdirectory = datafile_mc.substr(0,found);
-	string datafilename = datafile_mc.substr(found+1);
-	
 	TChain *file_input_tree = new TChain("events/events");
+	TNamed *G4MCname;
 	
 	if (fileexists(datafile_mc) == false) {
 		cout << endl;
@@ -576,10 +580,10 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		cout << endl;
 		gApplication->Terminate();
 	}
-	else if ((fileexists(datafile_mc) == true) && (datafilename=="")) {
+	else if ((fileexists(datafile_mc) == true) && (datafilename_mc=="")) {
 		cout << "= reading datafiles ==== dir mode ==========================" << endl;
 		
-			string ext = ".root";
+		string ext = ".root";
 		TSystemDirectory dir(workingdirectory.c_str(), workingdirectory.c_str());
 		TList *files = dir.GetListOfFiles();
 		if (files) {
@@ -588,14 +592,18 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == datafilename)) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == rawdatafilename_mc)) {
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
 					if (file_input_tree->GetEntries() == 0) {
 						TFile *f = new TFile(filename,"READ");
-						TNamed *G4MCname;
-						f->GetObject("MC_TAG",G4MCname);
+						if (f->GetListOfKeys()->Contains("MC_TAG")) {
+							f->GetObject("MC_TAG",G4MCname);
+						}
+						else {
+							G4MCname = new TNamed("MC_TAG","Xenon1t");
+						}
 						TPC.Init(G4MCname);
 						f->Close();
 					}
@@ -611,14 +619,18 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		cout << "= reading datafile ===== single file =======================" << endl;
 		if (file_input_tree->GetEntries() == 0) {
 			TFile *f = new TFile(datafile_mc.c_str(),"READ");
-			TNamed *G4MCname;
-			f->GetObject("MC_TAG",G4MCname);
+			if (f->GetListOfKeys()->Contains("MC_TAG")) {
+				f->GetObject("MC_TAG",G4MCname);
+			}
+			else {
+				G4MCname = new TNamed("MC_TAG","Xenon1t");
+			}
 			TPC.Init(G4MCname);
 			f->Close();
 		}
 		file_input_tree->AddFile(datafile_mc.c_str()); 
 		const int nevents = file_input_tree->GetEntries();
-		cout << " file: " << datafilename << " " << nevents << " events " << endl;
+		cout << " file: " << datafilename_mc << " " << nevents << " events " << endl;
 	}
 	cout << "============================================================" << endl;
 	
@@ -626,8 +638,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	// Search for S2 sim
 	string S1_Tag = "_S1_";
 	
-	if (datafilename.find(S1_Tag) != std::string::npos) {
-		string datafilename_S2 = datafilename.replace(datafilename.find(S1_Tag),S1_Tag.length(),"_S2_");
+	if (datafilename_mc.find(S1_Tag) != std::string::npos) {
+		string datafilename_S2 = datafilename_mc.replace(datafilename_mc.find(S1_Tag),S1_Tag.length(),"_S2_");
 		char filename_S2[10000];
 		sprintf(filename_S2,"%s/%s", workingdirectory.c_str(), datafilename_S2.c_str());
 		
@@ -660,55 +672,157 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		cout << "No S2 file found!" << endl;
 	}
 	cout << "============================================================" << endl;
-	
-	file_outplot->cd();
-	
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
+	
+	TH2F* check_pmt_details = new TH2F("check_pmt_details", "check_pmt_details", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	file_input_tree->Draw("zp_pri/10. : rrp_pri >> check_pmt_details","pmthitID[0]>0","goff");
+	bool no_PMT_details = (bool)(check_pmt_details->GetEntries() == 0);
+	
+	vector<double> QE_PMT;
+	vector<double> On_PMT;
+	
+	if ((datafile_PMT == "") || (no_PMT_details)) {
+		cout << endl;
+		cout << "x WARNING xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "No PMT details in MC or no PMT.ini found." << endl;
+		cout << "Assuming average values!" << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		
+		// generate PMT values with average QEs and all On
+		for (int i = 0; i < TPC.Get_PMTs_top(); i++) {
+			QE_PMT.push_back(TPC.Get_QE_top());
+			On_PMT.push_back(1.);
+		}
+		for (int i = TPC.Get_PMTs_top(); i < (TPC.Get_PMTs_top()+TPC.Get_PMTs_bottom()); i++) {
+			QE_PMT.push_back(TPC.Get_QE_bottom());
+			On_PMT.push_back(1.);
+		}
+	} else {
+		// read PMT.ini file 
+		raw.open(datafile_PMT.c_str());
+		// check if the file could be opened successfully 
+		if(!raw) {cout << "-> Error opening PMT.ini file." << endl; gApplication->Terminate();}
+			getline(raw, linebuffer);
+			// read the data file line by line
+			while (getline(raw, linebuffer)) {
+				// parse the line
+				char* buf = strdup(linebuffer.c_str());
+				token[0] = strtok(buf, DELIMITER_t); // first token
+				for (int n = 1; n < 100; n++) {
+					token[n] = strtok(0, DELIMITER_t); // subsequent tokens
+					if (!token[n]) break; // no more tokens
+				}
+				if (!(QE_PMT.size() == (unsigned)atoi(token[0]))) {
+					cout << endl;
+					cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+					cout << "PMT numbering in bad order!" << endl;
+					cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+					cout << endl;
+					gApplication->Terminate();
+				}
+				QE_PMT.push_back(atof(token[1]));
+				On_PMT.push_back(atoi(token[2]));
+			}
+		raw.close();
+	}
+	
+	long nbentries = file_input_tree->GetEntries();
+
+	Int_t ntpmthits = 0;
+	file_input_tree->SetBranchAddress("ntpmthits", &ntpmthits);
+	Int_t nbpmthits = 0;
+	file_input_tree->SetBranchAddress("nbpmthits", &nbpmthits);
+	vector<int> *pmthitID = 0;
+	file_input_tree->SetBranchAddress("pmthitID", &pmthitID);
+	Float_t xp_pri = 0;
+	file_input_tree->SetBranchAddress("xp_pri", &xp_pri);
+	Float_t yp_pri = 0;
+	file_input_tree->SetBranchAddress("yp_pri", &yp_pri);
+	Float_t zp_pri = 0;
+	file_input_tree->SetBranchAddress("zp_pri", &zp_pri);
+	Float_t rrp_pri = 0;
 	
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
 	/*=================================================================*/
 	/*=================================================================*/
-	// R^{2} vs. Z of generated events LXe
+	// Define all TH2F which will be calculated directly from the TTree
 	/*=================================================================*/
-	style_2D->cd();
 	TH2F* h_rrZ = new TH2F("rrZ_pri", "MC: R^{2} vs. Z generated events", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_pri", draw_selection, "goff");
-	//cout << "Events: " << h_rrZ->GetEntries() << endl;
-	//TH2F* h_rrZ_temp = new TH2F("rrZ_pri_temp", "MC: R^{2} vs. Z generated events", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	//sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	//file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_pri_temp", draw_selection, "goff");
-	//h_rrZ->Add(h_rrZ_temp, 1.);
-	//cout << "Events t2: " << h_rrZ->GetEntries() << endl;
-	
-	/*=================================================================*/
-	// R^{2} vs. Z detected events (TOP PMTs)
-	/*=================================================================*/
-	style_2D->cd();
 	TH2F* h_rrZ_det_top = new TH2F("rrZ_det_top", "MC: R^{2} vs. Z detected events (TOP PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_det_top", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// R^{2} vs. Z detected events (BOTTOM PMTs)
-	/*=================================================================*/
-	style_2D->cd();
 	TH2F* h_rrZ_det_bottom = new TH2F("rrZ_det_bottom", "MC: R^{2} vs. Z detected events (BOTTOM PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_det_bottom", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// R^{2} vs. Z detected events (TOP + BOTTOM PMTs)
-	/*=================================================================*/
-	style_2D->cd();
 	TH2F* h_rrZ_det = new TH2F("rrZ_det", "MC: R^{2} vs. Z detected events (ALL PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	/* not needed at this moment (see below):
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0 || ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. : rrp_pri >> rrZ_det", draw_selection, "goff");
-	*/
-	h_rrZ_det->Add(h_rrZ_det_top, 1.);
-	h_rrZ_det->Add(h_rrZ_det_bottom, 1.);
+	TH1F* h_LCEZ_gen = new TH1F("LCEZ_gen", "MC: generated events vs. Z (All PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCEZ_det_top = new TH1F("LCEZ_det_top", "MC: detected events vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCEZ_det_bottom = new TH1F("LCEZ_det_bottom", "MC: detected events vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCEZ_det = new TH1F("LCEZ_det", "MC: detected events vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
+	TH1F* h_LCErr_det_bottom = new TH1F("LCErr_det_bottom", "MC: detected events vs. R^{2} (BOTTOM PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH1F* h_LCErr_det_top = new TH1F("LCErr_det_top", "MC: detected events vs. R^{2} (TOP PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+	TH1F* h_LCErr_det = new TH1F("LCErr_det", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR());
+
+	cout << "Calculating maps with per-PMT values:" << endl;
+	float progress = 0.0;
+	int barWidth = 53;
+	int pmtID = 0;
+	
+	for (long i=0; i<nbentries; i++){
+		// little progress bar
+		if (i%10000 == 0 || i==0) {
+			progress = (float)i/(float)nbentries;
+			std::cout << "[";
+			int pos = barWidth * progress;
+			for (int g = 0; g < barWidth; ++g) {
+				if (g < pos) std::cout << "=";
+				else if (g == pos) std::cout << ">";
+				else std::cout << " ";
+			}
+			std::cout << "] " << int(progress * 100.0) << " %\r";
+			std::cout.flush();
+		}
+		
+		file_input_tree->GetEntry(i);
+		rrp_pri = (xp_pri*xp_pri + yp_pri*yp_pri)/10.;
+		
+		if (!( (zp_pri/10.<=TPC.Get_LXe_maxZ()) && (zp_pri/10.>=TPC.Get_LXe_minZ()) && 
+		       (rrp_pri/10.>=TPC.Get_LXe_minRR()) && (rrp_pri/10.<=TPC.Get_LXe_maxRR()) )) {
+			// event outside TPC
+			continue;
+		}
+		
+		// This calculation works only with one simulated photon per event
+		if ((ntpmthits+nbpmthits) > 1) {
+			cout << endl;
+			cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+			cout << "Only one photon per event is allowed!" << endl;
+			cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+			cout << endl;
+			gApplication->Terminate();
+		}
+		if ((ntpmthits+nbpmthits) == 1) {
+			if (no_PMT_details) {
+				if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
+				else {pmtID = TPC.Get_PMTs_top();}
+			} else { pmtID = (*pmthitID)[0]; }
+			
+			// If a pmthit is seen
+			h_rrZ_det_top->Fill(rrp_pri/10., zp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_rrZ_det_bottom->Fill(rrp_pri/10., zp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_rrZ_det->Fill(rrp_pri/10., zp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det->Fill(zp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det_top->Fill(rrp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det_bottom->Fill(rrp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det->Fill(rrp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
+		}
+		// All events
+		h_rrZ->Fill(rrp_pri/10., zp_pri/10., 1.);
+		h_LCEZ_gen->Fill(zp_pri/10., 1.);
+	}
+	std::cout << std::endl;	
+	
+	file_outplot->cd();
 	
 	/*=================================================================*/
 	// ly of R^{2} vs. Z
@@ -725,8 +839,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ly_rrZ->GetZaxis()->CenterTitle();
 	h_ly_rrZ->Sumw2();
 	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
-	h_ly_rrZ->Add(h_rrZ_det_top, TPC.Get_QE_top());
-	h_ly_rrZ->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_rrZ->Add(h_rrZ_det_top, 1.);
+	h_ly_rrZ->Add(h_rrZ_det_bottom, 1.);
 	h_ly_rrZ->Divide(h_rrZ);
 	h_ly_rrZ->Scale(50.); 
 	double h_ly_rrZ_mean = 0;
@@ -822,7 +936,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ly_rrZ_top->GetZaxis()->CenterTitle();
 	h_ly_rrZ_top->Sumw2();
 	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
-	h_ly_rrZ_top->Add(h_rrZ_det_top, TPC.Get_QE_top());
+	h_ly_rrZ_top->Add(h_rrZ_det_top, 1.);
 	h_ly_rrZ_top->Divide(h_rrZ);
 	h_ly_rrZ_top->Scale(50.); 
 	h_ly_rrZ_top->Draw("colz");
@@ -856,7 +970,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ly_rrZ_bottom->GetZaxis()->CenterTitle();
 	h_ly_rrZ_bottom->Sumw2();
 	// Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm). QE*CE =~ 31%
-	h_ly_rrZ_bottom->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_rrZ_bottom->Add(h_rrZ_det_bottom, 1.);
 	h_ly_rrZ_bottom->Divide(h_rrZ);
 	h_ly_rrZ_bottom->Scale(50.); 
 	h_ly_rrZ_bottom->Draw("colz");	
@@ -997,8 +1111,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_rrZ->SetZTitle("relative LCE");
 	h_rLCE_rrZ->GetZaxis()->CenterTitle();
 	h_rLCE_rrZ->Sumw2();
-	h_rLCE_rrZ->Add(h_rrZ_det_top, TPC.Get_QE_top());
-	h_rLCE_rrZ->Add(h_rrZ_det_bottom, TPC.Get_QE_bottom());
+	h_rLCE_rrZ->Add(h_rrZ_det_top, 1.);
+	h_rLCE_rrZ->Add(h_rrZ_det_bottom, 1.);
 	h_rLCE_rrZ->Divide(h_rrZ);	
 	h_rLCE_rrZ->Scale(100.);
 	double h_LCE_rrZ_mean = 0;
@@ -1042,7 +1156,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_rrZ_top->SetZTitle("relative LCE");
 	h_rLCE_rrZ_top->GetZaxis()->CenterTitle();
 	h_rLCE_rrZ_top->Sumw2();
-	h_rLCE_rrZ_top->Divide(h_rrZ_det_top, h_rrZ, TPC.Get_QE_top(), 1., "b");
+	h_rLCE_rrZ_top->Divide(h_rrZ_det_top, h_rrZ, 1., 1., "b");
 	h_rLCE_rrZ_top->Scale(100.);
 	h_rLCE_rrZ_top->Scale(1./h_LCE_rrZ_mean);
 	h_rLCE_rrZ_top->SetMaximum(0.4);
@@ -1076,7 +1190,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_rrZ_bottom->SetZTitle("relative LCE");
 	h_rLCE_rrZ_bottom->GetZaxis()->CenterTitle();
 	h_rLCE_rrZ_bottom->Sumw2();
-	h_rLCE_rrZ_bottom->Divide(h_rrZ_det_bottom, h_rrZ, TPC.Get_QE_bottom(), 1., "b");
+	h_rLCE_rrZ_bottom->Divide(h_rrZ_det_bottom, h_rrZ, 1., 1., "b");
 	h_rLCE_rrZ_bottom->Scale(100.);
 	h_rLCE_rrZ_bottom->Scale(1./h_LCE_rrZ_mean);
 	h_rLCE_rrZ_bottom->SetMaximum(1.4);
@@ -1253,49 +1367,13 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	//if (!(export_format=="")) c_crLCE_rrZ_3D->SaveAs(canvasfile);
 	
 	/*=================================================================*/
-	// generated events vs. Z
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCEZ_gen = new TH1F("LCEZ_gen", "MC: generated events vs. Z (All PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. >> LCEZ_gen", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// detected events vs. Z (TOP PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCEZ_det_top = new TH1F("LCEZ_det_top", "MC: detected events vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. >> LCEZ_det_top", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// detected events vs. Z (BOTTOM PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCEZ_det_bottom = new TH1F("LCEZ_det_bottom", "MC: detected events vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. >> LCEZ_det_bottom", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// detected events vs. Z (TOP + BOTTOM PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCEZ_det = new TH1F("LCEZ_det", "MC: detected events vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
-	/* Not needed at the moment (see below):
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0 || ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("zp_pri/10. >> LCEZ_det", draw_selection, "goff");
-	*/
-	h_LCEZ_det->Add(h_LCEZ_det_top, 1.);
-	h_LCEZ_det->Add(h_LCEZ_det_bottom, 1.);
-	
-	/*=================================================================*/
 	// LCE vs. Z
 	/*=================================================================*/
 	style_1D->cd();
 	TH1F* h_LCE_LCEZ = new TH1F("LCE_LCEZ", "MC: LCE vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ->Sumw2();
-	h_LCE_LCEZ->Add(h_LCEZ_det_top, TPC.Get_QE_top());
-	h_LCE_LCEZ->Add(h_LCEZ_det_bottom, TPC.Get_QE_bottom());
+	h_LCE_LCEZ->Add(h_LCEZ_det_top, 1.);
+	h_LCE_LCEZ->Add(h_LCEZ_det_bottom, 1.);
 	h_LCE_LCEZ->Divide(h_LCEZ_gen);
 	h_LCE_LCEZ->Scale(100.);
 	
@@ -1305,7 +1383,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_LCE_LCEZ_top = new TH1F("LCE_LCEZ_top", "MC: LCE vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ_top->Sumw2();
-	h_LCE_LCEZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+	h_LCE_LCEZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, 1., 1., "b");
 	h_LCE_LCEZ_top->Scale(100.);
 	
 	/*=================================================================*/
@@ -1314,7 +1392,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_LCE_LCEZ_bottom = new TH1F("LCE_LCEZ_bottom", "MC: LCE vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_LCE_LCEZ_bottom->Sumw2();
-	h_LCE_LCEZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+	h_LCE_LCEZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, 1., 1., "b");
 	h_LCE_LCEZ_bottom->Scale(100.);
 	
 	/*=================================================================*/
@@ -1323,8 +1401,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_ly_lyZ = new TH1F("ly_lyZ", "MC: ly vs. Z (ALL PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ->Sumw2();
-	h_ly_lyZ->Add(h_LCEZ_det_top, TPC.Get_QE_top());
-	h_ly_lyZ->Add(h_LCEZ_det_bottom, TPC.Get_QE_bottom());
+	h_ly_lyZ->Add(h_LCEZ_det_top, 1.);
+	h_ly_lyZ->Add(h_LCEZ_det_bottom, 1.);
 	h_ly_lyZ->Divide(h_LCEZ_gen);
 	h_ly_lyZ->Scale(50.);
 	
@@ -1334,7 +1412,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_ly_lyZ_top = new TH1F("ly_lyZ_top", "MC: ly vs. Z (TOP PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ_top->Sumw2();
-	h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, TPC.Get_QE_top(), 1., "b");
+	h_ly_lyZ_top->Divide(h_LCEZ_det_top, h_LCEZ_gen, 1., 1., "b");
 	h_ly_lyZ_top->Scale(50.);
 	
 	/*=================================================================*/
@@ -1343,7 +1421,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_ly_lyZ_bottom = new TH1F("ly_lyZ_bottom", "MC: ly vs. Z (BOTTOM PMTs)", TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 	h_ly_lyZ_bottom->Sumw2();
-	h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, TPC.Get_QE_bottom(), 1., "b");
+	h_ly_lyZ_bottom->Divide(h_LCEZ_det_bottom, h_LCEZ_gen, 1., 1., "b");
 	h_ly_lyZ_bottom->Scale(50.);
 	
 	/*=================================================================*/
@@ -1878,41 +1956,6 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	gROOT->SetBatch(kTRUE);
 	/*=================================================================*/
-	/*=================================================================*/
-	// detected events vs. R^{2} (BOTTOM PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCErr_det_bottom = new TH1F("LCErr_det_bottom", "MC: detected events vs. R^{2} (BOTTOM PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("rrp_pri >> LCErr_det_bottom", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// detected events vs. R^{2} (TOP PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCErr_det_top = new TH1F("LCErr_det_top", "MC: detected events vs. R^{2} (TOP PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("rrp_pri >> LCErr_det_top", draw_selection, "goff");
-	
-	/*=================================================================*/
-	// detected events vs. R^{2} (TOP + BOTTOM PMTs)
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCErr_det = new TH1F("LCErr_det", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
-	/* Not used at the moment (see below):
-	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0 || ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
-	file_input_tree->Draw("rrp_pri >> LCErr_det", draw_selection, "goff");
-	*/
-	h_LCErr_det->Add(h_LCErr_det_top, 1.);
-	h_LCErr_det->Add(h_LCErr_det_bottom, 1.);
-	
-	/*=================================================================*/
-	// detected events vs. R^{2} (TOP + BOTTOM PMTs) with QE
-	/*=================================================================*/
-	style_1D->cd();
-	TH1F* h_LCErr_det_QE = new TH1F("LCErr_det_QE", "MC: detected events vs. R^{2} (ALL PMTs)", TPC.Get_nbinsRR(), 0., TPC.Get_LXe_maxRR());
-	h_LCErr_det_QE->Add(h_LCErr_det_top, TPC.Get_QE_top());
-	h_LCErr_det_QE->Add(h_LCErr_det_bottom, TPC.Get_QE_bottom());
 
 	/*=================================================================*/
 	// AFT vs. rr
@@ -1920,7 +1963,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	TH1F* h_AFTrr_MC = new TH1F("AFTrr_MC", "MC: AFT vs. R^{2}", TPC.Get_nbinsR(), 0., TPC.Get_LXe_maxRR());
 	h_AFTrr_MC->Sumw2();
-	h_AFTrr_MC->Divide(h_LCErr_det_top, h_LCErr_det_QE, TPC.Get_QE_top(), 1., "b");
+	h_AFTrr_MC->Divide(h_LCErr_det_top, h_LCErr_det, 1., 1., "b");
 	h_AFTrr_MC->Scale(100.);
 	
 	/*=================================================================*/

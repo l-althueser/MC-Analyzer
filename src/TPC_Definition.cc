@@ -12,6 +12,7 @@ class TPC_Definition {
 	double GXe_minZ, GXe_maxZ;
 	double LXe_minRR, LXe_maxRR, LXe_maxR;
 	double QE_top, QE_bottom;
+	double PMTs_top, PMTs_bottom;
 	
   public:
 	TPC_Definition ();
@@ -40,6 +41,8 @@ class TPC_Definition {
 	double Get_LXe_maxR (void) {return LXe_maxR;}
 	double Get_QE_top (void) {return QE_top;}
 	double Get_QE_bottom (void) {return QE_bottom;}
+	double Get_PMTs_top (void) {return PMTs_top;}
+	double Get_PMTs_bottom (void) {return PMTs_bottom;}
 };
 
 TPC_Definition::TPC_Definition () {
@@ -75,6 +78,8 @@ void TPC_Definition::TPC_Xe1T () {
 	
 	QE_top = 0.314;
 	QE_bottom = 0.366;
+	PMTs_top = 127;
+	PMTs_bottom = 121;
 }
 
 void TPC_Definition::TPC_MS () {
@@ -94,6 +99,8 @@ void TPC_Definition::TPC_MS () {
 	
 	QE_top = 0.31;
 	QE_bottom = 0.31;
+	PMTs_top = 7;
+	PMTs_bottom = 7;
 }
 
 void TPC_Definition::Init (TNamed *G4MCname) {
@@ -108,7 +115,7 @@ void TPC_Definition::Init (TNamed *G4MCname) {
 	else {
 		cout << endl;
 		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-		cout << "File format not known .." << endl;
+		cout << "TPC name not known ..." << endl;
 		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 		cout << endl;
 		gApplication->Terminate();

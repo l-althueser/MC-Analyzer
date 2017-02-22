@@ -60,8 +60,13 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	size_t found=datafile.find_last_of("/\\");
 	string workingdirectory = datafile.substr(0,found);
 	string datafilename = datafile.substr(found+1);
-	size_t lastindex = datafilename.find_last_of("."); 
-	string rawdatafilename = datafilename.substr(0, lastindex); 
+	string rawdatafilename = "";
+	if (datafilename == "") {
+		rawdatafilename = "optPhot";
+	} else {
+		size_t lastindex = datafilename.find_last_of("."); 
+		rawdatafilename = datafilename.substr(0, lastindex); 
+	}
 	
 	Int_t canvas_x = 650;
 	Int_t canvas_y = 800;
@@ -71,7 +76,8 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	
 	TPC_Definition TPC(bin_z, bin_r, bin_rr);
 	TChain *file_input_tree = new TChain("events/events");
-		
+	TNamed *G4MCname;
+	
 	char file_outname[10000];
 	sprintf(file_outname,"%s/%s_S2.dat", workingdirectory.c_str(), rawdatafilename.c_str());
 	
@@ -101,14 +107,18 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 			TIter next(files);
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
-				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == datafilename)) {
+				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname == rawdatafilename)) {
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
 					if (file_input_tree->GetEntries() == 0) {
 						TFile *f = new TFile(filename,"READ");
-						TNamed *G4MCname;
-						f->GetObject("MC_TAG",G4MCname);
+						if (f->GetListOfKeys()->Contains("MC_TAG")) {
+							f->GetObject("MC_TAG",G4MCname);
+						}
+						else {
+							G4MCname = new TNamed("MC_TAG","Xenon1t");
+						}
 						TPC.Init(G4MCname);
 						f->Close();
 					}
@@ -126,8 +136,12 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 		cout << "= reading datafile ===== single file =======================" << endl;
 		if (file_input_tree->GetEntries() == 0) {
 			TFile *f = new TFile(datafile.c_str(),"READ");
-			TNamed *G4MCname;
-			f->GetObject("MC_TAG",G4MCname);
+			if (f->GetListOfKeys()->Contains("MC_TAG")) {
+				f->GetObject("MC_TAG",G4MCname);
+			}
+			else {
+				G4MCname = new TNamed("MC_TAG","Xenon1t");
+			}
 			TPC.Init(G4MCname);
 			f->Close();
 		}

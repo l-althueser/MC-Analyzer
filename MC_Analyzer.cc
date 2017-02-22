@@ -31,12 +31,13 @@ using namespace std;
 void MC_Analyzer() {
 	
 	std::ifstream configfile_in("./.MC_Analyzer.config");
-	string lastfile_MC, lastfile_Kr83m, lastfile_parameters;
+	string lastfile_MC, lastfile_Kr83m, lastfile_parameters, lastfile_pmtini;
 	
 	if(configfile_in) {
 		configfile_in >> lastfile_MC;
 		configfile_in >> lastfile_Kr83m;
 		configfile_in >> lastfile_parameters;
+		configfile_in >> lastfile_pmtini;
 	}
 	
 	cout << "============================================================" << endl;
@@ -124,6 +125,20 @@ void MC_Analyzer() {
 			lastfile_Kr83m = datafile_kr;
 		}
 		cout << "------------------------------------------------------------" << endl;
+		cout << "Which PMT.ini file should be used?" << endl;
+		cout << "------------------------------------------------------------" << endl;
+		cout << "(l) for: " << lastfile_pmtini << endl;
+		string pmtini;
+		cin >> pmtini;
+		cin.ignore();
+		
+		if (pmtini=="l") {
+			pmtini = lastfile_pmtini;
+		}
+		else {
+			lastfile_pmtini = pmtini;
+		}
+		cout << "------------------------------------------------------------" << endl;
 		cout << "Which MC datafile(s) do you want to analyse?" << endl;
 		cout << "------------------------------------------------------------" << endl;
 		cout << "(l) for: " << lastfile_MC << endl;
@@ -138,7 +153,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile_mc;
 		}
 		
-		optPhot_comparison(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
+		optPhot_comparison(datafile_kr,pmtini,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
@@ -164,7 +179,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile;
 		}
 		
-		optPhot_parameter_variations(datafile,parameter,"png",);
+		optPhot_parameter_variations(datafile,parameter,"png");
 		
 	}
 	if ( cinput == "5" ){
@@ -220,7 +235,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile_mc;
 		}
 		
-		optPhot_matching(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12");
+		optPhot_matching(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
 		
 	}
 	if (( cinput == "8" )){
@@ -252,5 +267,6 @@ void MC_Analyzer() {
 	configfile_out << lastfile_MC << "\n";
 	configfile_out << lastfile_Kr83m << "\n";
 	configfile_out << lastfile_parameters << "\n";
+	configfile_out << lastfile_pmtini << "\n";
 	configfile_out.close();
 }

@@ -199,10 +199,15 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 					TChain *file_input_tree = new TChain("events/events");
 					if (first == true) {
 						TFile *f = new TFile(filename,"READ");
-						f->GetObject("MC_TAG",G4MCname);
+						TNamed *G4MCname;
+						if (f->GetListOfKeys()->Contains("MC_TAG")) {
+							f->GetObject("MC_TAG",G4MCname);
+						}
+						else {
+							G4MCname = new TNamed("MC_TAG","Xenon1t");
+						}
 						TPC.Init(G4MCname);
 						f->Close();
-						first = false;
 					}
 					file_input_tree->AddFile(filename); 
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
