@@ -124,14 +124,14 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	double AFT_S2 = 0;
 	double AFT_S2_ratio = 0;
 	
-	const Int_t canvas_x = 650;
-	const Int_t canvas_y = 800;
+	const Int_t canvas_x = 1000;
+	const Int_t canvas_y = 1200;
 	char canvasfile[10000];
 	char draw_selection[10000];
 	
 	TGaxis::SetMaxDigits(3);
 	//TGaxis::SetExponentOffset(-0.0325, +0.01, "z"); // X and Y offset for Z axis
-	TGaxis::SetExponentOffset(0.01, -0.0325, "x"); // Y and Y offset for X axis
+	TGaxis::SetExponentOffset(-0.075, -0.07, "x"); // X and Y offset for X axis
 	
 	const Int_t NRGBs = 5;
 	const Int_t NCont = 255;
@@ -150,7 +150,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->SetTitleBorderSize(1);
 	style_1D->SetOptStat(0);
 	style_1D->SetPadLeftMargin(0.105);
-	style_1D->SetPadRightMargin(0.09);
+	style_1D->SetPadRightMargin(0.01);
 	style_1D->SetPadTopMargin(0.075);
 	style_1D->SetPadBottomMargin(0.075);
 	
@@ -1547,7 +1547,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	// comparison relative LCE vs. Z
 	/*=================================================================*/
-	TCanvas *c_crLCEZ_ALL = new TCanvas("crLCEZ_ALL","crLCEZ_ALL",canvas_x,canvas_y);
+	TCanvas *c_crLCEZ_ALL = new TCanvas("crLCEZ_ALL","crLCEZ_ALL",canvas_x,canvas_x);
 	TPad *top = new TPad("top", "top", 0., 0.4, 1., 1., 0, 0, 0);
 	style_1D->cd();
 	top->SetGridy();
@@ -1569,7 +1569,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_LCE_LCEZ->Scale(1./h_rLCE_mean);
 	h_LCE_LCEZ->SetXTitle("Z [cm]");
 	h_LCE_LCEZ->GetXaxis()->CenterTitle();
-	h_LCE_LCEZ->SetYTitle("relative LCE");
+	h_LCE_LCEZ->SetYTitle("relative LightCollectionEfficiency S1");
 	h_LCE_LCEZ->GetYaxis()->CenterTitle();
 	h_LCE_LCEZ->Draw();
 	h_LCE_LCEZ_bottom->Scale(1./h_rLCE_mean);
@@ -1577,7 +1577,8 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_LCE_LCEZ_top->Scale(1./h_rLCE_mean);
 	h_LCE_LCEZ_top->Draw();
 	
-	h_LCE_LCEZ->SetTitle("Comparison S1: relative LCE vs. Z");
+	//h_LCE_LCEZ->SetTitle("Comparison S1: relative LCE vs. Z");
+	h_LCE_LCEZ->SetTitle("");
 	h_LCE_LCEZ->SetLineColor(kBlue);
 	h_LCE_LCEZ->GetYaxis()->SetRangeUser(0,2.5);
 	h_LCE_LCEZ->Draw("");
@@ -1634,7 +1635,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ratio_rLCE->SetTitle("");
 	h_ratio_rLCE->SetXTitle("Z [cm]");
 	h_ratio_rLCE->GetXaxis()->CenterTitle();
-	h_ratio_rLCE->SetYTitle("#Delta rLCE");
+	h_ratio_rLCE->SetYTitle("#Delta rLCE S1");
 	h_ratio_rLCE->GetYaxis()->CenterTitle();
 	h_ratio_rLCE->SetTitleOffset(1.,"X");
 	h_ratio_rLCE->SetTitleOffset(1.,"Y");
@@ -1731,7 +1732,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	// comparison ly vs. Z
 	/*=================================================================*/
-	TCanvas *c_clyZ_ALL = new TCanvas("clyZ_ALL","clyZ_ALL",canvas_x,canvas_y);
+	TCanvas *c_clyZ_ALL = new TCanvas("clyZ_ALL","clyZ_ALL",canvas_x,canvas_x);
 	TPad *ly_top = new TPad("ly_top", "ly_top", 0., 0.4, 1., 1., 0, 0, 0);
 	style_1D->cd();
 	ly_top->SetGridy();
@@ -1748,10 +1749,11 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	style_1D->cd();
 	h_ly_lyZ->SetXTitle("Z [cm]");
 	h_ly_lyZ->GetXaxis()->CenterTitle();
-	h_ly_lyZ->SetYTitle("ly [pe/keV]");
+	h_ly_lyZ->SetYTitle("light yield S1 [pe/keV]");
 	h_ly_lyZ->GetYaxis()->CenterTitle();
 	
-	h_ly_lyZ->SetTitle("Comparison S1: ly vs. Z");
+	//h_ly_lyZ->SetTitle("Comparison S1: ly vs. Z");
+	h_ly_lyZ->SetTitle("");
 	h_ly_lyZ->SetLineColor(kBlue);
 	h_ly_lyZ->GetYaxis()->SetRangeUser(0,10);
 	h_ly_lyZ->Draw("");
@@ -1808,7 +1810,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ratio_ly->SetTitle("");
 	h_ratio_ly->SetXTitle("Z [cm]");
 	h_ratio_ly->GetXaxis()->CenterTitle();
-	h_ratio_ly->SetYTitle("#Delta ly");
+	h_ratio_ly->SetYTitle("#Delta ly S1");
 	h_ratio_ly->GetYaxis()->CenterTitle();
 	h_ratio_ly->SetTitleOffset(1.,"X");
 	h_ratio_ly->SetTitleOffset(1.,"Y");
@@ -1907,7 +1909,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	/*=================================================================*/
 	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
-	TCanvas *c_cAFTZ = new TCanvas("cAFTZ","cAFTZ",canvas_x,canvas_y);
+	TCanvas *c_cAFTZ = new TCanvas("cAFTZ","cAFTZ",canvas_x,canvas_x);
 	TPad *top_AFTZ = new TPad("top_AFTZ", "top_AFTZ", 0., 0.4, 1., 1., 0, 0, 0);
 	style_1D->cd();
 	top_AFTZ->SetGridy();
@@ -1923,10 +1925,11 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	top_AFTZ->cd();
 	gStyle->SetPalette(NCont,ColPalette);
 	style_1D->cd();
-	h_AFTZ_MC->SetTitle("Comparison S1/S2: AreaFractionTop vs. Z");
+	//h_AFTZ_MC->SetTitle("Comparison S1/S2: AreaFractionTop vs. Z");
+	h_AFTZ_MC->SetTitle("");
 	h_AFTZ_MC->SetXTitle("Z [cm]");
 	h_AFTZ_MC->GetXaxis()->CenterTitle();
-	h_AFTZ_MC->SetYTitle("AreaFractionTop [%]");
+	h_AFTZ_MC->SetYTitle("AreaFractionTop S1 [%]");
 	h_AFTZ_MC->GetYaxis()->CenterTitle();
 	h_AFTZ_MC->SetLineColor(kRed);
 	h_AFTZ_MC->GetYaxis()->SetRangeUser(0,50);
@@ -1984,7 +1987,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ratio_AFTZ->SetTitle("");
 	h_ratio_AFTZ->SetXTitle("Z [cm]");
 	h_ratio_AFTZ->GetXaxis()->CenterTitle();
-	h_ratio_AFTZ->SetYTitle("#Delta AreaFractionTop [%]");
+	h_ratio_AFTZ->SetYTitle("#Delta AreaFractionTop S1 [%]");
 	h_ratio_AFTZ->GetYaxis()->CenterTitle();
 	h_ratio_AFTZ->SetTitleOffset(1.,"X");
 	h_ratio_AFTZ->SetTitleOffset(1.,"Y");
@@ -2033,9 +2036,10 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	TCanvas *c_cAFTrr = new TCanvas("cAFTrr","cAFTrr",canvas_x,canvas_y);
 	c_cAFTrr->SetGridy();
 	h_AFTrr_MC->SetTitle("Comparison S1: AreaFractionTop vs. R^{2}");
+	h_AFTrr_MC->SetTitle("");
 	h_AFTrr_MC->SetXTitle("R^{2} [cm^{2}]");
 	h_AFTrr_MC->GetXaxis()->CenterTitle();
-	h_AFTrr_MC->SetYTitle("AreaFractionTop [%]");
+	h_AFTrr_MC->SetYTitle("AreaFractionTop S1 [%]");
 	h_AFTrr_MC->GetYaxis()->CenterTitle();
 	h_AFTrr_MC->SetLineColor(kRed);
 	h_AFTrr_MC->GetYaxis()->SetRangeUser(0,50);

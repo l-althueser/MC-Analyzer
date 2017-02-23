@@ -39,23 +39,18 @@
 
 using namespace std;
 
-void optPhot_matching(string, double, string, int, int, int, string, string);
-void optPhot_matching(string, string, double, string, int, int, int, string, string);
-void optPhot_matching(string, string, double, string, int, int, int, string, string, bool);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string export_format = "png");
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string export_format = "png", bool batch = true);
 
 /*=================================================================*/
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
-	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
-}
-
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format) {
-	optPhot_matching(datafile_kr,datafile_PMT,AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,true);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string export_format) {
+	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,filenumber_start,filenumber_end,export_format,true);
 }
 
 /*=================================================================*/
 
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch) {
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string export_format, bool batch) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -110,8 +105,17 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	found=workingdirectory.find_last_of("/\\");
 	string workingdirectory_topname = workingdirectory.substr(found+1);
 	
+	found=datafile_kr.find_last_of("/\\");
+	string datafilename_kr = datafile_kr.substr(found+1);
+	size_t lastindex = datafilename_kr.find_last_of("."); 
+	string rawdatafilename_kr = datafilename_kr.substr(0, lastindex); 
+	
 	char file_outname[10000];
-	sprintf(file_outname,"%s/matching_%s.dat", workingdirectory.c_str(), workingdirectory_topname.c_str());
+	if (filenumber_start != filenumber_end) {
+		sprintf(file_outname,"%s/matching_%d_to_%d_%s_vs_%s.dat", workingdirectory.c_str(), filenumber_start, filenumber_end, workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
+	} else {
+		sprintf(file_outname,"%s/matching_%s_vs_%s.dat", workingdirectory.c_str(), workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
+	}
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -294,6 +298,12 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	}
 	else if ((fileexists(datafile_mc) == true) && (datafilename=="")) {
 		cout << "= reading datafiles ==== dir mode ==========================" << endl;
+		if (filenumber_start != filenumber_end) {
+			cout << "= from file " << filenumber_start << " to file " << filenumber_end << endl;
+		} else {
+			cout << "= all files in directory" << endl;
+		}
+		cout << "============================================================" << endl;
 		
 		/*=================================================================*/
 		// generated events vs. Z
@@ -396,38 +406,79 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 			double SOS_sum_min_AFT_S1 = 0;
 			double SOS_sum_min_AFT_S2 = 0;
 			
+			char filename[10000];	
+			char filename_S2[10000];			
 			double max_param = 0;
+			char* buf = 0;
+			long nevents = 0;
+			long nevents_S2 = 0;
+			bool no_PMT_details = false;
+			double AFT_S2_ratio = 0;
+			double AFT_S2 = 0;
+			
+			long nbentries = 0;
+			Int_t ntpmthits = 0;
+			Int_t nbpmthits = 0;
+			vector<int> *pmthitID = 0;
+			Float_t xp_pri = 0;
+			Float_t yp_pri = 0;
+			Float_t zp_pri = 0;
+			Float_t rrp_pri = 0;
+			double S2_hits_top = 0;
+			double S2_hits_bottom = 0;
+			
+			double h_rLCE_mean = 0;
+			double h_ratio_rLCE_sos_all = 0; //sum of squares
+			double h_ratio_rLCE_md_all = 0; //maximum deviation
+			double h_ratio_rLCE_sos_top = 0; //sum of squares
+			double h_ratio_rLCE_md_top = 0; //maximum deviation
+			double h_ratio_rLCE_sos_bottom = 0; //sum of squares
+			double h_ratio_rLCE_md_bottom = 0; //maximum deviation
+			
+			double h_ratio_ly_sos_all = 0; //sum of squares
+			double h_ratio_ly_md_all = 0; //maximum deviation
+			double h_ratio_ly_sos_top = 0; //sum of squares
+			double h_ratio_ly_md_top = 0; //maximum deviation
+			double h_ratio_ly_sos_bottom = 0; //sum of squares
+			double h_ratio_ly_md_bottom = 0; //maximum deviation
+			
+			double h_ratio_AFTZ_sos = 0; //sum of squares
+			double h_ratio_AFTZ_md = 0; //maximum deviation
+			
 			while ((file=(TSystemFile*)next())) {
 				fname = file->GetName();
 				if (!file->IsDirectory() && fname.EndsWith(ext.c_str()) && !(fname.Contains("comparison_")) && !(fname.Contains("_S2_"))) {
-					char filename[10000];
+					
+					filenumber++;
+					if ( ((filenumber < filenumber_start) || (filenumber > filenumber_end)) && (filenumber_start != filenumber_end) ) {continue;}
+					
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
-					TFile *f = new TFile(filename,"READ");
+					TFile *f_S1 = new TFile(filename,"READ");
 					TNamed *G4MCname;
-					if (f->GetListOfKeys()->Contains("MC_TAG")) {
-						f->GetObject("MC_TAG",G4MCname);
+					if (f_S1->GetListOfKeys()->Contains("MC_TAG")) {
+						f_S1->GetObject("MC_TAG",G4MCname);
 					}
 					else {
 						G4MCname = new TNamed("MC_TAG","Xenon1t");
 					}
-					if ( strcmp(G4MCname->GetTitle(),"Xenon1t") == 0 ) {
-						f->Close();
+					if ( (strcmp(G4MCname->GetTitle(),"Xenon1t") == 0) && (!(f_S1->IsZombie())) ) {
+						f_S1->Close();
+						delete f_S1;
 					}
 					else {
 						cout << endl;
 						cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-						cout << "File format not known:" << endl;
+						cout << "File format not known (or Zombie file):" << endl;
 						cout << "-> " << filename << endl;
 						cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 						cout << endl;
 						gApplication->Terminate();
 					}
 					
-					filenumber++;
 					// read in parameter value
 					// e.g.: rev338_S1_90_90_5000_30_30_163_01 -> VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
-					char* buf = strdup(fname.Data());
+					buf = strdup(fname.Data());
 					token[0] = strtok(buf, DELIMITER_); // first token
 					for (int n = 1; n < 10; n++) {
 						if (n > 2) {
@@ -440,15 +491,13 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					
 					TChain *file_input_tree = new TChain("events/events");
 					file_input_tree->AddFile(filename); 
-					long nevents = file_input_tree->GetEntries();
-					
-					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
+					nevents = file_input_tree->GetEntries();
 					
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 					
 					check_pmt_details->Reset();
 					file_input_tree->Draw("zp_pri/10. : rrp_pri >> check_pmt_details","pmthitID[0]>0","goff");
-					bool no_PMT_details = (bool)(check_pmt_details->GetEntries() == 0);
+					no_PMT_details = (bool)(check_pmt_details->GetEntries() == 0);
 					
 					/*=================================================================*/
 					// FILTER PARAMETER SETTINGS
@@ -456,28 +505,18 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					//if (atoi(token[5])!=10000) {cout << "Skip!" << endl; continue;}
 					
 					// Search for S2 sim
-					char filename_S2[10000];
+					
 					sprintf(filename_S2,"%s/%s_S2_%s_%s_%s_%s_%s_%s_%s.root", workingdirectory.c_str(), token[0], token[2], token[3], token[4], token[5], token[6], token[7], token[8]);
 					TChain *file_input_tree_S2 = new TChain("events/events");
 					file_input_tree_S2->AddFile(filename_S2); 
-					const int nevents_S2 = file_input_tree_S2->GetEntries();
-					double AFT_S2_ratio = 0;
-					double AFT_S2 = 0;
+					nevents_S2 = file_input_tree_S2->GetEntries();
 					
-					long nbentries = 0;
-					Int_t ntpmthits = 0;
-					Int_t nbpmthits = 0;
-					vector<int> *pmthitID = 0;
-					Float_t xp_pri = 0;
-					Float_t yp_pri = 0;
-					Float_t zp_pri = 0;
-					Float_t rrp_pri = 0;
-					int pmtID = 0;
-					double S2_hits_top = 0;
-					double S2_hits_bottom = 0;
+					TFile *f_S2 = new TFile(filename_S2,"READ");
 					
+					S2_hits_top = 0;
+					S2_hits_bottom = 0;
 					
-					if (nevents_S2 > 0) {
+					if ( (nevents_S2 > 0) && (!(f_S2->IsZombie())) ) {
 						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total." <<  endl;
 						
 						nbentries = nevents_S2;
@@ -519,7 +558,11 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 						delete file_input_tree_S2;
 						continue;
 					}
+					f_S2->Close();
+					delete f_S2;
 					delete file_input_tree_S2;
+					
+					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
 					
 					nbentries = file_input_tree->GetEntries();
 	
@@ -552,8 +595,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 							cout << endl;
 							gApplication->Terminate();
-						}
-						if ((ntpmthits+nbpmthits) == 1) {
+						} else {
 							if (no_PMT_details) {
 								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*TPC.Get_QE_top());
 								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*TPC.Get_QE_bottom());
@@ -639,7 +681,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					/*=================================================================*/
 					// comparison relative LCE vs. Z
 					/*=================================================================*/
-					double h_rLCE_mean = 0;
+					h_rLCE_mean = 0;
 					for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 						h_rLCE_mean += h_LCE_LCEZ->GetBinContent(z+1)/(TPC.Get_nbinsZ());
 					}
@@ -656,12 +698,12 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					h_ratio_rLCE_bottom->Add(h_rLCE_LCEZ_bottom, 1.);
 					h_ratio_rLCE_bottom->Add(h_LCE_LCEZ_bottom, -1.);
 					
-					double h_ratio_rLCE_sos_all = 0; //sum of squares
-					double h_ratio_rLCE_md_all = 0; //maximum deviation
-					double h_ratio_rLCE_sos_top = 0; //sum of squares
-					double h_ratio_rLCE_md_top = 0; //maximum deviation
-					double h_ratio_rLCE_sos_bottom = 0; //sum of squares
-					double h_ratio_rLCE_md_bottom = 0; //maximum deviation
+					h_ratio_rLCE_sos_all = 0; //sum of squares
+					h_ratio_rLCE_md_all = 0; //maximum deviation
+					h_ratio_rLCE_sos_top = 0; //sum of squares
+					h_ratio_rLCE_md_top = 0; //maximum deviation
+					h_ratio_rLCE_sos_bottom = 0; //sum of squares
+					h_ratio_rLCE_md_bottom = 0; //maximum deviation
 					for (int z=0; z<TPC.Get_nbinsZ(); z++){
 						h_ratio_rLCE_sos_all += h_ratio_rLCE->GetBinContent(z)*h_ratio_rLCE->GetBinContent(z);
 						if (abs(h_ratio_rLCE->GetBinContent(z)) > h_ratio_rLCE_md_all) {h_ratio_rLCE_md_all = abs(h_ratio_rLCE->GetBinContent(z));}
@@ -682,12 +724,12 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					h_ratio_ly_bottom->Add(h_Kr_LCE_LCEZ_bottom, 1.);
 					h_ratio_ly_bottom->Add(h_ly_lyZ_bottom, -1.);
 					
-					double h_ratio_ly_sos_all = 0; //sum of squares
-					double h_ratio_ly_md_all = 0; //maximum deviation
-					double h_ratio_ly_sos_top = 0; //sum of squares
-					double h_ratio_ly_md_top = 0; //maximum deviation
-					double h_ratio_ly_sos_bottom = 0; //sum of squares
-					double h_ratio_ly_md_bottom = 0; //maximum deviation
+					h_ratio_ly_sos_all = 0; //sum of squares
+					h_ratio_ly_md_all = 0; //maximum deviation
+					h_ratio_ly_sos_top = 0; //sum of squares
+					h_ratio_ly_md_top = 0; //maximum deviation
+					h_ratio_ly_sos_bottom = 0; //sum of squares
+					h_ratio_ly_md_bottom = 0; //maximum deviation
 					for (int z=0; z<TPC.Get_nbinsZ(); z++){
 						h_ratio_ly_sos_all += h_ratio_ly->GetBinContent(z)*h_ratio_ly->GetBinContent(z);
 						if (abs(h_ratio_ly->GetBinContent(z)) > h_ratio_ly_md_all) {h_ratio_ly_md_all = abs(h_ratio_ly->GetBinContent(z));}
@@ -702,8 +744,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					h_ratio_AFTZ->Add(h_AFTZ_Kr, 1.);
 					h_ratio_AFTZ->Add(h_AFTZ_MC, -1.);
 					
-					double h_ratio_AFTZ_sos = 0; //sum of squares
-					double h_ratio_AFTZ_md = 0; //maximum deviation
+					h_ratio_AFTZ_sos = 0; //sum of squares
+					h_ratio_AFTZ_md = 0; //maximum deviation
 					for (int z=0; z<TPC.Get_nbinsZ(); z++){
 						h_ratio_AFTZ_sos += h_ratio_AFTZ->GetBinContent(z)*h_ratio_AFTZ->GetBinContent(z);
 						if (abs(h_ratio_AFTZ->GetBinContent(z)) > h_ratio_AFTZ_md) {h_ratio_AFTZ_md = abs(h_ratio_AFTZ->GetBinContent(z));}
