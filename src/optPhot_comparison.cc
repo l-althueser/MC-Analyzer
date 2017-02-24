@@ -98,6 +98,9 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		rawdatafilename_mc = datafilename_mc.substr(0, lastindex); 
 	}
 	
+	found=datafile_PMT.find_last_of("/\\");
+	string datafilename_PMT = datafile_PMT.substr(found+1);
+	
 	found=datafile_kr.find_last_of("/\\");
 	string datafilename_kr = datafile_kr.substr(found+1);
 	lastindex = datafilename_kr.find_last_of("."); 
@@ -1588,10 +1591,17 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_INFO->AddText(canvasfile);
 	sprintf(canvasfile,"data: %s", rawdatafilename_kr.c_str());
 	pt_INFO->AddText(canvasfile);
-	sprintf(canvasfile,"         average QE_Top: %0.2f%%", QE_Top*100);
-	pt_INFO->AddText(canvasfile);
-	sprintf(canvasfile,"         average QE_bottom: %0.2f%%", QE_Bottom*100);
-	pt_INFO->AddText(canvasfile);
+	if ((datafile_PMT == "") || (no_PMT_details)) {
+		sprintf(canvasfile,"         average QE_Top: %0.2f%%", QE_Top*100);
+		pt_INFO->AddText(canvasfile);
+		sprintf(canvasfile,"         average QE_bottom: %0.2f%%", QE_Bottom*100);
+		pt_INFO->AddText(canvasfile);
+	} else {
+		sprintf(canvasfile,"         per-PMT settings used");
+		pt_INFO->AddText(canvasfile);
+		sprintf(canvasfile,"         %s", datafilename_PMT.c_str());
+		pt_INFO->AddText(canvasfile);
+	}
 	sprintf(canvasfile,"         %0.0f PMTs excluded", Off_PMTs);
 	pt_INFO->AddText(canvasfile);
 	
