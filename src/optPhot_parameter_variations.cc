@@ -44,17 +44,17 @@
 
 using namespace std;
 
-void optPhot_parameter_variations(string datadir, string parameter, string export_format, bool batch);
-void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format, bool batch);
+void optPhot_parameter_variations(string datadir, string parameter, string output_dir, string export_format, bool batch);
+void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_parameter_variations(string datadir, string parameter, string export_format = "png", bool batch = true) {
-	optPhot_parameter_variations(datadir,parameter,30,export_format,batch);
+void optPhot_parameter_variations(string datadir, string parameter, string output_dir = "", string export_format = "png", bool batch = true) {
+	optPhot_parameter_variations(datadir,parameter,30,output_dir,export_format,batch);
 }
 
 /*=================================================================*/
 
-void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format = "png", bool batch = true) {
+void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -63,6 +63,17 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 	size_t found=datadir.find_last_of("/\\");
 	string workingdirectory = datadir.substr(0,found);
 	string datafilename = datadir.substr(found+1);
+	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
 	
 	int param_min = 0;
 	int	param_max = 0;
@@ -125,7 +136,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 	TFile *file_outplot; 
 	
 	char file_outname[10000];
-	sprintf(file_outname,"%s/paramvar_%s.dat", workingdirectory.c_str(), parameter.c_str());
+	sprintf(file_outname,"%s/paramvar_%s.dat", output_dir.c_str(), parameter.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -160,7 +171,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 		cout << "= reading datafiles ==== dir mode ==========================" << endl;
 		
 		// generate plots 
-		sprintf(file_outname,"%s/paramvar_%s.root", workingdirectory.c_str(), parameter.c_str());
+		sprintf(file_outname,"%s/paramvar_%s.root", output_dir.c_str(), parameter.c_str());
 		file_outplot = new TFile(file_outname,"RECREATE");
 		
 		vector<double> param_value;
@@ -463,7 +474,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			pt_MCINFO->Draw();
 			
 			if (file_outplot) c_AFT->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_AFT.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_AFT.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_AFT->SaveAs(canvasfile);
 
 			style_1D->cd();
@@ -512,7 +523,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			leg_AFTZ->Draw();   
 			
 			if (file_outplot) c_AFTZ->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_AFTz.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_AFTz.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_AFTZ->SaveAs(canvasfile);
 			
 			style_1D->cd();
@@ -560,7 +571,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			leg_LCE->Draw();   
 			
 			if (file_outplot) c_LCE->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_LCE.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_LCE.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_LCE->SaveAs(canvasfile);
 			
 			style_1D->cd();
@@ -659,7 +670,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			leg_LCEZ->Draw();   
 			
 			if (file_outplot) c_LCEZ->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_LCEz.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_LCEz.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_LCEZ->SaveAs(canvasfile);
 			
 			style_1D->cd();
@@ -725,7 +736,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			leg_rLCEZ->Draw();   
 			
 			if (file_outplot) c_rLCEZ->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_rLCEz.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_rLCEz.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_rLCEZ->SaveAs(canvasfile);
 		}
 		
@@ -750,7 +761,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 			pt_MCINFO->Draw();
 			
 			if (file_outplot) c_AFT_S2->Write();	
-			sprintf(canvasfile,"%s/paramvar_%s_AFT_S2.%s", workingdirectory.c_str(), parameter.c_str(),export_format.c_str());
+			sprintf(canvasfile,"%s/paramvar_%s_AFT_S2.%s", output_dir.c_str(), parameter.c_str(),export_format.c_str());
 			if (!(export_format=="")) c_AFT_S2->SaveAs(canvasfile);
 		}
 		

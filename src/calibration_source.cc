@@ -39,20 +39,20 @@
 
 using namespace std;
 
-void calibration_source(string datafile, string export_format);
-void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
+void calibration_source(string datafile, string output_dir, string export_format);
+void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void calibration_source(string datafile, string export_format = "png") {
+void calibration_source(string datafile, string output_dir = "", string export_format = "png") {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
-	calibration_source(datafile,50,45,22,export_format,true);
+	calibration_source(datafile,50,45,22,output_dir,export_format,true);
 }
 
 /*=================================================================*/
 
-void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
+void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -69,6 +69,17 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 		rawdatafilename = datafilename.substr(0, lastindex); 
 	}
 	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	Int_t canvas_x = 850;
 	Int_t canvas_y = 800;
 
@@ -79,7 +90,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	TChain *file_input_tree = new TChain("events/events");
 
 	char file_outname[10000];
-	sprintf(file_outname,"%s/%s_calsource.dat", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_calsource.dat", output_dir.c_str(), rawdatafilename.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -159,7 +170,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	file_input_tree->SetAlias("rp","TMath::Sqrt((xp*xp + yp*yp))"); 	
 	
 	// generate plots  
-	sprintf(file_outname,"%s/%s_calsource.root", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_calsource.root", output_dir.c_str(), rawdatafilename.c_str());
 	TFile *file_outplot = new TFile(file_outname,"RECREATE");
 	
 	file_outstat << "= geometry parameters ======================================" << "\n";
@@ -306,7 +317,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	h_spectrum->GetYaxis()->CenterTitle();
 	h_spectrum->Draw();
 	if (file_outplot) c_spectrum->Write();
-	sprintf(canvasfile,"%s/%s_calsource_spectrum.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_calsource_spectrum.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_spectrum->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -357,7 +368,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	h_xy->Scale(1./h_xy->GetEntries());
 	h_xy->Draw("colz");
 	if (file_outplot) c_xy->Write();
-	sprintf(canvasfile,"%s/%s_calsource_xy.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_calsource_xy.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_xy->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -470,7 +481,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rZ->Write();
-	sprintf(canvasfile,"%s/%s_calsource_yz.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_calsource_yz.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -496,7 +507,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 		lin_cath->Draw("same");
 		lin_grnd->Draw("same");
 		if (file_outplot) c_rZ_det->Write();
-		sprintf(canvasfile,"%s/%s_calsource_yz_det.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+		sprintf(canvasfile,"%s/%s_calsource_yz_det.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 		if (!(export_format=="")) c_rZ_det->SaveAs(canvasfile);
 		
 		/*=================================================================*/
@@ -518,7 +529,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 		lin_cath->Draw("same");
 		lin_grnd->Draw("same");
 		if (file_outplot) c_rZ_det_top->Write();
-		sprintf(canvasfile,"%s/%s_calsource_yz_det_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+		sprintf(canvasfile,"%s/%s_calsource_yz_det_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 		if (!(export_format=="")) c_rZ_det_top->SaveAs(canvasfile);
 		
 		/*=================================================================*/
@@ -540,7 +551,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 		lin_cath->Draw("same");
 		lin_grnd->Draw("same");
 		if (file_outplot) c_rZ_det_bottom->Write();
-		sprintf(canvasfile,"%s/%s_calsource_yz_det_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+		sprintf(canvasfile,"%s/%s_calsource_yz_det_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 		if (!(export_format=="")) c_rZ_det_bottom->SaveAs(canvasfile);
 	}	
 	/*=================================================================*/

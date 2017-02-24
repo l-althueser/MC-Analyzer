@@ -40,17 +40,17 @@
 
 using namespace std;
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, bool batch);
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, bool batch);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string output_dir, bool batch);
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string output_dir, bool batch);
 
 /*=================================================================*/
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, bool batch = true) {
-	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,filenumber_start,filenumber_end,batch);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string output_dir = "", bool batch = true) {
+	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,filenumber_start,filenumber_end,output_dir,batch);
 }
 
 /*=================================================================*/
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, bool batch = true) {
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string output_dir = "", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -120,6 +120,17 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	found=workingdirectory.find_last_of("/\\");
 	string workingdirectory_topname = workingdirectory.substr(found+1);
 	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	found=datafile_kr.find_last_of("/\\");
 	string datafilename_kr = datafile_kr.substr(found+1);
 	size_t lastindex = datafilename_kr.find_last_of("."); 
@@ -129,9 +140,9 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	
 	char file_outname[10000];
 	if (filenumber_start != filenumber_end) {
-		sprintf(file_outname,"%s/matching_%d_to_%d_%s_vs_%s.dat", workingdirectory.c_str(), filenumber_start, filenumber_end, workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
+		sprintf(file_outname,"%s/matching_%d_to_%d_%s_vs_%s.dat", output_dir.c_str(), filenumber_start, filenumber_end, workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
 	} else {
-		sprintf(file_outname,"%s/matching_%s_vs_%s.dat", workingdirectory.c_str(), workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
+		sprintf(file_outname,"%s/matching_%s_vs_%s.dat", output_dir.c_str(), workingdirectory_topname.c_str(), rawdatafilename_kr.c_str());
 	}
 	
 	ofstream file_outstat;

@@ -39,20 +39,20 @@
 
 using namespace std;
 
-void optPhot_S2(string datafile, string export_format, bool batch);
-void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
+void optPhot_S2(string datafile, string output_dir, string export_format, bool batch);
+void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_S2(string datafile, string export_format = "png", bool batch = true) {
+void optPhot_S2(string datafile, string output_dir = "", string export_format = "png", bool batch = true) {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
-	optPhot_S2(datafile,26,50,22,export_format,batch);
+	optPhot_S2(datafile,26,50,22,output_dir,export_format,batch);
 }
 
 /*=================================================================*/
 
-void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
+void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -69,6 +69,17 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 		rawdatafilename = datafilename.substr(0, lastindex); 
 	}
 	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	Int_t canvas_x = 850;
 	Int_t canvas_y = 800;
 
@@ -80,7 +91,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	TNamed *G4MCname;
 	
 	char file_outname[10000];
-	sprintf(file_outname,"%s/%s_S2.dat", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_S2.dat", output_dir.c_str(), rawdatafilename.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -158,7 +169,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
 	// generate plots  
-	sprintf(file_outname,"%s/%s_S2.root", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_S2.root", output_dir.c_str(), rawdatafilename.c_str());
 	TFile *file_outplot = new TFile(file_outname,"RECREATE");
 	
 	file_outstat << "= geometry parameters ======================================" << "\n";
@@ -331,7 +342,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy->Scale(100.);
 	h_LCE_xy->Draw("colz");
 	if (file_outplot) c_LCE_xy->Write();
-	sprintf(canvasfile,"%s/%s_S2_xy_LCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -351,7 +362,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy_top->Scale(100.);
 	h_LCE_xy_top->Draw("colz");
 	if (file_outplot) c_LCE_xy_top->Write();
-	sprintf(canvasfile,"%s/%s_S2_xy_LCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -374,7 +385,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy_bottom->Scale(100.);
 	h_LCE_xy_bottom->Draw("colz");
 	if (file_outplot) c_LCE_xy_bottom->Write();
-	sprintf(canvasfile,"%s/%s_S2_xy_LCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy_bottom->SaveAs(canvasfile);
 	
 	file_outstat << "============================================================" << "\n";

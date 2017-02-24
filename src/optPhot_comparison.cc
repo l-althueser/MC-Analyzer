@@ -39,18 +39,18 @@
 
 using namespace std;
 
-void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch);
-void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format, bool batch);
+void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir, string export_format, bool batch);
+void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
 
-void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format = "png", bool batch = true) {
-	optPhot_comparison(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,export_format,batch);
+void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir = "", string export_format = "png", bool batch = true) {
+	optPhot_comparison(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,output_dir,export_format,batch);
 }
 
 /*=================================================================*/
 //.x ../src/optPhot_comparison.cc++("./comparison_perPMT_QE/Xe_Kr83m.txt","./comparison_perPMT_QE/Xe_Kr83m_PMT.ini",0.645,"./comparison_perPMT_QE/MC_Xe_TPC_optPhot_S1_1e5.root",9,4,4,"4 6 8 12","png");
-void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format = "png", bool batch = true) {
+void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -98,6 +98,17 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		rawdatafilename_mc = datafilename_mc.substr(0, lastindex); 
 	}
 	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	found=datafile_PMT.find_last_of("/\\");
 	string datafilename_PMT = datafile_PMT.substr(found+1);
 	
@@ -106,7 +117,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	lastindex = datafilename_kr.find_last_of("."); 
 	string rawdatafilename_kr = datafilename_kr.substr(0, lastindex); 
 	
-	sprintf(file_outname,"%s/comparison_%s_vs_%s.root", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str());
+	sprintf(file_outname,"%s/comparison_%s_vs_%s.root", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str());
 	file_outplot = new TFile(file_outname,"RECREATE");
 	
 	TPC_Definition TPC;
@@ -325,7 +336,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	}
 	h_ly_sigma_map->Draw("colz");
 	if (file_outplot) c_ly_sigma_map->Write();
-	//sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_Kr.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	//sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_Kr.%s", output_dir.c_str(),suffix.c_str(),export_format.c_str());
 	//if (!(export_format=="")) c_ly_sigma_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -350,7 +361,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	}
 	h_ly_map->Draw("colz");
 	if (file_outplot) c_ly_map->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -372,7 +383,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	}
 	h_ly_map_top->Draw("colz");
 	if (file_outplot) c_ly_map_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_map_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -391,7 +402,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ly_map_bottom->Add(h_ly_map_top,-1);
 	h_ly_map_bottom->Draw("colz");
 	if (file_outplot) c_ly_map_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_ly_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_map_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -425,7 +436,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_map->SetMinimum(0.5);
 	h_rLCE_map->Draw("colz");
 	if (file_outplot) c_rLCE_map->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -461,7 +472,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_map_top->SetMinimum(0);
 	h_rLCE_map_top->Draw("colz");
 	if (file_outplot) c_rLCE_map_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_top->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -482,7 +493,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_rLCE_map_bottom->SetMinimum(0.4);
 	h_rLCE_map_bottom->Draw("colz");
 	if (file_outplot) c_rLCE_map_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_Kr_rLCE_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -954,7 +965,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_ly_rrZ_QE->Draw();
 
 	if (file_outplot) c_ly_rrZ->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1001,7 +1012,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_ly_rms_rrZ_QE->Draw();
 	
 	if (file_outplot) c_ly_rms_rrZ->Write();
-	//sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_MC.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	//sprintf(canvasfile,"%s/%s_comparison_ly_sigma_rrZ_MC.%s", output_dir.c_str(),suffix.c_str(),export_format.c_str());
 	//if (!(export_format=="")) c_ly_rms_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1038,7 +1049,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_ly_rrZ_top_QE->Draw();
 	
 	if (file_outplot) c_ly_rrZ_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1072,7 +1083,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_ly_rrZ_bottom_QE->Draw();
 	
 	if (file_outplot) c_ly_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_ly_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_ly_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1108,7 +1119,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_cly_rrZ->SetMaximum(abs(h_cly_rrZ->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_cly_rrZ->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cly_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1144,7 +1155,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_cly_rrZ_top->SetMaximum(abs(h_cly_rrZ_top->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_cly_rrZ_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cly_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1180,7 +1191,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_cly_rrZ_bottom->SetMaximum(abs(h_cly_rrZ_bottom->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_cly_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_ly_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cly_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1226,7 +1237,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_rLCE_rrZ_QE->Draw();
 	
 	if (file_outplot) c_rLCE_rrZ->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1260,7 +1271,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_rLCE_rrZ_top_QE->Draw();
 	
 	if (file_outplot) c_rLCE_rrZ_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1294,7 +1305,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_rLCE_rrZ_bottom_QE->Draw();
 	
 	if (file_outplot) c_rLCE_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_MC_rLCE_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1330,7 +1341,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_crLCE_rrZ->SetMaximum(abs(h_crLCE_rrZ->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1365,7 +1376,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_crLCE_rrZ_top->SetMaximum(abs(h_crLCE_rrZ_top->GetMinimum()));}
 	// else do nothing;
 	if (file_outplot) c_crLCE_rrZ_top->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE_top.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE_top.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1400,7 +1411,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		{h_crLCE_rrZ_bottom->SetMaximum(abs(h_crLCE_rrZ_bottom->GetMinimum()));}
 	// else do nothing; 
 	if (file_outplot) c_crLCE_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE_bottom.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rrZ_rLCE_bottom.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1449,7 +1460,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	c_crLCE_rrZ_3D->SetTheta(20.);
 	c_crLCE_rrZ_3D->SetPhi(220.);
 	if (file_outplot) c_crLCE_rrZ_3D->Write();
-	//sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_3D.%s", workingdirectory.c_str(),suffix.c_str(),export_format.c_str());
+	//sprintf(canvasfile,"%s/%s_comparison_rLCE_rrZ_3D.%s", output_dir.c_str(),suffix.c_str(),export_format.c_str());
 	//if (!(export_format=="")) c_crLCE_rrZ_3D->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1781,7 +1792,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	leg_crLCE_ratio->Draw();
 	
 	if (file_outplot) c_crLCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rLCEz.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_rLCEz.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_crLCEZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -1950,7 +1961,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	leg_cly_ratio->Draw();
 	
 	if (file_outplot) c_clyZ_ALL->Write();	
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_lyz.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_lyz.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_clyZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -2041,7 +2052,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	pt_ratio_AFTZ->Draw();
 
 	if (file_outplot) c_cAFTZ->Write();	
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTz.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTz.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cAFTZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -2118,7 +2129,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		h_S2_AFTZ->Draw("hist");
 		
 		if (file_outplot) c_cAFTZ_S2->Write();	
-		sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTz_S2.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+		sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTz_S2.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 		if (!(export_format=="")) c_cAFTZ_S2->SaveAs(canvasfile);
 	}
 	
@@ -2207,7 +2218,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	h_ratio_AFTrr->Draw("hist");
 
 	if (file_outplot) c_cAFTrr->Write();	
-	sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTrr.%s", workingdirectory.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
+	sprintf(canvasfile,"%s/comparison_%s_vs_%s_AFTrr.%s", output_dir.c_str(), rawdatafilename_mc.c_str(), rawdatafilename_kr.c_str(),export_format.c_str());
 	if (!(export_format=="")) c_cAFTrr->SaveAs(canvasfile);
 	
 	gStyle->SetPalette(NCont,ColPalette);

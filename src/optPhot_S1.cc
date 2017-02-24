@@ -39,18 +39,18 @@
 
 using namespace std;
 
-void optPhot_S1(string datafile, string export_format, bool batch);
-void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
+void optPhot_S1(string datafile, string output_dir, string export_format, bool batch);
+void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_S1(string datafile, string export_format = "png", bool batch = true) {
+void optPhot_S1(string datafile, string output_dir = "", string export_format = "png", bool batch = true) {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
-	optPhot_S1(datafile,26,50,22,export_format,batch);
+	optPhot_S1(datafile,26,50,22,output_dir,export_format,batch);
 }
 
-void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
+void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kPrint;
@@ -67,6 +67,17 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 		rawdatafilename = datafilename.substr(0, lastindex); 
 	}
 	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	Int_t canvas_x = 850;
 	Int_t canvas_y = 800;
 
@@ -78,7 +89,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	TNamed *G4MCname;
 	
 	char file_outname[10000];
-	sprintf(file_outname,"%s/%s_S1.dat", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_S1.dat", output_dir.c_str(), rawdatafilename.c_str());
 	
 	ofstream file_outstat;
 	file_outstat.open(file_outname);
@@ -156,7 +167,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 	
 	// generate plots  
-	sprintf(file_outname,"%s/%s_S1.root", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outname,"%s/%s_S1.root", output_dir.c_str(), rawdatafilename.c_str());
 	TFile *file_outplot = new TFile(file_outname,"RECREATE");
 	
 	file_outstat << "= geometry parameters ======================================" << "\n";
@@ -418,7 +429,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy->Scale(100.);
 	h_LCE_xy->Draw("colz");
 	if (file_outplot) c_LCE_xy->Write();
-	sprintf(canvasfile,"%s/%s_S1_xy_LCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_xy_LCE.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -441,7 +452,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy_top->Scale(100.);
 	h_LCE_xy_top->Draw("colz");
 	if (file_outplot) c_LCE_xy_top->Write();
-	sprintf(canvasfile,"%s/%s_S1_xy_LCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_xy_LCE_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -461,7 +472,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	h_LCE_xy_bottom->Scale(100.);
 	h_LCE_xy_bottom->Draw("colz");
 	if (file_outplot) c_LCE_xy_bottom->Write();
-	sprintf(canvasfile,"%s/%s_S1_xy_LCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_xy_LCE_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_xy_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -492,7 +503,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rrZ_camber->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_gen.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_gen.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rrZ_camber->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -532,7 +543,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rrZ_det->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_det.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_det.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rrZ_det->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -553,7 +564,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rrZ_det_top->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_det_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_det_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rrZ_det_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -574,7 +585,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rrZ_det_bottom->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_det_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_det_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rrZ_det_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -599,7 +610,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_LCE_rrZ->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -624,7 +635,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_LCE_rrZ_top->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -646,7 +657,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_LCE_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_LCE_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -676,7 +687,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rLCE_rrZ->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -699,7 +710,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rLCE_rrZ_top->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -722,7 +733,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
 	if (file_outplot) c_rLCE_rrZ_bottom->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ_bottom->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -746,7 +757,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	c_rLCE_rrZ_3D->SetTheta(20.);
 	c_rLCE_rrZ_3D->SetPhi(220.);
 	if (file_outplot) c_rLCE_rrZ_3D->Write();
-	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_3D.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rrZ_rLCE_3D.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_rrZ_3D->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -843,7 +854,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	leg_LCE_LCEZ->Draw();    
 
 	if (file_outplot) c_LCE_LCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_S1_LCEz.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_LCEz.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_LCEZ_ALL->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -890,7 +901,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	leg_LCE_rLCEZ->Draw();    
 
 	if (file_outplot) c_LCE_rLCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_S1_rLCEz.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_rLCEz.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_rLCEZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -993,7 +1004,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	leg->Draw();    
 
 	if (file_outplot) c_LCE_LCErr_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_S1_LCErr.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_S1_LCErr.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_LCErr_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/

@@ -37,10 +37,10 @@
 
 using namespace std;
 
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
@@ -48,6 +48,17 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	string datafilename = datafile.substr(found+1);
 	size_t lastindex = datafilename.find_last_of("."); 
 	string rawdatafilename = datafilename.substr(0, lastindex); 
+	
+	if (output_dir == "") {output_dir = workingdirectory;}
+	if (fileexists(output_dir) == false) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "output directory not found:" << endl;
+		cout << "-> " << output_dir << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
 	
 	// Read raw file and determine data structure
 	ifstream raw;
@@ -90,7 +101,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	
 	TFile *file_outplot;  
 	char file_outplotname[10000];
-	sprintf(file_outplotname,"%s/%s_map.root", workingdirectory.c_str(), rawdatafilename.c_str());
+	sprintf(file_outplotname,"%s/%s_map.root", output_dir.c_str(), rawdatafilename.c_str());
 	file_outplot = new TFile(file_outplotname,"RECREATE");
 	
 	const Int_t canvas_x = 650;
@@ -193,7 +204,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	}
 	h_ly_map->Draw("colz");
 	if (file_outplot) c_ly_map->Write();
-	sprintf(canvasfile,"%s/%s_map_ly.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_ly.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_ly_map->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -226,7 +237,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	h_rLCE_map->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map->Draw("colz");
 	if (file_outplot) c_rLCE_map->Write();
-	sprintf(canvasfile,"%s/%s_map_rLCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_rLCE.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -250,7 +261,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	c_rLCE_map_3D->SetTheta(20.);
 	c_rLCE_map_3D->SetPhi(220.);
 	if (file_outplot) c_rLCE_map_3D->Write();
-	sprintf(canvasfile,"%s/%s_map_rLCE_3D.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_rLCE_3D.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_3D->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -273,7 +284,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	h_rLCE_map_top->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map_top->Draw("colz");
 	if (file_outplot) c_rLCE_map_top->Write();
-	sprintf(canvasfile,"%s/%s_map_rLCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_rLCE_top.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_top->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -292,7 +303,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	h_rLCE_map_bottom->Add(h_rLCE_map_top,-1);
 	h_rLCE_map_bottom->Draw("colz");
 	if (file_outplot) c_rLCE_map_bottom->Write();
-	sprintf(canvasfile,"%s/%s_map_rLCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_rLCE_bottom.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_rLCE_map_bottom->SaveAs(canvasfile);
 
 	/*=================================================================*/
@@ -352,7 +363,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	leg_LCEZ->Draw();    
 
 	if (file_outplot) c_LCE_LCEZ_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_map_LCEz.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_LCEz.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_LCE_LCEZ_ALL->SaveAs(canvasfile);
 	
 	/*=================================================================*/
@@ -410,7 +421,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	leg_lyZ->Draw();    
 
 	if (file_outplot) c_ly_lyZ_ALL->Write();	
-	sprintf(canvasfile,"%s/%s_map_lyz.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	sprintf(canvasfile,"%s/%s_map_lyz.%s", output_dir.c_str(), rawdatafilename.c_str(), export_format.c_str());
 	if (!(export_format=="")) c_ly_lyZ_ALL->SaveAs(canvasfile);
 	
 	if (!batch) {gROOT->SetBatch(kFALSE);}	
