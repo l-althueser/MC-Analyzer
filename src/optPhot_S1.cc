@@ -68,6 +68,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output
 	}
 	
 	if (output_dir == "") {output_dir = workingdirectory;}
+	else if (output_dir.find("\\", output_dir.size())) {output_dir = output_dir.substr(0,output_dir.size()-1);}
 	if (fileexists(output_dir) == false) {
 		cout << endl;
 		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;

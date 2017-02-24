@@ -99,6 +99,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	}
 	
 	if (output_dir == "") {output_dir = workingdirectory;}
+	else if (output_dir.find("\\", output_dir.size())) {output_dir = output_dir.substr(0,output_dir.size()-1);}
 	if (fileexists(output_dir) == false) {
 		cout << endl;
 		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
