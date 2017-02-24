@@ -55,7 +55,7 @@ void calibration_source(string datafile, string export_format = "png") {
 void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
-	gErrorIgnoreLevel = kWarning;
+	gErrorIgnoreLevel = kPrint;
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");

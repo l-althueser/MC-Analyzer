@@ -33,7 +33,7 @@ using namespace std;
 void MC_Analyzer() {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
-	gErrorIgnoreLevel = kWarning;
+	gErrorIgnoreLevel = kPrint;
 	
 	std::ifstream configfile_in("./.MC_Analyzer.config");
 	string lastfile_MC, lastfile_Kr83m, lastfile_parameters, lastfile_pmtini;

@@ -53,7 +53,7 @@ void optPhot_comparison(string datafile_kr, double AFT_S2_Kr, string datafile_mc
 void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
-	gErrorIgnoreLevel = kWarning;
+	gErrorIgnoreLevel = kPrint;
 	
 	if (fileexists(datafile_kr) == false) {
 		cout << endl;

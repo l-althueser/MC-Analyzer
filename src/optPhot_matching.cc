@@ -52,7 +52,7 @@ void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, 
 void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
-	gErrorIgnoreLevel = kWarning;
+	gErrorIgnoreLevel = kPrint;
 	
 	if (fileexists(datafile_kr) == false) {
 		cout << endl;

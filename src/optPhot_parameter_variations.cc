@@ -57,7 +57,7 @@ void optPhot_parameter_variations(string datadir, string parameter, string expor
 void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
-	gErrorIgnoreLevel = kWarning;
+	gErrorIgnoreLevel = kPrint;
 	
 	// read in datafilename and get working directory
 	size_t found=datadir.find_last_of("/\\");
