@@ -10,6 +10,7 @@
 
 // include C++ libs
 #include <vector>
+#include <time.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -83,9 +84,24 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 		gApplication->Terminate();
 	}
 	
+	if ( (filenumber_start > filenumber_end) ) {
+		cout << endl;
+		cout << "x Error xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << "file index start is greater then file index end!" << endl;
+		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+		cout << endl;
+		gApplication->Terminate();
+	}
+	
 	TPC_Definition TPC;
 	TPC.Set_Bins(bin_z,bin_r,bin_rr);
 	
+	time_t     now = time(0);
+    struct tm  tstruct;
+    char       starttime[80];
+    tstruct = *localtime(&now);
+    strftime(starttime, sizeof(starttime), "%X", &tstruct);
+
 	stringstream stream(strnbinst);
 	std::vector<int> nbinst;
 	int element;
@@ -108,6 +124,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	string datafilename_kr = datafile_kr.substr(found+1);
 	size_t lastindex = datafilename_kr.find_last_of("."); 
 	string rawdatafilename_kr = datafilename_kr.substr(0, lastindex); 
+	
+	if ( (filenumber_start == 0) && (filenumber_start != filenumber_end) ) {filenumber_start = 1;}
 	
 	char file_outname[10000];
 	if (filenumber_start != filenumber_end) {
@@ -302,7 +320,6 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 		} else {
 			cout << "= all files in directory" << endl;
 		}
-		cout << "============================================================" << endl;
 		
 		/*=================================================================*/
 		// generated events vs. Z
@@ -390,6 +407,30 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 		TH2F* check_pmt_details = new TH2F("check_pmt_details", "check_pmt_details", TPC.Get_nbinsRR(), TPC.Get_LXe_minRR(), TPC.Get_LXe_maxRR(), TPC.Get_nbinsZ(), TPC.Get_LXe_minZ(), TPC.Get_LXe_maxZ());
 		
 		string ext = ".root";
+		int files_to_process = 0;
+		
+		TSystemDirectory test_dir(workingdirectory.c_str(), workingdirectory.c_str());
+		TList *test_files = test_dir.GetListOfFiles();
+		if (test_files) {
+			TSystemFile *test_file;
+			TString test_fname;
+			TIter test_next(test_files);
+			while ((test_file=(TSystemFile*)test_next())) {
+					test_fname = test_file->GetName();
+					if (!test_file->IsDirectory() && test_fname.EndsWith(ext.c_str()) && !(test_fname.Contains("comparison_")) && !(test_fname.Contains("_S2_"))) {
+						files_to_process += 1;
+					}
+			}
+			
+		}
+		
+		if ( (filenumber_start < files_to_process) && (filenumber_end <= files_to_process) && (filenumber_start != filenumber_end) ) {
+			files_to_process = filenumber_end - filenumber_start + 1;
+		}
+		
+		cout << "= " << files_to_process << " files to process" << endl;
+		cout << "============================================================" << endl;
+		
 		TSystemDirectory dir(workingdirectory.c_str(), workingdirectory.c_str());
 		TList *files = dir.GetListOfFiles();
 		if (files) {
@@ -445,6 +486,11 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					
 					filenumber++;
 					if ( ((filenumber < filenumber_start) || (filenumber > filenumber_end)) && (filenumber_start != filenumber_end) ) {continue;}
+					
+					now = time(0);
+					char currtime[80];
+					tstruct = *localtime(&now);
+					strftime(currtime, sizeof(currtime), "%X", &tstruct);
 					
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), fname.Data());
 					
@@ -511,7 +557,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					S2_hits_bottom = 0;
 					
 					if ( (nevents_S2 > 0) && (!(f_S2->IsZombie())) ) {
-						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total." <<  endl;
+						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total.\t" << (double)(filenumber-filenumber_start+1)/(double)files_to_process*100 << "% - " << currtime << " (since " << starttime << ")" <<   endl;
 						
 						nbentries = nevents_S2;
 						
@@ -556,7 +602,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					delete f_S2;
 					delete file_input_tree_S2;
 					
-					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total." <<  endl;
+					cout << " file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents << " events total.\t" << (double)(filenumber-filenumber_start+1)/(double)files_to_process*100 << "% - " << currtime << " (since " << starttime << ")" <<  endl;
 					
 					nbentries = file_input_tree->GetEntries();
 	
