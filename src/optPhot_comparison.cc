@@ -700,6 +700,9 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			QE_PMT.push_back(TPC.Get_QE_bottom());
 			On_PMT.push_back(1.);
 		}
+		QE_Top = TPC.Get_QE_top();
+		QE_Bottom = TPC.Get_QE_bottom();
+		Off_PMTs = 0;
 	} else {
 		// read PMT.ini file 
 		raw.open(datafile_PMT.c_str());
