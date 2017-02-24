@@ -1,4 +1,6 @@
 .MC_Analyzer.config
+examples/.ipynb_checkpoints/
+.ipynb_checkpoints/
 
 # Compiled Object files
 *.slo

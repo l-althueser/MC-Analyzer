@@ -1,0 +1,39 @@
+============================================================
+= reading datafile ===== single file =======================
+ file: MC_Xe_TPC_optPhot_S1_1e5.root 100000 events 
+============================================================
+= geometry parameters ======================================
+binning: 26 50 22
+chamber_minZ: -140
+chamber_maxZ: 6
+chamber_minRR: 0
+chamber_maxRR: 3600
+LXe_minZ: -96.7
+LXe_maxZ: 0
+LXe_minRR: 0
+LXe_maxRR: 2294.41
+LCE_min: 0
+LCE_max: 50
+============================================================
+= analyse ttree ============================================
+generated events: 100000
+generated events (LXe): 92538
+detected events (LXe): 30418
+Mean LCE LXe(detected/generated): 32.8708
+------------------------------------------------------------
+detected events (LXe TOP): 6164
+Mean LCE LXe(detected TOP/generated): 6.66105
+AreaFractionTop LXe(detected TOP/detected ALL): 20.2643
+------------------------------------------------------------
+detected events (LXe BOTTOM): 24254
+Mean LCE LXe(detected BOTTOM/generated): 26.2098
+AreaFractionBottom LXe(detected BOTTOM/detected ALL): 79.7357
+============================================================
+= plot xy ==================================================
+= plot rrZ =================================================
+Mean LCE: 32.9111
+= plot LCEZ ================================================
+Mean LCE: 32.9123
+= plot LCErr ===============================================
+Mean LCE: 32.8715
+============================================================

@@ -1977,7 +1977,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	
 	pt_INFO->Draw();
 	
-	TLegend *leg_cAFTZ = new TLegend(0.105,0.825,0.3,0.975);
+	TLegend *leg_cAFTZ = new TLegend(0.105,0.875,0.3,0.975);
 	leg_cAFTZ->SetFillColor(0);
 	//leg_cAFTZ->SetTextSize(0.04);
 	leg_cAFTZ->SetBorderSize(1);
@@ -2035,19 +2035,19 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	// comparison AFT vs. Z S2
 	/*=================================================================*/
 	if (nevents_S2 > 0) {
-		TCanvas *c_cAFTZ_S2 = new TCanvas("cAFTZ_S2","cAFTZ_S2",canvas_x/2.,canvas_x);
+		TCanvas *c_cAFTZ_S2 = new TCanvas("cAFTZ_S2","cAFTZ_S2",canvas_x,canvas_x);
 		TPad *top_AFTZ_S2 = new TPad("top_AFTZ_S2", "top_AFTZ_S2", 0., 0.4, 1., 1., 0, 0, 0);
 		style_1D->cd();
 		top_AFTZ_S2->SetGridy();
 		top_AFTZ_S2->SetTopMargin(0.025);
-		top_AFTZ_S2->SetRightMargin(0.035);
+		//top_AFTZ_S2->SetRightMargin(0.035);
 		top_AFTZ_S2->Draw();
 		TPad *bottom_AFTZ_S2 = new TPad("bottom_AFTZ_S2", "bottom_AFTZ_S2", 0., 0., 1., 0.4, 0, 0, 0);
 		style_1D->cd();
 		bottom_AFTZ_S2->SetGridy();
 		bottom_AFTZ_S2->SetTopMargin(0.02);
 		bottom_AFTZ_S2->SetBottomMargin(0.1);
-		bottom_AFTZ_S2->SetRightMargin(0.035);
+		//bottom_AFTZ_S2->SetRightMargin(0.035);
 		bottom_AFTZ_S2->SetLeftMargin(0.105);
 		bottom_AFTZ_S2->Draw();
 		top_AFTZ_S2->cd();
@@ -2071,7 +2071,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		
 		pt_INFO->Draw();
 	
-		TLegend *leg_cAFTZ_S2 = new TLegend(0.105,0.825,0.45,0.95);
+		TLegend *leg_cAFTZ_S2 = new TLegend(0.105,0.875,0.3,0.975);
 		leg_cAFTZ_S2->SetFillColor(0);
 		//leg_cAFTZ_S2->SetTextSize(0.04);
 		leg_cAFTZ_S2->SetBorderSize(1);
