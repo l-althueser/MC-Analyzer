@@ -44,21 +44,17 @@
 
 using namespace std;
 
-void optPhot_parameter_variations(string, string, int, string);
-void optPhot_parameter_variations(string, string, int, string, bool);
+void optPhot_parameter_variations(string datadir, string parameter, string export_format, bool batch);
+void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_parameter_variations(string datadir, string parameter, string export_format) {
-	optPhot_parameter_variations(datadir,parameter,30,export_format,true);
-}
-
-void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format) {
-	optPhot_parameter_variations(datadir,parameter,bin_z,export_format,true);
+void optPhot_parameter_variations(string datadir, string parameter, string export_format = "png", bool batch = true) {
+	optPhot_parameter_variations(datadir,parameter,30,export_format,batch);
 }
 
 /*=================================================================*/
 
-void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format, bool batch) {
+void optPhot_parameter_variations(string datadir, string parameter, int bin_z, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -86,6 +82,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 	
 	TPC_Definition TPC(bin_z,50,22); // bin_z = 30
 	TNamed *G4MCname = 0;
+	TNamed *MCVERSION_TAG = 0;
 	
 	//TGaxis::SetMaxDigits(4);
 	//TGaxis::SetExponentOffset(-0.01, 0.01, "y"); // X and Y offset for Y axis
@@ -125,6 +122,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 	gStyle->SetPalette(NCont,ColPalette);
 
 	TFile *file_input;
+	TFile *file_outplot; 
 	
 	char file_outname[10000];
 	sprintf(file_outname,"%s/paramvar_%s.dat", workingdirectory.c_str(), parameter.c_str());
@@ -161,8 +159,7 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 		file_outstat << "= reading datafiles ==== dir mode ==========================" << "\n";
 		cout << "= reading datafiles ==== dir mode ==========================" << endl;
 		
-		// generate plots
-		TFile *file_outplot;  
+		// generate plots 
 		sprintf(file_outname,"%s/paramvar_%s.root", workingdirectory.c_str(), parameter.c_str());
 		file_outplot = new TFile(file_outname,"RECREATE");
 		
@@ -187,7 +184,6 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 		
 		string ext = ".root";
 		string exclude = "paramvar_";
-		bool first = false;
 		TSystemDirectory dir(workingdirectory.c_str(), workingdirectory.c_str());
 		TList *files = dir.GetListOfFiles();
 		if (files) {
@@ -201,18 +197,19 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 					char filename[10000];
 					sprintf(filename,"%s/%s", workingdirectory.c_str(), input_file.c_str());
 					TChain *file_input_tree = new TChain("events/events");
-					if (first == true) {
-						TFile *f = new TFile(filename,"READ");
-						TNamed *G4MCname;
-						if (f->GetListOfKeys()->Contains("MC_TAG")) {
-							f->GetObject("MC_TAG",G4MCname);
-						}
-						else {
-							G4MCname = new TNamed("MC_TAG","Xenon1t");
-						}
-						TPC.Init(G4MCname);
-						f->Close();
+					
+					TFile *f = new TFile(filename,"READ");
+					if (f->GetListOfKeys()->Contains("MC_TAG")) {
+						f->GetObject("MC_TAG",G4MCname);
+						f->GetObject("MCVERSION_TAG",MCVERSION_TAG);
 					}
+					else {
+						G4MCname = new TNamed("MC_TAG","Xenon1t");
+						MCVERSION_TAG = new TNamed("MCVERSION_TAG","unknown");
+					}
+					TPC.Init(G4MCname);
+					f->Close();
+					
 					file_input_tree->AddFile(filename); 
 					file_input_tree->SetAlias("rrp_pri","(xp_pri*xp_pri + yp_pri*yp_pri)/10./10.");  
 					const int nevents = file_input_tree->GetEntries();
@@ -424,37 +421,26 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 		
 		file_outplot->cd();
 		
+		gROOT->SetBatch(kTRUE);
+		/*=================================================================*/
+		if (!batch) {gROOT->SetBatch(kFALSE);}
+		/*=================================================================*/
+		
 		TPaveText *pt_MCINFO = new TPaveText(0.735,0.775,0.97,0.975,"NDC");
 		pt_MCINFO->SetFillColor(0);   
 		pt_MCINFO->SetBorderSize(1);
 		pt_MCINFO->SetTextFont(42);
-		pt_MCINFO->SetTextAlign(12);  
-		if ( strcmp(G4MCname->GetTitle(),"Xenon1t") == 0 ) {
-			sprintf(canvasfile,"Xenon1t v0.1.6");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   1e7 events each");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   mesh values 04/2016");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   optPhot source (178nm)");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   top PMTs QE: 100%%");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   bottom PMTs QE: 100%%");
-			pt_MCINFO->AddText(canvasfile);
-		} else {
-			sprintf(canvasfile,"muensterTPC v0.0.0");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   1e7 events each");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   optPhot source (178nm)");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   top PMTs QE: 100%%");
-			pt_MCINFO->AddText(canvasfile);
-			sprintf(canvasfile,"   bottom PMTs QE: 100%%");
-			pt_MCINFO->AddText(canvasfile);
-		}
+		pt_MCINFO->SetTextAlign(12); 
+		sprintf(canvasfile,"MC: %s v%s", G4MCname->GetTitle(), MCVERSION_TAG->GetTitle());
+		pt_MCINFO->AddText(canvasfile);
+		sprintf(canvasfile,"   optPhot source (178nm)");
+		pt_MCINFO->AddText(canvasfile);
+		sprintf(canvasfile,"   top PMTs QE: 100%%");
+		pt_MCINFO->AddText(canvasfile);
+		sprintf(canvasfile,"   bottom PMTs QE: 100%%");
+		pt_MCINFO->AddText(canvasfile);
 
+		
 		if (param_value.size() != 0) {
 			
 			style_1D->cd();
@@ -799,5 +785,5 @@ void optPhot_parameter_variations(string datadir, string parameter, int bin_z, s
 	
 	file_outstat.close();
 	gROOT->SetBatch(kFALSE);	
-	//file_outplot->Close();  
+	if (batch) {file_outplot->Close();}  
 }

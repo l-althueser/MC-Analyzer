@@ -39,18 +39,17 @@
 
 using namespace std;
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string export_format = "png");
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, string export_format = "png", bool batch = true);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, bool batch);
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, bool batch);
 
 /*=================================================================*/
 
-void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string export_format) {
-	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,filenumber_start,filenumber_end,export_format,true);
+void optPhot_matching(string datafile_kr, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, bool batch = true) {
+	optPhot_matching(datafile_kr,"",AFT_S2_Kr,datafile_mc,bin_z,bin_r,bin_rr,strnbinst,filenumber_start,filenumber_end,batch);
 }
 
 /*=================================================================*/
-
-void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start, int filenumber_end, string export_format, bool batch) {
+void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr, string datafile_mc, int bin_z, int bin_r, int bin_rr, string strnbinst, int filenumber_start = 0, int filenumber_end = 0, bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -125,8 +124,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	// VERSIONTAG_SIGNTYPE_LXeTR_GXeTR_LXeAbsL_GXeAbsL_LXeRSL_LXeRef_NUMBER
 	file_outstat << "#" << "VTag" << "\t" << "STyp" << "\t" << "LXeTR" << "\t" << "GXeTR" << "\t" 
 				 << "LXeAbsL" << "\t" << "GXeAbsL" << "\t" << "LXeRSL" << "\t" << "LXeRef" << "\t" << "#" 
-				 << "\t" << "SOS_rLCE_S1" << "\t" << "SOS_AFT_S1" << "\t" << "SOS_ly_S1" << "\t" 
-				 << "SOS_AFT_S2" << "\t" << "SOS_sum" << "\n";
+				 << "\t" << "RMSD_rLCE_S1" << "\t" << "RMSD_AFT_S1" << "\t" << "RMSD_ly_S1" << "\t" 
+				 << "RMSD_AFT_S2" << "\t" << "RMSD_sum" << "\t" << "SOS_sum" << "\n";
 	
 	/*=================================================================*/
 	/*=================================================================*/
@@ -399,12 +398,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 			TIter next(files);
 			int filenumber = 0;
 			double SOS_sum = 0;
-			char SOS_sum_min_filename[10000];
-			double SOS_sum_min = 0; //sum of squares
-			double SOS_sum_min_rLCE = 0;
-			double SOS_sum_min_ly = 0;
-			double SOS_sum_min_AFT_S1 = 0;
-			double SOS_sum_min_AFT_S2 = 0;
+			double RMSD_sum = 0;
 			
 			char filename[10000];	
 			char filename_S2[10000];			
@@ -549,9 +543,9 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 									S2_hits_bottom += nbpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]];
 								}
 							}
-							AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
-							AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
 						}
+						AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
+						AFT_S2_ratio = abs(AFT_S2_Kr - AFT_S2);
 					}
 					else {
 						cout << " Skip file(" << filenumber << "): " << token[0] << "_S1_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << "no S2 found." <<  endl;
@@ -755,41 +749,16 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					/*=================================================================*/
 					// S1 + S2
 					SOS_sum = (h_ratio_rLCE_sos_all/(TPC.Get_nbinsZ()*0.05))+(h_ratio_ly_sos_all/(TPC.Get_nbinsZ()*0.2))+(h_ratio_AFTZ_sos/(TPC.Get_nbinsZ()*2.))+(AFT_S2_ratio/(1.*0.05));
-					
+					RMSD_sum = sqrt(h_ratio_rLCE_sos_all/(double)TPC.Get_nbinsZ()) + sqrt(h_ratio_AFTZ_sos/(double)TPC.Get_nbinsZ()) + sqrt(h_ratio_ly_sos_all/(double)TPC.Get_nbinsZ()) + sqrt(AFT_S2_ratio*AFT_S2_ratio);
+
 					// S1
 					//SOS_sum = (h_ratio_rLCE_sos_all/(TPC.Get_nbinsZ()*0.05))+(h_ratio_ly_sos_all/(TPC.Get_nbinsZ()*0.2))+(h_ratio_AFTZ_sos/(TPC.Get_nbinsZ()*2.));
-					
-					if (filenumber == 1) {
-						strcpy(SOS_sum_min_filename,filename);
-						SOS_sum_min_rLCE = h_ratio_rLCE_sos_all;
-						SOS_sum_min_ly = h_ratio_ly_sos_all;
-						SOS_sum_min_AFT_S1 = h_ratio_AFTZ_sos;
-						SOS_sum_min_AFT_S2 = AFT_S2_ratio;
-						SOS_sum_min = SOS_sum;
-					}
-					else {
-						if (SOS_sum < SOS_sum_min) {
-							strcpy(SOS_sum_min_filename,filename);
-							SOS_sum_min_rLCE = h_ratio_rLCE_sos_all;
-							SOS_sum_min_ly = h_ratio_ly_sos_all;
-							SOS_sum_min_AFT_S1 = h_ratio_AFTZ_sos;
-							SOS_sum_min_AFT_S2 = AFT_S2_ratio;
-							SOS_sum_min = SOS_sum;
-						}
-					}
 
-					file_outstat << token[0] << "\t" << token[1] << "\t" << token[2] << "\t" << token[3] << "\t" << token[4] << "\t" << token[5] << "\t" << token[6] << "\t" << token[7] << "\t" << token[8] << "\t" << h_ratio_rLCE_sos_all << "\t" << h_ratio_AFTZ_sos << "\t" << h_ratio_ly_sos_all << "\t" << AFT_S2_ratio << "\t" << SOS_sum << "\n";
+					file_outstat << token[0] << "\t" << token[1] << "\t" << token[2] << "\t" << token[3] << "\t" << token[4] << "\t" << token[5] << "\t" << token[6] << "\t" << token[7] << "\t" << token[8] << "\t" << sqrt(h_ratio_rLCE_sos_all/(double)TPC.Get_nbinsZ()) << "\t" << sqrt(h_ratio_AFTZ_sos/(double)TPC.Get_nbinsZ()) << "\t" << sqrt(h_ratio_ly_sos_all/(double)TPC.Get_nbinsZ()) << "\t" << sqrt(AFT_S2_ratio*AFT_S2_ratio) << "\t" << RMSD_sum << "\t" << SOS_sum << "\n";
 					
 					delete file_input_tree;
 				}
 			}
-			cout << "------------------------------------------------------------" << endl;
-			cout << "Best match file:" << SOS_sum_min_filename << endl;
-			cout << "Minimum sos sum    of " << SOS_sum_min << endl;
-			cout << "Minimum rLCE  sos  of " << SOS_sum_min_rLCE << endl;
-			cout << "Minimum S1AFT sos  of " << SOS_sum_min_AFT_S1 << endl;
-			cout << "Minimum ly    sos  of " << SOS_sum_min_ly << endl;
-			cout << "Minimum S2AFT diff of " << SOS_sum_min_AFT_S2 << endl;
 			cout << "------------------------------------------------------------" << endl;
 			cout << "sort with: LC_ALL=C sort -k14 -g matching_*.dat -o matching_sorted.dat" << endl;
 			//gROOT->ProcessLine("LC_ALL=C sort -k14 -g OpPhotStudy_matcher.dat -o OpPhotStudy_matcher_sort.dat"); 

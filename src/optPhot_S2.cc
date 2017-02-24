@@ -39,24 +39,20 @@
 
 using namespace std;
 
-void optPhot_S2(string, int, int, int, string);
-void optPhot_S2(string, int, int, int, string, bool);
+void optPhot_S2(string datafile, string export_format, bool batch);
+void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_S2(string datafile, string export_format) {
+void optPhot_S2(string datafile, string export_format = "png", bool batch = true) {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
-	optPhot_S2(datafile,26,50,22,export_format,true);
-}
-
-void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format) {
-	optPhot_S2(datafile,bin_z,bin_r,bin_rr,export_format,true);
+	optPhot_S2(datafile,26,50,22,export_format,batch);
 }
 
 /*=================================================================*/
 
-void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -73,7 +69,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 		rawdatafilename = datafilename.substr(0, lastindex); 
 	}
 	
-	Int_t canvas_x = 650;
+	Int_t canvas_x = 850;
 	Int_t canvas_y = 800;
 
 	char canvasfile[10000];
@@ -246,9 +242,144 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	
 	file_outstat << "============================================================" << "\n";
 	
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	// X vs. Y of generated events LXe
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_xy = new TCanvas("xy","xy",canvas_x,canvas_x);
+	TH2F* h_xy = new TH2F("xy_pri", "X vs. Y generated events", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_xy->SetXTitle("X [cm]");
+	h_xy->GetXaxis()->CenterTitle();
+	h_xy->SetYTitle("Y [cm]");
+	h_xy->GetYaxis()->CenterTitle();
+	h_xy->SetZTitle("events [#]");
+	h_xy->GetZaxis()->CenterTitle();
+	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f",TPC.Get_GXe_maxZ(),TPC.Get_GXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
+	file_input_tree->Draw("xp_pri/10. : yp_pri/10. >> xy_pri", draw_selection, "goff");
+	h_xy->Draw("colz");
+	if (file_outplot) c_xy->Write();
+	
+	/*=================================================================*/
+	// X vs. Y detected events (TOP + BOTTOM PMTs)
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_xy_det = new TCanvas("xy_det","xy_det",canvas_x,canvas_x);
+	TH2F* h_xy_det = new TH2F("xy_det", "X vs. Y detected events (ALL PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_xy_det->SetXTitle("X [cm]");
+	h_xy_det->GetXaxis()->CenterTitle();
+	h_xy_det->SetYTitle("Y [cm]");
+	h_xy_det->GetYaxis()->CenterTitle();
+	h_xy_det->SetZTitle("detected [#]");
+	h_xy_det->GetZaxis()->CenterTitle();
+	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0 || ntpmthits > 0)",TPC.Get_GXe_maxZ(),TPC.Get_GXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
+	file_input_tree->Draw("xp_pri/10. : yp_pri/10. >> xy_det", draw_selection, "goff");
+	h_xy_det->Draw("colz");
+	if (file_outplot) c_xy_det->Write();
+	
+	/*=================================================================*/
+	// X vs. Y detected events (TOP PMTs)
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_xy_det_top = new TCanvas("xy_det_top","xy_det_top",canvas_x,canvas_x);
+	TH2F* h_xy_det_top = new TH2F("xy_det_top", "X vs. Y detected events (TOP PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_xy_det_top->SetXTitle("X [cm]");
+	h_xy_det_top->GetXaxis()->CenterTitle();
+	h_xy_det_top->SetYTitle("Y [cm]");
+	h_xy_det_top->GetYaxis()->CenterTitle();
+	h_xy_det_top->SetZTitle("TOP detected [#]");
+	h_xy_det_top->GetZaxis()->CenterTitle();
+	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_GXe_maxZ(),TPC.Get_GXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
+	file_input_tree->Draw("xp_pri/10. : yp_pri/10. >> xy_det_top", draw_selection, "goff");
+	h_xy_det_top->Draw("colz");
+	if (file_outplot) c_xy_det_top->Write();
+	
+	/*=================================================================*/
+	// X vs. Y detected events (BOTTOM PMTs)
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_xy_det_bottom = new TCanvas("xy_det_bottom","xy_det_bottom",canvas_x,canvas_x);
+	TH2F* h_xy_det_bottom = new TH2F("xy_det_bottom", "X vs. Y detected events (BOTTOM PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_xy_det_bottom->SetXTitle("X [cm]");
+	h_xy_det_bottom->GetXaxis()->CenterTitle();
+	h_xy_det_bottom->SetYTitle("Y [cm]");
+	h_xy_det_bottom->GetYaxis()->CenterTitle();
+	h_xy_det_bottom->SetZTitle("BOTTOM detected [#]");
+	h_xy_det_bottom->GetZaxis()->CenterTitle();
+	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_GXe_maxZ(),TPC.Get_GXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
+	file_input_tree->Draw("xp_pri/10. : yp_pri/10. >> xy_det_bottom", draw_selection, "goff");
+	h_xy_det_bottom->Draw("colz");
+	if (file_outplot) c_xy_det_bottom->Write();
+	
+	/*=================================================================*/
+	if (!batch) {gROOT->SetBatch(kFALSE);}
+	/*=================================================================*/
+	/*=================================================================*/
+	// LCE of X vs. Y
+	/*=================================================================*/	
+	style_2D->cd();
+	TCanvas *c_LCE_xy = new TCanvas("LCE_xy","LCE_xy",canvas_x,canvas_x);
+	TH2F* h_LCE_xy = new TH2F("LCE_xy", "LCE S2 of X vs. Y (ALL PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_LCE_xy->SetXTitle("X [cm]");
+	h_LCE_xy->GetXaxis()->CenterTitle();
+	h_LCE_xy->SetYTitle("Y [cm]");
+	h_LCE_xy->GetYaxis()->CenterTitle();
+	h_LCE_xy->SetZTitle("LCE [%]");
+	h_LCE_xy->GetZaxis()->CenterTitle();
+	h_LCE_xy->Sumw2();
+	h_LCE_xy->Divide(h_xy_det, h_xy, 1.,1., "b");
+	h_LCE_xy->Scale(100.);
+	h_LCE_xy->Draw("colz");
+	if (file_outplot) c_LCE_xy->Write();
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	if (!(export_format=="")) c_LCE_xy->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	// LCE of X vs. Y (TOP PMTs)
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_LCE_xy_top = new TCanvas("LCE_xy_top","LCE_xy_top",canvas_x,canvas_x);
+	TH2F* h_LCE_xy_top = new TH2F("LCE_xy_top", "LCE S2 of X vs. Y (TOP PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_LCE_xy_top->SetXTitle("X [cm]");
+	h_LCE_xy_top->GetXaxis()->CenterTitle();
+	h_LCE_xy_top->SetYTitle("Y [cm]");
+	h_LCE_xy_top->GetYaxis()->CenterTitle();
+	h_LCE_xy_top->SetZTitle("TOP LCE [%]");
+	h_LCE_xy_top->GetZaxis()->CenterTitle();
+	h_LCE_xy_top->Sumw2();
+	h_LCE_xy_top->Divide(h_xy_det_top, h_xy, 1.,1., "b");
+	h_LCE_xy_top->Scale(100.);
+	h_LCE_xy_top->Draw("colz");
+	if (file_outplot) c_LCE_xy_top->Write();
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE_top.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	if (!(export_format=="")) c_LCE_xy_top->SaveAs(canvasfile);
+	
+	/*=================================================================*/
+	gROOT->SetBatch(kTRUE);
+	/*=================================================================*/
+	/*=================================================================*/
+	// LCE of X vs. Y (BOTTOM PMTs)
+	/*=================================================================*/
+	style_2D->cd();
+	TCanvas *c_LCE_xy_bottom = new TCanvas("LCE_xy_bottom","LCE_xy_bottom",canvas_x,canvas_x);
+	TH2F* h_LCE_xy_bottom = new TH2F("LCE_xy_bottom", "LCE S2 of X vs. Y (BOTTOM PMTs)", TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR(), TPC.Get_nbinsR(), -TPC.Get_LXe_maxR(), TPC.Get_LXe_maxR());
+	h_LCE_xy_bottom->SetXTitle("X [cm]");
+	h_LCE_xy_bottom->GetXaxis()->CenterTitle();
+	h_LCE_xy_bottom->SetYTitle("Y [cm]");
+	h_LCE_xy_bottom->GetYaxis()->CenterTitle();
+	h_LCE_xy_bottom->SetZTitle("BOTTOM LCE [%]");
+	h_LCE_xy_bottom->GetZaxis()->CenterTitle();
+	h_LCE_xy_bottom->Sumw2();
+	h_LCE_xy_bottom->Divide(h_xy_det_bottom, h_xy, 1.,1., "b");
+	h_LCE_xy_bottom->Scale(100.);
+	h_LCE_xy_bottom->Draw("colz");
+	if (file_outplot) c_LCE_xy_bottom->Write();
+	sprintf(canvasfile,"%s/%s_S2_xy_LCE_bottom.%s", workingdirectory.c_str(), rawdatafilename.c_str(), export_format.c_str());
+	if (!(export_format=="")) c_LCE_xy_bottom->SaveAs(canvasfile);
+	
 	file_outstat << "============================================================" << "\n";
 	file_outstat.close();	
-	//file_outplot->Close(); 
+	if (batch) {file_outplot->Close();}  
 }
 
 /*=================================================================*/

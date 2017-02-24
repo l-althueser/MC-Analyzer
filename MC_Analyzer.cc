@@ -88,7 +88,7 @@ void MC_Analyzer() {
 		}
 		
 		//optPhot_S1(datafile,26,50,22,"png");
-		optPhot_S1(datafile,"png");
+		optPhot_S1(datafile);
 		
 	}
 	if (( cinput == "2" ) || ( cinput == "Kr83m" )){
@@ -109,7 +109,7 @@ void MC_Analyzer() {
 			lastfile_Kr83m = datafile;
 		}
 		
-		data_maps(datafile,9,4,4,"png");
+		data_maps(datafile,9,4,4);
 		
 	}
 	if (( cinput == "3" )){
@@ -158,7 +158,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile_mc;
 		}
 		
-		optPhot_comparison(datafile_kr,pmtini,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
+		optPhot_comparison(datafile_kr,pmtini,0.645,datafile_mc,9,4,4,"4 6 8 12");
 		
 	}
 	if (( cinput == "4" ) || ( cinput == "parameters" )){
@@ -184,7 +184,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile;
 		}
 		
-		optPhot_parameter_variations(datafile,parameter,"png");
+		optPhot_parameter_variations(datafile,parameter);
 		
 	}
 	if ( cinput == "5" ){
@@ -204,7 +204,7 @@ void MC_Analyzer() {
 			lastfile_MC = datafile;
 		}
 		
-		calibration_source(datafile,"png");
+		calibration_source(datafile);
 		
 	}
 
@@ -240,7 +240,7 @@ void MC_Analyzer() {
 			lastfile_parameters = datafile_mc;
 		}
 		
-		optPhot_matching(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12","png");
+		optPhot_matching(datafile_kr,0.645,datafile_mc,9,4,4,"4 6 8 12");
 		
 	}
 	if (( cinput == "8" )){
@@ -262,7 +262,7 @@ void MC_Analyzer() {
 		}
 		
 		//optPhot_S1(datafile,26,50,22,"png");
-		optPhot_S2(datafile,"png");
+		optPhot_S2(datafile);
 		
 	}
 

@@ -37,17 +37,10 @@
 
 using namespace std;
 
-void data_maps(string, int, int, int, string);
-void data_maps(string, int, int, int, string, bool);
-
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format) {
-	//TPC.Set_Bins(9,4,4);
-	data_maps(datafile,bin_z,bin_r,bin_rr,export_format,true);
-}
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
 
 /*=================================================================*/
-
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
@@ -418,7 +411,5 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string export_
 	if (!(export_format=="")) c_ly_lyZ_ALL->SaveAs(canvasfile);
 	
 	if (!batch) {gROOT->SetBatch(kFALSE);}	
-	//file_outplot->Close();  
-	
-	
+	if (batch) {file_outplot->Close();}  
 }

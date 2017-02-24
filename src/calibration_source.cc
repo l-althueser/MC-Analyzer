@@ -39,23 +39,20 @@
 
 using namespace std;
 
-void calibration_source(string, int, int, int, string);
-void calibration_source(string, int, int, int, string, bool);
+void calibration_source(string datafile, string export_format);
+void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
 
 /*=================================================================*/
-void calibration_source(string datafile, string export_format) {
+void calibration_source(string datafile, string export_format = "png") {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
 	calibration_source(datafile,50,45,22,export_format,true);
 }
 
-void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format) {
-	calibration_source(datafile,bin_z,bin_r,bin_rr,export_format,true);
-}
 /*=================================================================*/
 
-void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -551,7 +548,7 @@ void calibration_source(string datafile, int bin_z, int bin_r, int bin_rr, strin
 	/*=================================================================*/
 	file_outstat << "============================================================" << "\n";
 	file_outstat.close();	
-	//file_outplot->Close(); 
+	if (batch) {file_outplot->Close();}  
 }
 
 /*=================================================================*/

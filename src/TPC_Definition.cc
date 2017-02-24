@@ -71,7 +71,7 @@ void TPC_Definition::TPC_Xe1T () {
 	LXe_minZ  = -96.7;
 	LXe_maxZ  = 0.;
 	GXe_minZ  = 0.;
-	GXe_maxZ  = 6.;
+	GXe_maxZ  = 0.6;
 	LXe_minRR = 0.;
 	LXe_maxR  = 47.9;
 	LXe_maxRR = LXe_maxR*LXe_maxR;

@@ -39,22 +39,18 @@
 
 using namespace std;
 
-void optPhot_S1(string, int, int, int, string);
-void optPhot_S1(string, int, int, int, string, bool);
+void optPhot_S1(string datafile, string export_format, bool batch);
+void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch);
 
 /*=================================================================*/
-void optPhot_S1(string datafile, string export_format) {
+void optPhot_S1(string datafile, string export_format = "png", bool batch = true) {
 	// Some good binnings
 	//TPC.Set_Bins(26,50,22) - default
 	//TPC.Set_Bins(52,100,44)- nevents > 10000000
-	optPhot_S1(datafile,26,50,22,export_format,true);
+	optPhot_S1(datafile,26,50,22,export_format,batch);
 }
 
-void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format) {
-	optPhot_S1(datafile,bin_z,bin_r,bin_rr,export_format,true);
-}
-
-void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format, bool batch) {
+void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export_format = "png", bool batch = true) {
 	
 	//gErrorIgnoreLevel = kPrint, kInfo, kWarning, kError, kBreak, kSysError, kFatal;
 	gErrorIgnoreLevel = kWarning;
@@ -1005,7 +1001,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string export
 	/*=================================================================*/
 	file_outstat << "============================================================" << "\n";
 	file_outstat.close();	
-	//file_outplot->Close(); 
+	if (batch) {file_outplot->Close();}  
 }
 
 /*=================================================================*/
