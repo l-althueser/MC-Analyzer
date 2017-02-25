@@ -748,7 +748,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 				} else {
 					QE_Bottom += atof(token[1])/TPC.Get_PMTs_bottom();
 				}
-				if (atoi(token[2]) ==  0) {
+				if (On_PMT.back() ==  0) {
 					Off_PMTs += 1;
 				}
 			}
