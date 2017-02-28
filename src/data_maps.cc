@@ -37,10 +37,10 @@
 
 using namespace std;
 
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir, string export_format, bool batch);
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir, string export_format, bool batch);
 
 /*=================================================================*/
-void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_dir = "", string export_format = "png", bool batch = true) {
+void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string strnbinst, string output_dir = "", string export_format = "png", bool batch = true) {
 	
 	// read in datafilename and get working directory
 	size_t found=datafile.find_last_of("/\\");
@@ -76,7 +76,13 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_
 	float lyZ[1000]={0};
 	float lyareatop[1000][1000]={0};
 	float lyareatopZ[1000]={0};
-	float nbinst[4] = {4.,6.,8.,12.};
+	
+	stringstream stream(strnbinst);
+	std::vector<int> nbinst;
+	int element;
+	while(stream >> element){
+		nbinst.push_back(element);
+	}
 	
 	// open datafile
 	raw.open(datafile.c_str());
@@ -223,9 +229,11 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_
 	h_rLCE_map->GetYaxis()->CenterTitle();
 	h_rLCE_map->SetZTitle("relative LCE");
 	h_rLCE_map->GetZaxis()->CenterTitle();
+	double mean_aft = 0;
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		for (int r=0; r<TPC.Get_nbinsR() ; r++){
 			h_rLCE_map->SetBinContent(r+1,TPC.Get_nbinsZ()-z,ly[z][r]);
+			mean_aft += lyareatop[z][r]/(TPC.Get_nbinsZ()*TPC.Get_nbinsR());
 		}
 	}
 	double h_rLCE_map_mean = 0;
@@ -235,6 +243,7 @@ void data_maps(string datafile, int bin_z, int bin_r, int bin_rr, string output_
 		}
 	}
 	cout << "Mean ly: " << h_rLCE_map_mean << endl;
+	cout << "Mean ly_AFT: " << mean_aft << endl;
 	h_rLCE_map->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map->Draw("colz");
 	if (file_outplot) c_rLCE_map->Write();
