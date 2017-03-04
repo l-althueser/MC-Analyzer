@@ -267,6 +267,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	
 	vector<double> QE_PMT;
 	vector<double> On_PMT;
+	double PMT_CE = 0.90; // as reported by the PMT group
 	
 	if ((datafile_PMT == "")) {
 		cout << endl;
@@ -567,6 +568,7 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 					
 					S2_hits_top = 0;
 					S2_hits_bottom = 0;
+					int pmtID = 0;
 					
 					if ( (nevents_S2 > 0) && (!(f_S2->IsZombie())) ) {
 						cout << " file(" << filenumber << "): " << token[0] << "_S2_" << token[2] << "_" << token[3] << "_" << token[4] << "_" << token[5] << "_" << token[6] << "_" << token[7] << "_" << token[8] << ".root" << " " << nevents_S2 << " events total.\t" << (double)(filenumber-filenumber_start+1)/(double)files_to_process*100 << "% - " << currtime << " (since " << starttime << ")" <<   endl;
@@ -591,15 +593,14 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 								cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 								cout << endl;
 								gApplication->Terminate();
-							}
-							if ((ntpmthits+nbpmthits) == 1) {
+							} else {
 								if (no_PMT_details) {
-									S2_hits_top += ntpmthits*TPC.Get_QE_top();
-									S2_hits_bottom += nbpmthits*TPC.Get_QE_bottom();
-								} else { 
-									S2_hits_top += ntpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]];
-									S2_hits_bottom += nbpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]];
-								}
+									if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
+									else {pmtID = TPC.Get_PMTs_top()+1;}
+								} else { pmtID = (*pmthitID)[0]; }
+								
+								S2_hits_top += ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
+								S2_hits_bottom += nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
 							}
 						}
 						AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
@@ -649,11 +650,12 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 							gApplication->Terminate();
 						} else {
 							if (no_PMT_details) {
-								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*TPC.Get_QE_top());
-								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*TPC.Get_QE_bottom());
-							} else { 
-								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]]);
-								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*QE_PMT[(*pmthitID)[0]]*On_PMT[(*pmthitID)[0]]);
+									if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
+									else {pmtID = TPC.Get_PMTs_top()+1;}
+								} else { pmtID = (*pmthitID)[0]; }
+								
+								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
 							}
 						}
 						// All events

@@ -697,6 +697,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	double QE_Top = 0;
 	double QE_Bottom = 0;
 	double Off_PMTs = 0;
+	double PMT_CE = 0.90; // as reported by the PMT group
 	
 	if ((datafile_PMT == "") || (no_PMT_details)) {
 		cout << endl;
@@ -813,15 +814,14 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 				cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 				cout << endl;
 				gApplication->Terminate();
-			}
-			if ((ntpmthits+nbpmthits) == 1) {
+			} else {
 				if (no_PMT_details) {
 					if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
-					else {pmtID = TPC.Get_PMTs_top();}
+					else {pmtID = TPC.Get_PMTs_top()+1;}
 				} else { pmtID = (*pmthitID)[0]; }
 				
-				S2_hits_top += ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID];
-				S2_hits_bottom += nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID];
+				S2_hits_top += ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
+				S2_hits_bottom += nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
 			}
 		}
 		std::cout << std::endl;	
@@ -896,23 +896,22 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 			cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 			cout << endl;
 			gApplication->Terminate();
-		}
-		if ((ntpmthits+nbpmthits) == 1) {
+		} else {
 			if (no_PMT_details) {
 				if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
-				else {pmtID = TPC.Get_PMTs_top();}
+				else {pmtID = TPC.Get_PMTs_top()+1;}
 			} else { pmtID = (*pmthitID)[0]; }
 			
 			// If a pmthit is seen
-			h_rrZ_det_top->Fill(rrp_pri/10., zp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_rrZ_det_bottom->Fill(rrp_pri/10., zp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_rrZ_det->Fill(rrp_pri/10., zp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCEZ_det->Fill(zp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCErr_det_top->Fill(rrp_pri/10., ntpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCErr_det_bottom->Fill(rrp_pri/10., nbpmthits*QE_PMT[pmtID]*On_PMT[pmtID]);
-			h_LCErr_det->Fill(rrp_pri/10., (ntpmthits+nbpmthits)*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_rrZ_det_top->Fill(rrp_pri/10., zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_rrZ_det_bottom->Fill(rrp_pri/10., zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_rrZ_det->Fill(rrp_pri/10., zp_pri/10., (ntpmthits+nbpmthits)*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCEZ_det->Fill(zp_pri/10., (ntpmthits+nbpmthits)*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det_top->Fill(rrp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det_bottom->Fill(rrp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+			h_LCErr_det->Fill(rrp_pri/10., (ntpmthits+nbpmthits)*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
 		}
 		// All events
 		h_rrZ->Fill(rrp_pri/10., zp_pri/10., 1.);
