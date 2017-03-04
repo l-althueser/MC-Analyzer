@@ -656,9 +656,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 									else {pmtID = TPC.Get_PMTs_top()+1;}
 								} else { pmtID = (*pmthitID)[0]; }
 								
-								h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
-								h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
-							}
+							h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+							h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
 						}
 						// All events
 						h_LCEZ_gen->Fill(zp_pri/10., 1.);
