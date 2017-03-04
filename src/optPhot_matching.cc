@@ -593,7 +593,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 								cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 								cout << endl;
 								gApplication->Terminate();
-							} else {
+							}
+							if ((ntpmthits+nbpmthits) == 1) {
 								if (no_PMT_details) {
 									if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
 									else {pmtID = TPC.Get_PMTs_top()+1;}
@@ -648,7 +649,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 							cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 							cout << endl;
 							gApplication->Terminate();
-						} else {
+						}
+						if ((ntpmthits+nbpmthits) == 1) {
 							if (no_PMT_details) {
 									if (ntpmthits == 1) {pmtID = TPC.Get_PMTs_top()-1;}
 									else {pmtID = TPC.Get_PMTs_top()+1;}
