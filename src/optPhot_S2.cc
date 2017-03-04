@@ -250,7 +250,7 @@ void optPhot_S2(string datafile, int bin_z, int bin_r, int bin_rr, string output
 	file_input_tree->Draw(">>elist_all","(nbpmthits > 0 || ntpmthits > 0)","goff");
 	TEntryList *elist_all = (TEntryList*)gDirectory->Get("elist_all");
 	file_outstat << "All PMT hits: " << elist_all->GetEntriesToProcess() << "\n";
-	file_outstat << "AFT: " << (double)elist_top->GetEntriesToProcess()/(double)elist_all->GetEntriesToProcess() << "\n";
+	file_outstat << "AFT (without QEs and CE): " << (double)elist_top->GetEntriesToProcess()/(double)elist_all->GetEntriesToProcess() << "\n";
 	
 	file_outstat << "============================================================" << "\n";
 	

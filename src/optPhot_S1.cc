@@ -267,21 +267,21 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output
 	file_input_tree->Draw(">>elist_LXe_det",draw_selection,"goff");
 	TEntryList *elist_LXe_det = (TEntryList*)gDirectory->Get("elist_LXe_det");
 	file_outstat << "detected events (LXe): " << elist_LXe_det->GetEntriesToProcess() << "\n";
-	file_outstat << "Mean LCE LXe(detected/generated): " << (double)elist_LXe_det->GetEntriesToProcess()/(double)elist_LXe_gen->GetEntriesToProcess()*100. << "\n";
+	file_outstat << "Mean LCE LXe(detected/generated (without QEs and CE)): " << (double)elist_LXe_det->GetEntriesToProcess()/(double)elist_LXe_gen->GetEntriesToProcess()*100. << "\n";
 	file_outstat << "------------------------------------------------------------" << "\n";
 	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (ntpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
 	file_input_tree->Draw(">>elist_LXe_det_top",draw_selection,"goff");
 	TEntryList *elist_LXe_det_top = (TEntryList*)gDirectory->Get("elist_LXe_det_top");
 	file_outstat << "detected events (LXe TOP): " << elist_LXe_det_top->GetEntriesToProcess() << "\n";
 	file_outstat << "Mean LCE LXe(detected TOP/generated): " << (double)elist_LXe_det_top->GetEntriesToProcess()/(double)elist_LXe_gen->GetEntriesToProcess()*100. << "\n";
-	file_outstat << "AreaFractionTop LXe(detected TOP/detected ALL): " << (double)elist_LXe_det_top->GetEntriesToProcess()/(double)elist_LXe_det->GetEntriesToProcess()*100. << "\n";
+	file_outstat << "AreaFractionTop LXe(detected TOP/detected ALL (without QEs and CE)): " << (double)elist_LXe_det_top->GetEntriesToProcess()/(double)elist_LXe_det->GetEntriesToProcess()*100. << "\n";
 	file_outstat << "------------------------------------------------------------" << "\n";
 	sprintf(draw_selection,"zp_pri/10<=%f && zp_pri/10>=%f && rrp_pri>=%f && rrp_pri<=%f && (nbpmthits > 0)",TPC.Get_LXe_maxZ(),TPC.Get_LXe_minZ(),TPC.Get_LXe_minRR(),TPC.Get_LXe_maxRR());
 	file_input_tree->Draw(">>elist_LXe_det_bottom",draw_selection,"goff");
 	TEntryList *elist_LXe_det_bottom = (TEntryList*)gDirectory->Get("elist_LXe_det_bottom");
 	file_outstat << "detected events (LXe BOTTOM): " << elist_LXe_det_bottom->GetEntriesToProcess() << "\n";
 	file_outstat << "Mean LCE LXe(detected BOTTOM/generated): " << (double)elist_LXe_det_bottom->GetEntriesToProcess()/(double)elist_LXe_gen->GetEntriesToProcess()*100. << "\n";
-	file_outstat << "AreaFractionBottom LXe(detected BOTTOM/detected ALL): " << (double)elist_LXe_det_bottom->GetEntriesToProcess()/(double)elist_LXe_det->GetEntriesToProcess()*100. << "\n";
+	file_outstat << "AreaFractionBottom LXe(detected BOTTOM/detected ALL (without QEs and CE)): " << (double)elist_LXe_det_bottom->GetEntriesToProcess()/(double)elist_LXe_det->GetEntriesToProcess()*100. << "\n";
 	file_outstat << "============================================================" << "\n";
 	
 	TLine* lin_cath = new TLine(0.,TPC.Get_LXe_maxZ(),TPC.Get_LXe_maxRR(),TPC.Get_LXe_maxZ());
@@ -683,7 +683,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output
 		}
 	}
 	h_rLCE_rrZ->Scale(1./h_LCE_rrZ_mean);
-	file_outstat << "Mean LCE: " << h_LCE_rrZ_mean << "\n";
+	file_outstat << "Mean LCE (without QEs and CE): " << h_LCE_rrZ_mean << "\n";
 	h_rLCE_rrZ->Draw("colz");
 	lin_cath->Draw("same");
 	lin_grnd->Draw("same");
@@ -872,7 +872,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output
 	for (int z=0; z<(TPC.Get_nbinsZ()); z++){
 		h_rLCE_LCEZ_mean += h_LCE_LCEZ->GetBinContent(z+1)/(TPC.Get_nbinsZ());
 	}
-	file_outstat << "Mean LCE: " << h_rLCE_LCEZ_mean << "\n";
+	file_outstat << "Mean LCE (without QEs and CE): " << h_rLCE_LCEZ_mean << "\n";
 	h_LCE_LCEZ->Scale(1./h_rLCE_LCEZ_mean);
 	h_LCE_LCEZ->SetYTitle("relative LCE");
 	h_LCE_LCEZ->Draw();
@@ -979,7 +979,7 @@ void optPhot_S1(string datafile, int bin_z, int bin_r, int bin_rr, string output
 	for (int R=0; R<(TPC.Get_nbinsRR()); R++){
 		h_rLCE_LCErr_mean += h_LCE_LCErr->GetBinContent(R+1)/(TPC.Get_nbinsRR());
 	}
-	file_outstat << "Mean LCE: " << h_rLCE_LCErr_mean << "\n";
+	file_outstat << "Mean LCE (without QEs and CE): " << h_rLCE_LCErr_mean << "\n";
 	h_LCE_LCErr->SetTitle("LCE vs. R^{2}");
 	h_LCE_LCErr->SetXTitle("R^{2} [cm^{2}]");
 	h_LCE_LCErr->GetXaxis()->CenterTitle();

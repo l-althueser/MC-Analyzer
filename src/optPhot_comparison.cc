@@ -430,7 +430,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		}
 	}
 	cout << "------------------------------------------------------------" << endl;
-	cout << "Mean Kr83m ly: " << h_rLCE_map_mean << endl;
+	cout << "Mean Kr83m ly (from data): " << h_rLCE_map_mean << endl;
 	cout << "------------------------------------------------------------" << endl;
 	h_rLCE_map->Scale(1./h_rLCE_map_mean);
 	h_rLCE_map->SetMaximum(1.5);
@@ -949,10 +949,9 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		}
 	}
 	cout << "------------------------------------------------------------" << endl;
-	cout << "Mean MC ly (calculated): " << h_ly_rrZ_mean << endl;
+	cout << "Mean MC ly (with QEs and CE): " << h_ly_rrZ_mean << endl;
 	cout << "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - " << endl;
-	cout << "Assume the average photon yield from NEST (50 ph/keV, " << endl;
-	cout << "at 32 keV, at 150 V/cm). QE*CE =~ 31%" << endl;
+	cout << "Assume the average photon yield from NEST (50 ph/keV, at 32 keV, at 150 V/cm)." << endl;
 	cout << "------------------------------------------------------------" << endl;
 	h_ly_rrZ->Draw("colz");
 	
@@ -1221,7 +1220,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 		}
 	}
 	cout << "------------------------------------------------------------" << endl;
-	cout << "Mean MC LCE: " << h_LCE_rrZ_mean << endl;
+	cout << "Mean MC LCE (with QEs and CE): " << h_LCE_rrZ_mean << endl;
 	cout << "------------------------------------------------------------" << endl;
 	h_rLCE_rrZ->Scale(1./h_LCE_rrZ_mean);
 	h_rLCE_rrZ->SetMaximum(1.5);
