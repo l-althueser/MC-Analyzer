@@ -267,7 +267,12 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 	
 	vector<double> QE_PMT;
 	vector<double> On_PMT;
+	// https://indico.in2p3.fr/event/9408/session/8/contribution/30/material/slides/0.pdf
+	// https://arxiv.org/pdf/1202.2628.pdf
+	// https://arxiv.org/pdf/1509.04055.pdf
+	// https://arxiv.org/pdf/1502.01000.pdf QE increase
 	double PMT_CE = 0.90; // as reported by the PMT group
+	double PMT_QE_Inc = 1.10; // increase at cryogenic temperatures
 	
 	if ((datafile_PMT == "")) {
 		cout << endl;
@@ -600,8 +605,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 									else {pmtID = TPC.Get_PMTs_top()+1;}
 								} else { pmtID = (*pmthitID)[0]; }
 								
-								S2_hits_top += ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
-								S2_hits_bottom += nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
+								S2_hits_top += ntpmthits*PMT_QE_Inc*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
+								S2_hits_bottom += nbpmthits*PMT_QE_Inc*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID];
 							}
 						}
 						AFT_S2 = (S2_hits_top)/(S2_hits_bottom+S2_hits_top);
@@ -656,8 +661,8 @@ void optPhot_matching(string datafile_kr, string datafile_PMT, double AFT_S2_Kr,
 									else {pmtID = TPC.Get_PMTs_top()+1;}
 								} else { pmtID = (*pmthitID)[0]; }
 								
-							h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
-							h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+							h_LCEZ_det_top->Fill(zp_pri/10., ntpmthits*PMT_QE_Inc*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
+							h_LCEZ_det_bottom->Fill(zp_pri/10., nbpmthits*PMT_QE_Inc*PMT_CE*QE_PMT[pmtID]*On_PMT[pmtID]);
 						}
 						// All events
 						h_LCEZ_gen->Fill(zp_pri/10., 1.);
