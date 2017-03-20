@@ -1828,7 +1828,7 @@ void optPhot_comparison(string datafile_kr, string datafile_PMT, double AFT_S2_K
 	//h_ly_lyZ->SetTitle("Comparison S1: ly vs. Z");
 	h_ly_lyZ->SetTitle("");
 	h_ly_lyZ->SetLineColor(kBlue);
-	h_ly_lyZ->GetYaxis()->SetRangeUser(0,10);
+	h_ly_lyZ->GetYaxis()->SetRangeUser(0,12);
 	h_ly_lyZ->Draw("");
 	h_ly_lyZ_bottom->SetLineColor(kGreen);
 	h_ly_lyZ_bottom->Draw("same");
